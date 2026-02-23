@@ -218,13 +218,19 @@ def build_tick_lookup(ex, sym, bar_timestamps):
         return None
 
 def build_intra_lookup(df_base, df_intra):
+    # Returns dict: bar_index -> list of (high, low, close, timestamp)
     lookup={}; bt=df_base["timestamp"].values; it=df_intra["timestamp"].values
     ih=df_intra["high"].values; il=df_intra["low"].values; ic=df_intra["close"].values
     n=len(df_base)
+    fallback_ts=None  # no intra timestamp for fallback — use bar close ts
     for i in range(n):
         ts=bt[i]; te=bt[i+1] if i+1<n else bt[i]+np.timedelta64(1,"ns")*int(1e18)
         idx=np.where((it>=ts)&(it<te))[0]
-        lookup[i]=list(zip(ih[idx],il[idx],ic[idx])) if len(idx)>0 else [(df_base.iloc[i]["high"],df_base.iloc[i]["low"],df_base.iloc[i]["close"])]
+        if len(idx)>0:
+            lookup[i]=list(zip(ih[idx],il[idx],ic[idx],it[idx]))
+        else:
+            r=df_base.iloc[i]
+            lookup[i]=[(r["high"],r["low"],r["close"],bt[i])]
     return lookup
 def _compute_dd(eq, cap):
     a=np.array(eq); pk=np.maximum.accumulate(a); dd=(a-pk)/pk*100
@@ -259,27 +265,29 @@ def run_ema_crossover(df_base, df_intra, p, fee_pct, capital, tick_lookup=None):
         if pos:
             ep=pos["entry_price"]; d=pos["direction"]
             bar_ts = df["timestamp"].iloc[i] if "timestamp" in df.columns else None
+            bar_ts_val = df["timestamp"].iloc[i]
             if use_ticks and bar_ts is not None and bar_ts in tick_lookup:
                 tick_prices = tick_lookup[bar_ts]
-                # Convert tick prices to (high, low, close) tuples — each tick is its own "bar"
-                bars = [(float(px), float(px), float(px)) for px in tick_prices]
-                if not bars: bars = [(float(row["high"]),float(row["low"]),close)]
+                # (high, low, close, timestamp) — each tick is its own point
+                bars = [(float(px), float(px), float(px), bar_ts) for px in tick_prices]
+                if not bars: bars = [(float(row["high"]),float(row["low"]),close,bar_ts_val)]
             elif intra:
-                bars=intra.get(i,[(row["high"],row["low"],close)])
+                # lookup already returns (h, l, c, ts) tuples
+                bars=intra.get(i,[(row["high"],row["low"],close,bar_ts_val)])
             else:
-                bars=[(float(row["high"]),float(row["low"]),close)]
-            closed=False; xp=None; xr=None
-            for (ih,il,ic) in bars:
+                bars=[(float(row["high"]),float(row["low"]),close,bar_ts_val)]
+            closed=False; xp=None; xr=None; exit_ts=bar_ts_val
+            for (ih,il,ic,its) in bars:
                 if closed: break
                 if d=="long":
-                    if ih>=pos["tp"]: xp,xr,closed=pos["tp"],"TP",True
-                    elif not pos["trail_active"] and il<=pos["sl"]: xp,xr,closed=pos["sl"],"SL",True
+                    if ih>=pos["tp"]: xp,xr,closed,exit_ts=pos["tp"],"TP",True,its
+                    elif not pos["trail_active"] and il<=pos["sl"]: xp,xr,closed,exit_ts=pos["sl"],"SL",True,its
                 else:
-                    if il<=pos["tp"]: xp,xr,closed=pos["tp"],"TP",True
-                    elif not pos["trail_active"] and ih>=pos["sl"]: xp,xr,closed=pos["sl"],"SL",True
+                    if il<=pos["tp"]: xp,xr,closed,exit_ts=pos["tp"],"TP",True,its
+                    elif not pos["trail_active"] and ih>=pos["sl"]: xp,xr,closed,exit_ts=pos["sl"],"SL",True,its
             if not closed and pos["trail_active"]:
                 dist=get_trail_dist(d,close,ep,atr,p)
-                for (ih2,il2,ic2) in bars:
+                for (ih2,il2,ic2,its2) in bars:
                     if d=="long":
                         if not pos["trail_on"]:
                             if ih2>=ep+dist: pos["trail_on"]=True; pos["tsl"]=ih2-dist
@@ -290,23 +298,25 @@ def run_ema_crossover(df_base, df_intra, p, fee_pct, capital, tick_lookup=None):
                         elif pos["tsl"] is None or il2+dist<pos["tsl"]: pos["tsl"]=il2+dist
                 if pos["trail_on"] and pos["tsl"] is not None:
                     if p.get("tsl_mode","intrabar")=="barclose":
-                        if d=="long" and close<=pos["tsl"]: xp,xr,closed=pos["tsl"],"TSL",True
-                        elif d=="short" and close>=pos["tsl"]: xp,xr,closed=pos["tsl"],"TSL",True
+                        if d=="long" and close<=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,bar_ts_val
+                        elif d=="short" and close>=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,bar_ts_val
                     else:
-                        for (ih2,il2,ic2) in bars:
+                        for (ih2,il2,ic2,its2) in bars:
                             if closed: break
-                            if d=="long" and il2<=pos["tsl"]: xp,xr,closed=pos["tsl"],"TSL",True
-                            elif d=="short" and ih2>=pos["tsl"]: xp,xr,closed=pos["tsl"],"TSL",True
+                            if d=="long" and il2<=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,its2
+                            elif d=="short" and ih2>=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,its2
             if not closed:
-                if d=="long" and ss[i]: xp,xr,closed=close,"Signal",True
-                elif d=="short" and ls[i]: xp,xr,closed=close,"Signal",True
+                if d=="long" and ss[i]: xp,xr,closed,exit_ts=close,"Signal",True,bar_ts_val
+                elif d=="short" and ls[i]: xp,xr,closed,exit_ts=close,"Signal",True,bar_ts_val
             if closed:
                 xp=xp*(1-slip) if d=="long" else xp*(1+slip)
                 fo=ep*pos["qty"]*fee_pct/100; fc=xp*pos["qty"]*fee_pct/100
                 gross=(xp-ep)*pos["qty"] if d=="long" else (ep-xp)*pos["qty"]
                 net=gross-fo-fc
+                _exit_ts = exit_ts if exit_ts is not None else row["timestamp"]
+                if hasattr(_exit_ts,"item"): _exit_ts=pd.Timestamp(_exit_ts)  # numpy -> pandas
                 trades.append({"entry_time":pos["et"].isoformat() if hasattr(pos["et"],"isoformat") else str(pos["et"]),
-                    "exit_time":row["timestamp"].isoformat() if hasattr(row["timestamp"],"isoformat") else str(row["timestamp"]),
+                    "exit_time":_exit_ts.isoformat() if hasattr(_exit_ts,"isoformat") else str(_exit_ts),
                     "direction":d,"entry_price":round(ep,6),"exit_price":round(xp,6),"exit_reason":xr,
                     "pnl_usdt":round(net,4),"pnl_pct":round(net/pos["cap"]*100,4),"fee_usdt":round(fo+fc,4),"qty":round(pos["qty"],6)})
                 capital+=net; pos=None
@@ -624,8 +634,18 @@ def index(): return send_from_directory(".","index.html")
 def api_cache_status():
     ex=request.args.get("exchange","bybit"); sym=request.args.get("symbol","XMR/USDT:USDT"); tf=request.args.get("timeframe","30m")
     df=load_cache(ex,sym,tf)
-    if df is None: return jsonify({"exists":False,"count":0})
-    return jsonify({"exists":True,"count":len(df),"first":df["timestamp"].iloc[0].isoformat(),"last":df["timestamp"].iloc[-1].isoformat()})
+    # Also return 1m status so frontend can warn about missing intrabar data
+    df1m=load_cache(ex,sym,"1m") if tf!="1m" else df
+    intra_info={"exists":False,"count":0}
+    if df1m is not None:
+        intra_info={"exists":True,"count":len(df1m),
+                    "first":df1m["timestamp"].iloc[0].isoformat()[:16],
+                    "last":df1m["timestamp"].iloc[-1].isoformat()[:16]}
+    if df is None: return jsonify({"exists":False,"count":0,"intra_1m":intra_info})
+    return jsonify({"exists":True,"count":len(df),
+                    "first":df["timestamp"].iloc[0].isoformat(),
+                    "last":df["timestamp"].iloc[-1].isoformat(),
+                    "intra_1m":intra_info})
 
 @app.route("/api/data/fetch", methods=["POST"])
 @login_required
@@ -704,12 +724,18 @@ def api_backtest_run():
                     log.info(f"Tick mode: {len(tl)} bars have tick data")
                 else:
                     log.info("Tick mode requested but no tick cache found, falling back to 1m")
+            intra_warning=None
             if tick_lookup is None and cfg.get("use_intrabar"):
                 df_intra=load_cache(ex_name,sym,cfg.get("intrabar_tf","1m"))
                 if df_intra is not None:
                     if cfg.get("date_from"): df_intra=df_intra[df_intra["timestamp"]>=pd.Timestamp(cfg["date_from"],tz="UTC")]
                     if cfg.get("date_to"): df_intra=df_intra[df_intra["timestamp"]<=pd.Timestamp(cfg["date_to"],tz="UTC")]
                     df_intra=df_intra.reset_index(drop=True)
+                    if len(df_intra)==0:
+                        intra_warning="1m cache exists but no data in selected date range — intrabar simulation disabled"
+                        df_intra=None
+                else:
+                    intra_warning="No 1m cache — intrabar simulation disabled, using bar close only. Upload tick files or run Update Cache to fix."
             fee=float(cfg.get("fee_pct",0.055)); capital=float(cfg.get("capital",1000))
             trades,final_cap,eq=run_ema_crossover(df_base,df_intra,p,fee,capital,tick_lookup=tick_lookup)
             if not trades: _bt_jobs[jid]={"status":"error","message":"No trades generated"}; return

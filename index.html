@@ -655,8 +655,12 @@ async function checkCacheStatus(){
   try{
     const r=await fetch(`/api/cache/status?exchange=${v('s-ex')}&symbol=${encodeURIComponent(v('s-sym'))}&timeframe=${v('s-tf')}`);
     const d=await r.json();
+    const intra=d.intra_1m||{};
+    const intraStr=intra.exists
+      ?`<span style="color:var(--g)">✓ 1m: ${intra.count.toLocaleString()} candles</span>`
+      :`<span style="color:var(--r)">✗ No 1m cache — intrabar simulation will be disabled</span>`;
     el('cache-info').innerHTML=d.exists
-      ?`<span class="tc">${d.count.toLocaleString()} candles</span> &nbsp;·&nbsp; <span class="t2">${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</span>`
+      ?`<div><span class="tc">${d.count.toLocaleString()} candles (${v('s-tf')})</span> &nbsp;·&nbsp; <span class="t2">${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</span></div><div style="margin-top:4px;font-size:0.72rem">${intraStr}</div>`
       :'<span class="tm">No cache</span>';
     // Check tick cache (graceful — pyarrow may not be installed yet)
     try{
@@ -760,7 +764,12 @@ async function runBacktest(overrideCfg){
     if(s.status==='done'){
       clearInterval(btPoll);
       const res=await(await fetch(`/api/backtest/result/${s.combo_key}`)).json();
-      renderBT(res);showMsg('bt-msg',`✓ Done${s.cached?' (cached)':''}`,'ok');
+      renderBT(res);
+      if(s.intra_warning){
+        showMsg('bt-msg',`⚠ ${s.intra_warning}`,'err');
+      }else{
+        showMsg('bt-msg',`✓ Done${s.cached?' (cached)':''}`,'ok');
+      }
     }else if(s.status==='error'){clearInterval(btPoll);showMsg('bt-msg',s.message,'err');}
   },600);
 }
