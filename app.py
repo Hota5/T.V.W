@@ -992,6 +992,17 @@ def api_bot_stop():
 def upload_page():
     return send_from_directory(".", "upload.html")
 
+
+def _resample_to_tf(df_1m, rule="30min"):
+    """Resample 1m OHLCV dataframe to a higher timeframe."""
+    df = df_1m.copy()
+    df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
+    df = df.set_index("timestamp").sort_index()
+    resampled = df.resample(rule, label="left", closed="left").agg({
+        "open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"
+    }).dropna(subset=["open"])
+    return resampled.reset_index()
+
 @app.route("/api/upload/candles", methods=["POST"])
 @login_required
 def api_upload_candles():

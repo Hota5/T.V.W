@@ -16,7 +16,7 @@
   --mut:#3d4d66;--t1:#dce3ee;--t2:#8899b8;--t3:#4d5e7a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:15px;line-height:1.6}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:17px;line-height:1.6}
 /* ── TOPBAR ── */
 #topbar{height:40px;background:var(--surf);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;position:sticky;top:0;z-index:100}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:4px;color:var(--y);margin-right:24px;flex-shrink:0}
@@ -53,7 +53,7 @@ input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:fo
 .chk input[type=checkbox]{width:13px;height:13px;accent-color:var(--y);cursor:pointer;flex-shrink:0}
 .chk span{font-size:0.74rem;color:var(--t2)}
 /* ── BUTTONS ── */
-.btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;padding:9px 18px;border-radius:2px;cursor:pointer;transition:.12s;white-space:nowrap}
+.btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;letter-spacing:1px;text-transform:uppercase;padding:9px 18px;border-radius:2px;cursor:pointer;transition:.12s;white-space:nowrap}
 .btn:hover{background:var(--b2);color:var(--t1)}
 .btn.y{background:var(--y);border-color:var(--y);color:#000;font-weight:600}
 .btn.y:hover{background:#d4a30a}
@@ -72,9 +72,9 @@ input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:fo
 .sgrid.c5{grid-template-columns:repeat(5,1fr)}
 .sgrid.c3{grid-template-columns:repeat(3,1fr)}
 .sc{background:var(--surf);padding:14px 20px}
-.sc .sl{font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
-.sc .sv{font-size:1.55rem;font-weight:500;color:var(--t1);line-height:1}
-.sc .ss{font-size:0.72rem;color:var(--t2);margin-top:3px}
+.sc .sl{font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.sc .sv{font-size:1.7rem;font-weight:500;color:var(--t1);line-height:1}
+.sc .ss{font-size:0.77rem;color:var(--t2);margin-top:4px}
 .sv.g{color:var(--g)}.sv.r{color:var(--r)}.sv.c{color:var(--c)}.sv.y{color:var(--y)}
 /* ── CHART ── */
 .chart-wrap{background:var(--surf);border-bottom:1px solid var(--b1)}
@@ -83,8 +83,8 @@ input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:fo
 .chart-togs{display:flex;gap:5px}
 .chart-body{padding:14px 20px}
 /* ── TABLE ── */
-.tbl{width:100%;border-collapse:collapse;font-size:0.85rem}
-.tbl th{background:var(--surf2);color:var(--t3);font-size:0.67rem;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;text-align:right;border-bottom:1px solid var(--b1);font-weight:400;white-space:nowrap}
+.tbl{width:100%;border-collapse:collapse;font-size:0.9rem}
+.tbl th{background:var(--surf2);color:var(--t3);font-size:0.74rem;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;text-align:right;border-bottom:1px solid var(--b1);font-weight:400;white-space:nowrap}
 .tbl th:first-child{text-align:left}
 .tbl td{padding:7px 12px;border-bottom:1px solid #0a0e15;text-align:right;color:var(--t2)}
 .tbl td:first-child{text-align:left;color:var(--t1)}
@@ -807,7 +807,13 @@ function renderCharts(data){
   if(chartState.eq) datasets.push({label:'Equity ($)',data:data.equity_curve.values,borderColor:'#0ecb81',backgroundColor:'rgba(14,203,129,0.06)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.2});
   if(chartState.bh) datasets.push({label:'Buy & Hold',data:data.bh_curve.values,borderColor:'#3d4d66',backgroundColor:'transparent',borderWidth:1,pointRadius:0,borderDash:[5,5],tension:0.1});
   const labels=chartState.eq?data.equity_curve.dates:data.bh_curve.dates;
-  eqChart=new Chart(el('eq-chart').getContext('2d'),{type:'line',data:{labels,datasets},options:{...base}});
+  // Tight Y bounds — start near the lowest value, end near highest
+const allVals=[...(chartState.eq?data.equity_curve.values:[]),...(chartState.bh?data.bh_curve.values:[])].filter(v=>v!=null);
+const yMin=allVals.length?Math.min(...allVals):0;
+const yMax=allVals.length?Math.max(...allVals):1000;
+const yPad=(yMax-yMin)*0.08||50;
+const tightOpts={...base,scales:{...base.scales,y:{...base.scales.y,min:Math.floor((yMin-yPad)/50)*50,max:Math.ceil((yMax+yPad)/50)*50}}};
+eqChart=new Chart(el('eq-chart').getContext('2d'),{type:'line',data:{labels,datasets},options:tightOpts});
   if(chartState.dd){
     el('dd-wrap').style.display='';
     ddChart=new Chart(el('dd-chart').getContext('2d'),{type:'line',data:{
@@ -992,7 +998,7 @@ function renderOptResults(data){
   el('op-is-head').innerHTML=cols.map(c=>`<th>${c}</th>`).join('');
   el('op-is-body').innerHTML=(data.results||[]).map((r,i)=>{
     const lv=r.max_lev||1;
-    const bg=i%2===0?'':'background:rgba(255,255,255,.018)';
+    const bg=i%2===0?'':'background:rgba(255,255,255,0.04)';
     return`<tr style="${bg}">
       ${keys.map(k=>`<td class="ty">${r[k]}</td>`).join('')}
       <td>${r.trades}</td>
@@ -1005,14 +1011,14 @@ function renderOptResults(data){
       <td class="${r.lev_ret>=0?'tg':'tr'}">${r.lev_ret>=0?'+':''}${r.lev_ret}%</td>
       <td class="${ddColor(r.lev_dd)}">${r.lev_dd}%</td>
       <td class="${r.worst<=-5?'tr':'t3'}">${r.worst||'—'}%</td>
-      <td class="${scoreColor(r.score)}" style="font-weight:600">${r.score}</td>
+      <td class="${scoreColor(r.score)}" style="font-weight:700;font-size:1rem">${r.score}</td>
     </tr>`;
   }).join('');
   if((data.oos_results||[]).length>0){
     const ocols=[...keys,'IS Ret','IS DD','IS WR','IS PF','OOS Ret','OOS DD','OOS WR','OOS N','Holds?'];
     el('op-oos-head').innerHTML=ocols.map(c=>`<th>${c}</th>`).join('');
     el('op-oos-body').innerHTML=(data.oos_results||[]).map((r,i)=>{
-      const bg=i%2===0?'':'background:rgba(255,255,255,.018)';
+      const bg=i%2===0?'':'background:rgba(255,255,255,0.04)';
       return`<tr style="${bg}">
         ${keys.map(k=>`<td class="ty">${r[k]}</td>`).join('')}
         <td class="${retColor(r.return)}">${r.return>=0?'+':''}${r.return||0}%</td>
