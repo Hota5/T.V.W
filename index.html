@@ -18,10 +18,10 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:15px;line-height:1.6}
 /* ── TOPBAR ── */
-#topbar{height:54px;background:var(--surf);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 28px;gap:0;flex-shrink:0;position:sticky;top:0;z-index:100}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:4px;color:var(--y);margin-right:32px;flex-shrink:0}
+#topbar{height:40px;background:var(--surf);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:4px;color:var(--y);margin-right:24px;flex-shrink:0}
 .logo span{color:var(--c)}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:0 22px;height:54px;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;transition:color .15s;white-space:nowrap}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:0 16px;height:40px;font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;transition:color .15s;white-space:nowrap}
 .tab-btn:hover{color:var(--t2)}.tab-btn.active{color:var(--t1);border-bottom-color:var(--y)}
 #topbar .sp{flex:1}
 #bot-pill{display:flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:1px;color:var(--t3);padding:4px 12px;border:1px solid var(--b1);border-radius:2px}
@@ -29,7 +29,7 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex
 #bot-pill.live{color:var(--g);border-color:rgba(14,203,129,.3);background:rgba(14,203,129,.06)}
 #bot-pill.live .dot{background:var(--g);box-shadow:0 0 8px var(--g)}
 /* ── LAYOUT ── */
-#main{display:flex;height:calc(100vh - 48px)}
+#main{display:flex;height:calc(100vh - 40px)}
 /* ── SIDEBAR ── */
 #sidebar{width:290px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto;overflow-x:hidden}
 #sidebar::-webkit-scrollbar{width:3px}
@@ -38,20 +38,20 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex
 #content::-webkit-scrollbar{width:5px}
 #content::-webkit-scrollbar-thumb{background:var(--b2)}
 /* ── SIDEBAR PANELS ── */
-.spanel{padding:14px 16px 12px}
+.spanel{padding:10px 14px 10px}
 .spanel+.spanel{border-top:1px solid var(--b1)}
 .ptitle{font-size:0.65rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);margin-bottom:10px;font-weight:500}
-.lbl{display:block;font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:4px;margin-top:10px}
+.lbl{display:block;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--mut);margin-bottom:3px;margin-top:8px}
 .lbl:first-of-type{margin-top:0}
 input[type=text],input[type=number],input[type=date],select{
   width:100%;background:var(--surf2);border:1px solid var(--b2);color:var(--t1);
-  font-family:'IBM Plex Mono',monospace;font-size:0.86rem;padding:7px 10px;
+  font-family:'IBM Plex Mono',monospace;font-size:0.82rem;padding:5px 8px;
   border-radius:2px;outline:none;transition:border .15s}
 input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:focus{border-color:var(--c)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.chk{display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;user-select:none}
-.chk input[type=checkbox]{width:14px;height:14px;accent-color:var(--y);cursor:pointer;flex-shrink:0}
-.chk span{font-size:0.78rem;color:var(--t2)}
+.chk{display:flex;align-items:center;gap:6px;margin-top:6px;cursor:pointer;user-select:none}
+.chk input[type=checkbox]{width:13px;height:13px;accent-color:var(--y);cursor:pointer;flex-shrink:0}
+.chk span{font-size:0.74rem;color:var(--t2)}
 /* ── BUTTONS ── */
 .btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;padding:9px 18px;border-radius:2px;cursor:pointer;transition:.12s;white-space:nowrap}
 .btn:hover{background:var(--b2);color:var(--t1)}
@@ -63,7 +63,7 @@ input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:fo
 .btn.danger:hover{background:var(--r);color:#fff}
 .btn.sm{padding:6px 13px;font-size:0.72rem}
 .btn.act{background:var(--surf3);color:var(--t1);border-color:var(--b3)}
-.brow{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.brow{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 /* ── TABS ── */
 .tabview{display:none}.tabview.active{display:block}
 /* ── STATS GRID ── */
@@ -143,7 +143,7 @@ code{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--c);back
   <button class="tab-btn" onclick="goTab('optimizer')">Optimizer</button>
   <button class="tab-btn" onclick="goTab('live')">Live Bot</button>
   <button class="tab-btn" onclick="goTab('settings')">Settings</button>
-  <a href="/upload" class="tab-btn" style="display:flex;align-items:center;text-decoration:none">Upload Data</a>
+  <a href="/upload" target="_blank" class="tab-btn" style="display:flex;align-items:center;text-decoration:none">Upload Data ↗</a>
   <div class="sp"></div>
   <div id="bot-pill"><div class="dot"></div><span id="bot-pill-txt">BOT OFFLINE</span></div>
 </div>
@@ -279,7 +279,7 @@ code{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--c);back
           <button class="btn sm" id="tog-dd" onclick="togChart('dd')">Drawdown</button>
         </div>
       </div>
-      <div class="chart-body"><canvas id="eq-chart" height="200"></canvas></div>
+      <div class="chart-body"><canvas id="eq-chart" height="280"></canvas></div>
       <div id="dd-wrap" style="display:none;border-top:1px solid var(--b1)">
         <div class="chart-body"><canvas id="dd-chart" height="80"></canvas></div>
       </div>
@@ -616,13 +616,30 @@ let btPoll=null, optPoll=null, botPoll=null, fetchPoll=null;
 function goTab(t){
   curTab=t;
   document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    b.classList.toggle('active',['backtest','optimizer','live','settings'][i]===t);
+    b.classList.toggle('active',['backtest','optimizer','live','settings','upload'][i]===t);
   });
   document.querySelectorAll('.tabview').forEach(v=>v.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
+  const panel=document.getElementById('tab-'+t);
+  if(panel) panel.classList.add('active');
   if(t==='live'){startBotPoll(); loadLiveCandles();}
   else stopBotPoll();
-  if(t==='backtest') loadPresets();
+  if(t==='backtest'){
+    loadPresets();
+    // Re-render backtest results if we have them
+    if(curResult){
+      el('bt-empty').style.display='none';
+      el('bt-results').style.display='block';
+      renderCharts(curResult);
+    }
+  }
+  if(t==='optimizer'){
+    // Re-render optimizer results if we have them
+    if(optResults){
+      el('op-empty').style.display='none';
+      el('op-results').style.display='block';
+      renderOptResults(optResults);
+    }
+  }
 }
 
 // ── HELPERS ──
@@ -641,19 +658,23 @@ async function checkCacheStatus(){
     el('cache-info').innerHTML=d.exists
       ?`<span class="tc">${d.count.toLocaleString()} candles</span> &nbsp;·&nbsp; <span class="t2">${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</span>`
       :'<span class="tm">No cache</span>';
-    // Check tick cache
-    const tr=await fetch(`/api/tick/status?exchange=${v('s-ex')}&symbol=${encodeURIComponent(v('s-sym'))}`);
-    const td=await tr.json();
-    const ti=el('tick-info');
-    if(td.exists){
-      ti.style.display='block';
-      ti.innerHTML=`<span style="color:var(--g)">✓ Tick cache: ${td.rows?.toLocaleString()} ticks · ${td.size_mb}MB · ${td.first?.slice(0,10)} → ${td.last?.slice(0,10)}</span>`;
-      el('s-tick').disabled=false;
-    }else{
-      ti.style.display='block';
-      ti.innerHTML='<span style="color:var(--mut)">No tick cache — upload .csv.gz files to enable tick mode</span>';
-      el('s-tick').checked=false; el('s-tick').disabled=true;
-    }
+    // Check tick cache (graceful — pyarrow may not be installed yet)
+    try{
+      const tr=await fetch(`/api/tick/status?exchange=${v('s-ex')}&symbol=${encodeURIComponent(v('s-sym'))}`);
+      if(tr.ok){
+        const td=await tr.json();
+        const ti=el('tick-info');
+        if(td.exists && !td.error){
+          ti.style.display='block';
+          ti.innerHTML=`<span style="color:var(--g)">✓ Tick cache: ${td.rows?.toLocaleString()} ticks · ${td.size_mb}MB · ${td.first?.slice(0,10)} → ${td.last?.slice(0,10)}</span>`;
+          el('s-tick').disabled=false;
+        }else{
+          ti.style.display='block';
+          ti.innerHTML=td.error?`<span style="color:var(--mut)">${td.error}</span>`:'<span style="color:var(--mut)">No tick cache — upload .csv.gz files</span>';
+          el('s-tick').checked=false; el('s-tick').disabled=true;
+        }
+      }
+    }catch(e){}
   }catch(e){}
 }
 ['s-ex','s-sym','s-tf'].forEach(id=>el(id)?.addEventListener('change',checkCacheStatus));
@@ -950,6 +971,12 @@ async function runOpt(){
   },1000);
 }
 
+function scoreColor(s){return s>=15?'tg':s>=8?'ty':s>=3?'t2':'tr';}
+function pfColor(pf){return pf>=2?'tg':pf>=1.5?'ty':pf>=1?'t2':'tr';}
+function retColor(r){return r>=20?'tg':r>=5?'ty':r>=0?'t2':'tr';}
+function ddColor(d){const v=Math.abs(d);return v<=10?'tg':v<=25?'ty':v<=40?'t2':'tr';}
+function wrColor(w){return w>=65?'tg':w>=55?'ty':w>=50?'t2':'tr';}
+
 function renderOptResults(data){
   optResults=data;
   el('op-empty').style.display='none'; el('op-results').style.display='block';
@@ -963,32 +990,42 @@ function renderOptResults(data){
   const keys=data.keys||[];
   const cols=[...keys,'Trades','AvgBars','WR%','Return%','DD%','PF','MaxLev','LevRet','LevDD','Worst%','Score'];
   el('op-is-head').innerHTML=cols.map(c=>`<th>${c}</th>`).join('');
-  el('op-is-body').innerHTML=(data.results||[]).map(r=>{
+  el('op-is-body').innerHTML=(data.results||[]).map((r,i)=>{
     const lv=r.max_lev||1;
-    return`<tr>${keys.map(k=>`<td>${r[k]}</td>`).join('')}
-      <td>${r.trades}</td><td>${r.avg_dur||0}</td>
-      <td>${r.win_rate}%</td>
-      <td class="${r.return>=0?'tg':'tr'}">${r.return>=0?'+':''}${r.return}%</td>
-      <td class="tr">${r.max_dd}%</td>
-      <td class="${r.pf>=2?'tg':r.pf>=1.5?'ty':'tr'}">${r.pf}</td>
-      <td class="tc">${lv}x</td>
+    const bg=i%2===0?'':'background:rgba(255,255,255,.018)';
+    return`<tr style="${bg}">
+      ${keys.map(k=>`<td class="ty">${r[k]}</td>`).join('')}
+      <td>${r.trades}</td>
+      <td class="t3">${r.avg_dur||0}</td>
+      <td class="${wrColor(r.win_rate)}">${r.win_rate}%</td>
+      <td class="${retColor(r.return)}">${r.return>=0?'+':''}${r.return}%</td>
+      <td class="${ddColor(r.max_dd)}">${r.max_dd}%</td>
+      <td class="${pfColor(r.pf)}">${r.pf}</td>
+      <td class="t3">${lv}x</td>
       <td class="${r.lev_ret>=0?'tg':'tr'}">${r.lev_ret>=0?'+':''}${r.lev_ret}%</td>
-      <td class="tr">${r.lev_dd}%</td>
-      <td class="tr">${r.worst||'—'}%</td>
-      <td class="ty">${r.score}</td>
+      <td class="${ddColor(r.lev_dd)}">${r.lev_dd}%</td>
+      <td class="${r.worst<=-5?'tr':'t3'}">${r.worst||'—'}%</td>
+      <td class="${scoreColor(r.score)}" style="font-weight:600">${r.score}</td>
     </tr>`;
   }).join('');
   if((data.oos_results||[]).length>0){
     const ocols=[...keys,'IS Ret','IS DD','IS WR','IS PF','OOS Ret','OOS DD','OOS WR','OOS N','Holds?'];
     el('op-oos-head').innerHTML=ocols.map(c=>`<th>${c}</th>`).join('');
-    el('op-oos-body').innerHTML=(data.oos_results||[]).map(r=>`<tr>
-      ${keys.map(k=>`<td>${r[k]}</td>`).join('')}
-      <td class="${r.return>=0?'tg':'tr'}">${r.return>=0?'+':''}${r.return||0}%</td>
-      <td class="tr">${r.max_dd||0}%</td><td>${r.win_rate||0}%</td><td>${r.pf||0}</td>
-      <td class="${r.oos_ret>=0?'tg':'tr'}">${r.oos_ret>=0?'+':''}${r.oos_ret||0}%</td>
-      <td class="tr">${r.oos_dd||0}%</td><td>${r.oos_wr||0}%</td><td>${r.oos_n||0}</td>
-      <td class="${r.holds?'tg':'tr'}">${r.holds?'✓':'✗'}</td>
-    </tr>`).join('');
+    el('op-oos-body').innerHTML=(data.oos_results||[]).map((r,i)=>{
+      const bg=i%2===0?'':'background:rgba(255,255,255,.018)';
+      return`<tr style="${bg}">
+        ${keys.map(k=>`<td class="ty">${r[k]}</td>`).join('')}
+        <td class="${retColor(r.return)}">${r.return>=0?'+':''}${r.return||0}%</td>
+        <td class="${ddColor(r.max_dd)}">${r.max_dd||0}%</td>
+        <td class="${wrColor(r.win_rate)}">${r.win_rate||0}%</td>
+        <td class="${pfColor(r.pf)}">${r.pf||0}</td>
+        <td class="${retColor(r.oos_ret)}" style="font-weight:600">${r.oos_ret>=0?'+':''}${r.oos_ret||0}%</td>
+        <td class="${ddColor(r.oos_dd)}">${r.oos_dd||0}%</td>
+        <td class="${wrColor(r.oos_wr)}">${r.oos_wr||0}%</td>
+        <td class="t2">${r.oos_n||0}</td>
+        <td class="${r.holds?'tg':'tr'}" style="font-size:1.1rem;line-height:1">${r.holds?'✓':'✗'}</td>
+      </tr>`;
+    }).join('');
   }else{
     el('op-oos-head').innerHTML='<th>No holdout (100% in-sample mode)</th>';
     el('op-oos-body').innerHTML='';
@@ -1000,6 +1037,7 @@ function applyBest(){
   const best=optResults.results[0]; const keys=optResults.keys||[];
   const map={fast_length:'p-fast',slow_length:'p-slow',atr_length:'p-atr-len',atr_multiplier:'p-atr-mult',tp_perc:'p-tp',trail_perc:'p-trail'};
   keys.forEach(k=>{if(map[k]) el(map[k]).value=best[k];});
+  // Switch tab but keep optResults so they survive the round-trip
   goTab('backtest');
   showMsg('bt-msg',`Applied: ${keys.map(k=>k+'='+best[k]).join(' ')} — run backtest to see full results`,'ok');
 }
