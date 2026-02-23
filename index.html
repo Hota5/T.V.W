@@ -7,6 +7,7 @@
 <title>EMAX Trading Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 :root{
   --bg:#080a0d;--surf:#0e1117;--surf2:#131820;--surf3:#181f2a;
@@ -15,12 +16,12 @@
   --mut:#3d4d66;--t1:#dce3ee;--t2:#8899b8;--t3:#4d5e7a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.5}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:15px;line-height:1.6}
 /* ── TOPBAR ── */
-#topbar{height:48px;background:var(--surf);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:0;flex-shrink:0;position:sticky;top:0;z-index:100}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:4px;color:var(--y);margin-right:28px;flex-shrink:0}
+#topbar{height:54px;background:var(--surf);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 28px;gap:0;flex-shrink:0;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:4px;color:var(--y);margin-right:32px;flex-shrink:0}
 .logo span{color:var(--c)}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:0 20px;height:48px;font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;transition:color .15s;white-space:nowrap}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:0 22px;height:54px;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;transition:color .15s;white-space:nowrap}
 .tab-btn:hover{color:var(--t2)}.tab-btn.active{color:var(--t1);border-bottom-color:var(--y)}
 #topbar .sp{flex:1}
 #bot-pill{display:flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:1px;color:var(--t3);padding:4px 12px;border:1px solid var(--b1);border-radius:2px}
@@ -30,29 +31,29 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex
 /* ── LAYOUT ── */
 #main{display:flex;height:calc(100vh - 48px)}
 /* ── SIDEBAR ── */
-#sidebar{width:300px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto;overflow-x:hidden}
+#sidebar{width:330px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto;overflow-x:hidden}
 #sidebar::-webkit-scrollbar{width:3px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
 #content{flex:1;overflow-y:auto;overflow-x:hidden;min-width:0}
 #content::-webkit-scrollbar{width:5px}
 #content::-webkit-scrollbar-thumb{background:var(--b2)}
 /* ── SIDEBAR PANELS ── */
-.spanel{padding:20px 20px 16px}
+.spanel{padding:22px 22px 18px}
 .spanel+.spanel{border-top:1px solid var(--b1)}
-.ptitle{font-size:0.62rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);margin-bottom:14px;font-weight:500}
-.lbl{display:block;font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:5px;margin-top:14px}
+.ptitle{font-size:0.7rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);margin-bottom:16px;font-weight:500}
+.lbl{display:block;font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:6px;margin-top:16px}
 .lbl:first-of-type{margin-top:0}
 input[type=text],input[type=number],input[type=date],select{
   width:100%;background:var(--surf2);border:1px solid var(--b2);color:var(--t1);
-  font-family:'IBM Plex Mono',monospace;font-size:0.82rem;padding:8px 10px;
+  font-family:'IBM Plex Mono',monospace;font-size:0.9rem;padding:10px 12px;
   border-radius:2px;outline:none;transition:border .15s}
 input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:focus{border-color:var(--c)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.chk{display:flex;align-items:center;gap:9px;margin-top:10px;cursor:pointer;user-select:none}
+.chk{display:flex;align-items:center;gap:10px;margin-top:12px;cursor:pointer;user-select:none}
 .chk input[type=checkbox]{width:14px;height:14px;accent-color:var(--y);cursor:pointer;flex-shrink:0}
-.chk span{font-size:0.75rem;color:var(--t2)}
+.chk span{font-size:0.82rem;color:var(--t2)}
 /* ── BUTTONS ── */
-.btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:2px;cursor:pointer;transition:.12s;white-space:nowrap}
+.btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;padding:9px 18px;border-radius:2px;cursor:pointer;transition:.12s;white-space:nowrap}
 .btn:hover{background:var(--b2);color:var(--t1)}
 .btn.y{background:var(--y);border-color:var(--y);color:#000;font-weight:600}
 .btn.y:hover{background:#d4a30a}
@@ -60,7 +61,7 @@ input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:fo
 .btn.c:hover{background:#00b8d9}
 .btn.danger{border-color:var(--r);color:var(--r)}
 .btn.danger:hover{background:var(--r);color:#fff}
-.btn.sm{padding:5px 11px;font-size:0.65rem}
+.btn.sm{padding:6px 13px;font-size:0.72rem}
 .btn.act{background:var(--surf3);color:var(--t1);border-color:var(--b3)}
 .brow{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
 /* ── TABS ── */
@@ -70,31 +71,31 @@ input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:fo
 .sgrid.c4{grid-template-columns:repeat(4,1fr)}
 .sgrid.c5{grid-template-columns:repeat(5,1fr)}
 .sgrid.c3{grid-template-columns:repeat(3,1fr)}
-.sc{background:var(--surf);padding:18px 22px}
-.sc .sl{font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:7px}
-.sc .sv{font-size:1.5rem;font-weight:500;color:var(--t1);line-height:1}
-.sc .ss{font-size:0.7rem;color:var(--t2);margin-top:5px}
+.sc{background:var(--surf);padding:22px 26px}
+.sc .sl{font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:9px}
+.sc .sv{font-size:1.7rem;font-weight:500;color:var(--t1);line-height:1}
+.sc .ss{font-size:0.75rem;color:var(--t2);margin-top:6px}
 .sv.g{color:var(--g)}.sv.r{color:var(--r)}.sv.c{color:var(--c)}.sv.y{color:var(--y)}
 /* ── CHART ── */
 .chart-wrap{background:var(--surf);border-bottom:1px solid var(--b1)}
 .chart-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--b1)}
-.chart-hdr .cht{font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
+.chart-hdr .cht{font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
 .chart-togs{display:flex;gap:5px}
 .chart-body{padding:14px 20px}
 /* ── TABLE ── */
-.tbl{width:100%;border-collapse:collapse;font-size:0.78rem}
-.tbl th{background:var(--surf2);color:var(--t3);font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;padding:10px 12px;text-align:right;border-bottom:1px solid var(--b1);font-weight:400;white-space:nowrap}
+.tbl{width:100%;border-collapse:collapse;font-size:0.85rem}
+.tbl th{background:var(--surf2);color:var(--t3);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;padding:12px 14px;text-align:right;border-bottom:1px solid var(--b1);font-weight:400;white-space:nowrap}
 .tbl th:first-child{text-align:left}
-.tbl td{padding:9px 12px;border-bottom:1px solid #0a0e15;text-align:right;color:var(--t2)}
+.tbl td{padding:11px 14px;border-bottom:1px solid #0a0e15;text-align:right;color:var(--t2)}
 .tbl td:first-child{text-align:left;color:var(--t1)}
 .tbl tr:hover td{background:rgba(255,255,255,.02)}
 .tbl .long{color:var(--g)}.tbl .short{color:var(--r)}
 .tbl-wrap{overflow-x:auto;overflow-y:auto}
 /* ── SECTION HEAD ── */
-.shead{padding:12px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--surf)}
-.shead .ht{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
+.shead{padding:14px 22px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--surf)}
+.shead .ht{font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
 /* ── STATUS ── */
-.msg{padding:10px 14px;font-size:0.75rem;border-radius:2px;margin-top:10px;line-height:1.5}
+.msg{padding:12px 16px;font-size:0.82rem;border-radius:2px;margin-top:12px;line-height:1.6}
 .msg.info{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);color:var(--c)}
 .msg.err{background:rgba(246,70,93,.08);border:1px solid rgba(246,70,93,.25);color:var(--r)}
 .msg.ok{background:rgba(14,203,129,.07);border:1px solid rgba(14,203,129,.2);color:var(--g)}
@@ -165,7 +166,9 @@ code{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--c);back
     </select>
     <label class="lbl">Intrabar TF</label>
     <select id="s-itf"><option value="1m" selected>1m</option><option value="5m">5m</option><option value="15m">15m</option></select>
-    <div class="chk"><input type="checkbox" id="s-intra" checked><span>Intrabar simulation</span></div>
+    <div class="chk"><input type="checkbox" id="s-intra" checked><span>Intrabar simulation (1m)</span></div>
+    <div class="chk"><input type="checkbox" id="s-tick"><span>Tick mode <span style="color:var(--c);font-size:0.65rem">— use raw ticks for exits (most accurate)</span></span></div>
+    <div id="tick-info" style="margin-top:4px;font-size:0.7rem;color:var(--t3);display:none"></div>
     <div id="cache-info" style="margin-top:10px;font-size:0.72rem;color:var(--t3)">No cache loaded</div>
     <div class="brow">
       <button class="btn c sm" onclick="fetchData(false)">Update Cache</button>
@@ -475,13 +478,16 @@ code{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--c);back
       </div>
       <div id="live-bot-msg"></div>
 
-      <!-- Candle chart -->
+      <!-- Candle chart — lightweight-charts -->
       <div id="candle-chart-container">
         <div class="shead" style="background:transparent;border-bottom:1px solid var(--b1)">
           <span class="ht" id="live-chart-title">LIVE CHART</span>
-          <span id="live-chart-msg" class="tm" style="font-size:0.7rem"></span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span id="live-chart-msg" class="tm" style="font-size:0.75rem"></span>
+            <button class="btn sm" onclick="loadLiveCandles()">↻ Refresh</button>
+          </div>
         </div>
-        <div style="padding:12px"><canvas id="candle-chart" height="250"></canvas></div>
+        <div id="lw-chart" style="height:320px;width:100%"></div>
       </div>
 
       <div class="div" style="margin-top:16px"></div>
@@ -635,6 +641,19 @@ async function checkCacheStatus(){
     el('cache-info').innerHTML=d.exists
       ?`<span class="tc">${d.count.toLocaleString()} candles</span> &nbsp;·&nbsp; <span class="t2">${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</span>`
       :'<span class="tm">No cache</span>';
+    // Check tick cache
+    const tr=await fetch(`/api/tick/status?exchange=${v('s-ex')}&symbol=${encodeURIComponent(v('s-sym'))}`);
+    const td=await tr.json();
+    const ti=el('tick-info');
+    if(td.exists){
+      ti.style.display='block';
+      ti.innerHTML=`<span style="color:var(--g)">✓ Tick cache: ${td.rows?.toLocaleString()} ticks · ${td.size_mb}MB · ${td.first?.slice(0,10)} → ${td.last?.slice(0,10)}</span>`;
+      el('s-tick').disabled=false;
+    }else{
+      ti.style.display='block';
+      ti.innerHTML='<span style="color:var(--mut)">No tick cache — upload .csv.gz files to enable tick mode</span>';
+      el('s-tick').checked=false; el('s-tick').disabled=true;
+    }
   }catch(e){}
 }
 ['s-ex','s-sym','s-tf'].forEach(id=>el(id)?.addEventListener('change',checkCacheStatus));
@@ -741,7 +760,8 @@ function renderBT(data){
     <div class="sc"><div class="sl">Exits</div><div class="sv t2" style="font-size:0.9rem">TP:${s.exit_tp} TSL:${s.exit_tsl} SL:${s.exit_sl} Sig:${s.exit_signal}</div></div>
     <div class="sc"><div class="sl">Data Range</div><div class="sv t2" style="font-size:0.85rem">${s.data_from?.slice(0,10)}</div><div class="ss">→ ${s.data_to?.slice(0,10)}</div></div>`;
   const cfg=buildConfig();
-  el('chart-title').textContent=`${cfg.symbol} ${cfg.timeframe} · EMA ${cfg.params.fast_length}/${cfg.params.slow_length}${data.saved_at?' · cached '+data.saved_at?.slice(0,10):''}`;
+  const modeStr=cfg.use_tick_mode?'tick mode':cfg.use_intrabar?'1m intrabar':'bar close';
+el('chart-title').textContent=`${cfg.symbol} ${cfg.timeframe} · EMA ${cfg.params.fast_length}/${cfg.params.slow_length} · ${modeStr}${data.saved_at?' · cached '+data.saved_at?.slice(0,10):''}`;
   renderCharts(data);
   renderTradesTbl(data.trades);
   el('bt-trade-cnt').textContent=`${data.all_trades_count} total (showing last ${data.trades.length})`;
@@ -1041,8 +1061,19 @@ async function saveBotCfg(){
   showMsg('bc-msg',d.ok?'✓ Config saved':'Error','ok');
 }
 
-async function botStart(){await fetch('/api/bot/start',{method:'POST'});showMsg('live-bot-msg','<span class="spin"></span> Starting...','info');}
-async function botStop(){await fetch('/api/bot/stop',{method:'POST'});showMsg('live-bot-msg','Bot stopped','info');}
+async function botStart(){
+  const r=await fetch('/api/bot/start',{method:'POST'});
+  const d=await r.json();
+  showMsg('live-bot-msg','✓ Bot started','ok');
+  setTimeout(updateBot,1000);
+}
+async function botStop(){
+  const r=await fetch('/api/bot/stop',{method:'POST'});
+  showMsg('live-bot-msg','Bot stopped','info');
+  el('bot-pill').className=''; el('bot-pill-txt').textContent='BOT OFFLINE';
+  el('live-status').textContent='Stopped';
+  setTimeout(updateBot,1000);
+}
 
 function startBotPoll(){loadBotCfg();updateBot();botPoll=setInterval(updateBot,8000);}
 function stopBotPoll(){clearInterval(botPoll);}
@@ -1063,7 +1094,7 @@ async function updateBot(){
     if(pos==='long'){posEl.textContent='LONG';posEl.className='pill long';}
     else if(pos==='short'){posEl.textContent='SHORT';posEl.className='pill short';}
     else{posEl.textContent='FLAT';posEl.className='pill flat';}
-    el('live-status').textContent=st.running&&st.enabled?'Running':st.enabled?'Enabled (idle)':'Stopped';
+    el('live-status').textContent=st.running&&st.enabled?'Running':'Stopped';
     el('live-ep').textContent=st.state?.entry_price?fmtN(st.state.entry_price,4):'—';
     el('live-tsl').textContent=st.state?.trail_stop?fmtN(st.state.trail_stop,4):'—';
     el('live-sigs').innerHTML=(sigs.signals||[]).map(s=>`<tr>
@@ -1086,47 +1117,72 @@ async function loadLiveCandles(){
   }catch(e){el('live-chart-msg').textContent='Could not load candles';}
 }
 
+let _lwChart=null;
+
 function renderCandleChart(data){
-  if(candleChart){candleChart.destroy();candleChart=null;}
-  const candles=data.candles; const n=candles.length;
-  const labels=candles.map(c=>new Date(c.t).toISOString().slice(11,16));
-  const opens=candles.map(c=>c.o), highs=candles.map(c=>c.h), lows=candles.map(c=>c.l), closes=candles.map(c=>c.c);
-  // Represent candles as floating bar (high-low) with color
-  const barData=candles.map(c=>({x:new Date(c.t).toISOString().slice(11,16),y:[Math.min(c.o,c.c),Math.max(c.o,c.c)]}));
-  const wickData=candles.map(c=>({x:new Date(c.t).toISOString().slice(11,16),y:[c.l,c.h]}));
-  const barColors=candles.map(c=>c.c>=c.o?'rgba(14,203,129,0.85)':'rgba(246,70,93,0.85)');
-  const wickColors=candles.map(c=>c.c>=c.o?'rgba(14,203,129,0.5)':'rgba(246,70,93,0.5)');
-  const state=data.state||{}; const pos=state.position;
+  const container=el('lw-chart');
+  if(!container) return;
+  // Destroy previous chart
+  if(_lwChart){_lwChart.remove();_lwChart=null;}
 
-  const datasets=[
-    {type:'bar',label:'Wick',data:wickData,backgroundColor:wickColors,barThickness:1,order:3},
-    {type:'bar',label:'Candle',data:barData,backgroundColor:barColors,barThickness:6,order:2},
-    {type:'line',label:'Fast EMA',data:data.fast_ema,borderColor:'#f0b90b',borderWidth:1.5,pointRadius:0,tension:0.3,order:1},
-    {type:'line',label:'Slow EMA',data:data.slow_ema,borderColor:'#00d4ff',borderWidth:1.5,pointRadius:0,tension:0.3,order:1},
-  ];
-  // Entry line
-  if(state.entry_price){
-    datasets.push({type:'line',label:`Entry ${pos?.toUpperCase()||''}`,data:Array(n).fill(state.entry_price),borderColor:pos==='long'?'rgba(14,203,129,0.6)':'rgba(246,70,93,0.6)',borderWidth:1,borderDash:[4,4],pointRadius:0,order:0});
-  }
-  if(state.trail_stop){
-    datasets.push({type:'line',label:'Trail Stop',data:Array(n).fill(state.trail_stop),borderColor:'rgba(240,185,11,0.7)',borderWidth:1,borderDash:[3,3],pointRadius:0,order:0});
-  }
-
-  candleChart=new Chart(el('candle-chart').getContext('2d'),{
-    type:'bar',
-    data:{labels,datasets},
-    options:{
-      responsive:true,maintainAspectRatio:false,animation:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#8899b8',font:{family:'IBM Plex Mono',size:10},boxWidth:10,padding:12}},
-               tooltip:{backgroundColor:'#0e1117',borderColor:'#1a2030',borderWidth:1,
-                        titleColor:'#8899b8',bodyColor:'#dce3ee',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}}},
-      scales:{
-        x:{ticks:{color:'#4d5e7a',maxTicksLimit:10,font:{family:'IBM Plex Mono',size:9}},grid:{color:'#0d1219'},border:{color:'#1a2030'}},
-        y:{ticks:{color:'#4d5e7a',font:{family:'IBM Plex Mono',size:9}},grid:{color:'#0d1219'},border:{color:'#1a2030'}}
-      }
-    }
+  _lwChart=LightweightCharts.createChart(container,{
+    width:container.clientWidth,
+    height:340,
+    layout:{background:{color:'#0e1117'},textColor:'#8899b8',fontSize:11,fontFamily:'IBM Plex Mono'},
+    grid:{vertLines:{color:'#0d1219'},horzLines:{color:'#0d1219'}},
+    crosshair:{mode:LightweightCharts.CrosshairMode.Normal,
+      vertLine:{color:'#3d4d66',width:1,style:LightweightCharts.LineStyle.Dashed,labelBackgroundColor:'#131820'},
+      horzLine:{color:'#3d4d66',width:1,style:LightweightCharts.LineStyle.Dashed,labelBackgroundColor:'#131820'}},
+    rightPriceScale:{borderColor:'#1a2030',textColor:'#4d5e7a'},
+    timeScale:{borderColor:'#1a2030',timeVisible:true,secondsVisible:false,
+      rightOffset:5,barSpacing:8,fixLeftEdge:false,lockVisibleTimeRangeOnResize:true},
+    handleScroll:{mouseWheel:true,pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false},
+    handleScale:{mouseWheel:true,pinch:true,axisPressedMouseMove:true},
   });
+
+  // Candlestick series
+  const cSeries=_lwChart.addCandlestickSeries({
+    upColor:'#0ecb81',downColor:'#f6465d',
+    borderUpColor:'#0ecb81',borderDownColor:'#f6465d',
+    wickUpColor:'rgba(14,203,129,0.7)',wickDownColor:'rgba(246,70,93,0.7)',
+  });
+  const candleData=data.candles
+    .map(c=>({time:Math.floor(c.t/1000),open:c.o,high:c.h,low:c.l,close:c.c}))
+    .filter(c=>c.open&&c.high&&c.low&&c.close)
+    .sort((a,b)=>a.time-b.time);
+  cSeries.setData(candleData);
+
+  // Fast EMA line
+  const fastSeries=_lwChart.addLineSeries({color:'#f0b90b',lineWidth:2,priceLineVisible:false,lastValueVisible:true,title:'Fast EMA'});
+  fastSeries.setData(data.candles.map((c,i)=>({time:Math.floor(c.t/1000),value:data.fast_ema[i]})).filter(d=>d.value!=null).sort((a,b)=>a.time-b.time));
+
+  // Slow EMA line
+  const slowSeries=_lwChart.addLineSeries({color:'#00d4ff',lineWidth:2,priceLineVisible:false,lastValueVisible:true,title:'Slow EMA'});
+  slowSeries.setData(data.candles.map((c,i)=>({time:Math.floor(c.t/1000),value:data.slow_ema[i]})).filter(d=>d.value!=null).sort((a,b)=>a.time-b.time));
+
+  // Entry price line
+  const state=data.state||{};
+  if(state.entry_price && candleData.length){
+    const col=state.position==='long'?'#0ecb81':'#f6465d';
+    const entrySeries=_lwChart.addLineSeries({color:col,lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:true,title:`Entry ${(state.position||'').toUpperCase()}`});
+    entrySeries.setData(candleData.map(c=>({time:c.time,value:state.entry_price})));
+  }
+
+  // Trail stop line
+  if(state.trail_stop && candleData.length){
+    const tslSeries=_lwChart.addLineSeries({color:'#f0b90b',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dotted,priceLineVisible:false,lastValueVisible:true,title:'TSL'});
+    tslSeries.setData(candleData.map(c=>({time:c.time,value:state.trail_stop})));
+  }
+
+  // Fit to screen then scroll to latest
+  _lwChart.timeScale().fitContent();
+
+  // Auto-resize when container changes
+  if(window._lwResizeObs) window._lwResizeObs.disconnect();
+  window._lwResizeObs=new ResizeObserver(entries=>{
+    if(_lwChart && entries[0]) _lwChart.applyOptions({width:entries[0].contentRect.width});
+  });
+  window._lwResizeObs.observe(container);
 }
 
 // ── SETTINGS ──

@@ -27,8 +27,9 @@ BOT_CONFIG_FILE = BASE_DIR / "live_bot_config.json"
 SIGNALS_FILE    = BASE_DIR / "signals.csv"
 AUTH_FILE       = BASE_DIR / "auth.json"
 BYBIT_DATA_DIR  = BASE_DIR / "bybit_data"
+TICK_DIR        = BASE_DIR / "tick_cache"
 
-for d in [CACHE_DIR, RESULT_DIR, OPT_DIR, BYBIT_DATA_DIR]:
+for d in [CACHE_DIR, RESULT_DIR, OPT_DIR, BYBIT_DATA_DIR, TICK_DIR]:
     d.mkdir(exist_ok=True)
 
 log = logging.getLogger("webapp")
@@ -160,7 +161,7 @@ def _compute_dd(eq, cap):
     return float(dd.min()) if len(dd) else 0.0
 
 # BACKTEST ENGINE
-def run_ema_crossover(df_base, df_intra, p, fee_pct, capital):
+def run_ema_crossover(df_base, df_intra, p, fee_pct, capital, tick_lookup=None):
     init_cap=capital
     df=df_base.copy().reset_index(drop=True)
     df["fast_ema"]=compute_ema(df["close"],p["fast_length"])
@@ -181,12 +182,22 @@ def run_ema_crossover(df_base, df_intra, p, fee_pct, capital):
         adx_ok=df["adx"].values>p["adx_threshold"]
     ls=cu&vol_ok&adx_ok; ss=cd&vol_ok&adx_ok
     intra=build_intra_lookup(df,df_intra) if df_intra is not None and len(df_intra)>0 else None
+    use_ticks = tick_lookup is not None
     trades=[]; pos=None; eq=[]; slip=p.get("slippage_pct",0.0143)/100
     for i in range(2,n):
         row=df.iloc[i]; atr=float(row["atr"]) if not np.isnan(row["atr"]) else 0.0; close=float(row["close"])
         if pos:
             ep=pos["entry_price"]; d=pos["direction"]
-            bars=intra.get(i,[(row["high"],row["low"],close)]) if intra else [(float(row["high"]),float(row["low"]),close)]
+            bar_ts = df["timestamp"].iloc[i] if "timestamp" in df.columns else None
+            if use_ticks and bar_ts is not None and bar_ts in tick_lookup:
+                tick_prices = tick_lookup[bar_ts]
+                # Convert tick prices to (high, low, close) tuples — each tick is its own "bar"
+                bars = [(float(px), float(px), float(px)) for px in tick_prices]
+                if not bars: bars = [(float(row["high"]),float(row["low"]),close)]
+            elif intra:
+                bars=intra.get(i,[(row["high"],row["low"],close)])
+            else:
+                bars=[(float(row["high"]),float(row["low"]),close)]
             closed=False; xp=None; xr=None
             for (ih,il,ic) in bars:
                 if closed: break
@@ -392,6 +403,7 @@ _fetch_jobs={}
 
 # BOT
 _bot_thread=None; _bot_stop=threading.Event(); _bot_lock=threading.Lock()
+_bot_enabled=False  # in-memory flag, no disk read needed for status
 def load_bot_config():
     if BOT_CONFIG_FILE.exists():
         cfg=DEFAULT_BOT_CONFIG.copy(); cfg.update(json.load(open(BOT_CONFIG_FILE))); return cfg
@@ -425,7 +437,7 @@ def _bot_loop(stop_ev):
     while not stop_ev.is_set():
         try:
             cfg=load_bot_config()
-            if not cfg.get("enabled"): time.sleep(15); continue
+            if not _bot_enabled: time.sleep(15); continue
             try:
                 import ccxt as _cx; ex=_cx.bybit({"enableRateLimit":True})
             except: time.sleep(30); continue
@@ -498,14 +510,17 @@ def _bot_loop(stop_ev):
     log.info("Bot stopped")
 
 def start_bot():
-    global _bot_thread, _bot_stop
+    global _bot_thread, _bot_stop, _bot_enabled
     with _bot_lock:
+        _bot_enabled=True
         if _bot_thread and _bot_thread.is_alive(): return
         _bot_stop=threading.Event()
         _bot_thread=threading.Thread(target=_bot_loop,args=(_bot_stop,),daemon=True)
         _bot_thread.start()
 def stop_bot():
+    global _bot_enabled
     with _bot_lock:
+        _bot_enabled=False
         if _bot_stop: _bot_stop.set()
 
 # OPTIMIZER WORKER
@@ -608,24 +623,35 @@ def api_backtest_run():
             if cfg.get("date_from"): df_base=df_base[df_base["timestamp"]>=pd.Timestamp(cfg["date_from"],tz="UTC")]
             if cfg.get("date_to"): df_base=df_base[df_base["timestamp"]<=pd.Timestamp(cfg["date_to"],tz="UTC")]
             df_base=df_base.reset_index(drop=True)
-            df_intra=None
-            if cfg.get("use_intrabar"):
+            df_intra=None; tick_lookup=None
+            if cfg.get("use_tick_mode"):
+                # Build tick lookup for bars that matter (more accurate)
+                bar_ts_list = list(df_base["timestamp"].values)
+                ex_name2 = cfg.get("exchange","bybit")
+                tl = build_tick_lookup(ex_name2, sym, bar_ts_list)
+                if tl:
+                    tick_lookup = tl
+                    log.info(f"Tick mode: {len(tl)} bars have tick data")
+                else:
+                    log.info("Tick mode requested but no tick cache found, falling back to 1m")
+            if tick_lookup is None and cfg.get("use_intrabar"):
                 df_intra=load_cache(ex_name,sym,cfg.get("intrabar_tf","1m"))
                 if df_intra is not None:
                     if cfg.get("date_from"): df_intra=df_intra[df_intra["timestamp"]>=pd.Timestamp(cfg["date_from"],tz="UTC")]
                     if cfg.get("date_to"): df_intra=df_intra[df_intra["timestamp"]<=pd.Timestamp(cfg["date_to"],tz="UTC")]
                     df_intra=df_intra.reset_index(drop=True)
             fee=float(cfg.get("fee_pct",0.055)); capital=float(cfg.get("capital",1000))
-            trades,final_cap,eq=run_ema_crossover(df_base,df_intra,p,fee,capital)
+            trades,final_cap,eq=run_ema_crossover(df_base,df_intra,p,fee,capital,tick_lookup=tick_lookup)
             if not trades: _bt_jobs[jid]={"status":"error","message":"No trades generated"}; return
             df_t=pd.DataFrame(trades); wins=int((df_t["pnl_pct"]>0).sum()); ret=(final_cap-capital)/capital*100
             max_dd=_compute_dd(eq,capital)
             gw=float(df_t[df_t["pnl_usdt"]>0]["pnl_usdt"].sum()); gl=float(df_t[df_t["pnl_usdt"]<=0]["pnl_usdt"].abs().sum())
             pf=round(gw/gl,3) if gl>0 else 99.0
-            # Correct buy & hold: capital * (price / first_price)
+            # Buy & Hold: $capital invested at first bar close, held to end
             bh_start=float(df_base["close"].iloc[0])
-            bh_eq=[round(capital*(float(p_)/bh_start),2) for p_ in df_base["close"]]
-            bh_dates=[str(t)[:10] for t in df_base["timestamp"]]
+            bh_qty=capital/bh_start  # how many units you could buy
+            bh_eq=[round(bh_qty*float(p_),2) for p_ in df_base["close"]]
+            bh_dates=[str(t)[:16] for t in df_base["timestamp"]]
             eq_vals=[round(capital+float(df_t["pnl_usdt"].iloc[:i+1].sum()),2) for i in range(len(df_t))]
             eq_dates=[str(t["exit_time"])[:16] for t in trades]
             arr=np.array(eq_vals); pk=np.maximum.accumulate(arr); dd_vals=[round(float(v),2) for v in ((arr-pk)/pk*100)]
@@ -839,7 +865,8 @@ def api_bot_config():
 def api_bot_status():
     cfg=load_bot_config(); state=load_bot_state()
     running=_bot_thread is not None and _bot_thread.is_alive()
-    return jsonify({"running":running,"enabled":cfg.get("enabled",False),"state":state,"symbol":cfg.get("symbol"),"timeframe":cfg.get("timeframe")})
+    # Use in-memory flag — no disk read, no flicker
+    return jsonify({"running":running,"enabled":_bot_enabled,"state":state,"symbol":cfg.get("symbol"),"timeframe":cfg.get("timeframe")})
 
 @app.route("/api/bot/signals")
 @login_required
@@ -872,12 +899,12 @@ def api_bot_candles():
 @app.route("/api/bot/start", methods=["POST"])
 @login_required
 def api_bot_start():
-    cfg=load_bot_config(); cfg["enabled"]=True; save_bot_config(cfg); start_bot(); return jsonify({"ok":True})
+    cfg=load_bot_config(); cfg["enabled"]=True; save_bot_config(cfg); start_bot(); return jsonify({"ok":True,"enabled":True})
 
 @app.route("/api/bot/stop", methods=["POST"])
 @login_required
 def api_bot_stop():
-    cfg=load_bot_config(); cfg["enabled"]=False; save_bot_config(cfg); return jsonify({"ok":True})
+    cfg=load_bot_config(); cfg["enabled"]=False; save_bot_config(cfg); stop_bot(); return jsonify({"ok":True,"enabled":False})
 
 
 @app.route("/upload")
@@ -889,62 +916,104 @@ def upload_page():
 @login_required
 def api_upload_candles():
     """
-    Accept uploaded CSV or CSV.GZ candle files.
-    Streams file, decompresses if needed, parses, merges into cache.
+    Accept Bybit CSV or CSV.GZ files (tick data OR OHLCV).
+    Ported directly from original import_bybit_csv logic.
+    - Tick data (timestamp,symbol,side,size,price,...) -> resample to 1m OHLCV
+    - OHLCV data -> use directly as 1m
+    Always saves 1m cache + auto-aggregates to 30m cache.
     """
     import gzip as gz_mod
     if "file" not in request.files:
         return jsonify({"error": "No file"}), 400
-    f = request.files["file"]
+    f   = request.files["file"]
     fname = f.filename or ""
-    ex   = request.form.get("exchange", "bybit")
-    sym  = request.form.get("symbol",   "XMR/USDT:USDT")
-    tf   = request.form.get("timeframe","30m")
+    ex  = request.form.get("exchange", "bybit")
+    sym = request.form.get("symbol",   "XMR/USDT:USDT")
     try:
-        raw = f.read()
+        raw_bytes = f.read()
         if fname.endswith(".gz"):
-            raw = gz_mod.decompress(raw)
-        text = raw.decode("utf-8", errors="replace")
+            raw_bytes = gz_mod.decompress(raw_bytes)
+        text = raw_bytes.decode("utf-8", errors="replace")
         from io import StringIO as _SIO
-        df_new = pd.read_csv(_SIO(text))
-        # Normalise column names
-        col_map = {}
-        for c in df_new.columns:
-            cl = c.lower().strip()
-            if cl in ["timestamp","time","open time","date","opentime"]: col_map[c] = "timestamp"
-            elif cl == "open":  col_map[c] = "open"
-            elif cl == "high":  col_map[c] = "high"
-            elif cl == "low":   col_map[c] = "low"
-            elif cl in ["close","close price"]: col_map[c] = "close"
-            elif cl in ["volume","vol"]:        col_map[c] = "volume"
-        df_new = df_new.rename(columns=col_map)
-        needed = {"timestamp","open","high","low","close","volume"}
-        if not needed.issubset(df_new.columns):
-            missing = needed - set(df_new.columns)
-            return jsonify({"error": f"Missing columns: {missing}"}), 400
-        df_new = df_new[list(needed)].copy()
-        df_new["timestamp"] = pd.to_datetime(df_new["timestamp"], utc=True, errors="coerce")
-        df_new = df_new.dropna(subset=["timestamp"])
-        for c in ["open","high","low","close","volume"]:
-            df_new[c] = pd.to_numeric(df_new[c], errors="coerce")
-        df_new = df_new.dropna()
-        if len(df_new) == 0:
-            return jsonify({"error": "No valid rows after parsing"}), 400
-        # Merge with existing cache
-        existing = load_cache(ex, sym, tf)
-        if existing is not None and len(existing) > 0:
-            merged = pd.concat([existing, df_new], ignore_index=True)
+        raw = pd.read_csv(_SIO(text))
+
+        cols_lower = [c.lower() for c in raw.columns]
+        is_tick = "side" in cols_lower or ("price" in cols_lower and "open" not in cols_lower)
+
+        if is_tick:
+            # ── Tick data from public.bybit.com/trading/ ──
+            raw.columns = [c.lower() for c in raw.columns]
+            # timestamp is unix seconds (with decimals)
+            raw["timestamp"] = pd.to_datetime(raw["timestamp"], unit="s", utc=True)
+            raw = raw.sort_values("timestamp")
+            ohlcv = raw.set_index("timestamp")["price"].resample("1min").agg(
+                open="first", high="max", low="min", close="last"
+            ).dropna()
+            ohlcv["volume"] = raw.set_index("timestamp")["size"].resample("1min").sum()
+            df_1m = ohlcv.reset_index()
+            detected = "tick"
         else:
-            merged = df_new
-        merged = merged.drop_duplicates("timestamp").sort_values("timestamp").reset_index(drop=True)
-        save_cache(merged, ex, sym, tf)
+            # ── Standard OHLCV ──
+            if "open" in cols_lower:
+                raw.columns = [c.lower() for c in raw.columns]
+                raw = raw.rename(columns={"open_time":"timestamp","time":"timestamp","opentime":"timestamp"})
+            else:
+                raw.columns = (["timestamp","open","high","low","close","volume"] +
+                               [f"x{i}" for i in range(len(raw.columns)-6)])
+            df_1m = raw[["timestamp","open","high","low","close","volume"]].copy()
+            # Parse timestamp
+            first = df_1m["timestamp"].iloc[0]
+            if isinstance(first, str):
+                df_1m["timestamp"] = pd.to_datetime(df_1m["timestamp"], utc=True, errors="coerce")
+            else:
+                v = float(first)
+                unit = "ms" if v > 1e12 else "s"
+                df_1m["timestamp"] = pd.to_datetime(df_1m["timestamp"], unit=unit, utc=True)
+            for col in ["open","high","low","close","volume"]:
+                df_1m[col] = pd.to_numeric(df_1m[col], errors="coerce")
+            df_1m = df_1m.dropna()
+            detected = "ohlcv"
+
+        df_1m = df_1m.drop_duplicates("timestamp").sort_values("timestamp").reset_index(drop=True)
+        if len(df_1m) == 0:
+            return jsonify({"error": "No valid rows after parsing"}), 400
+
+        # ── Save raw ticks to parquet (if tick data) ──
+        if is_tick:
+            try:
+                tick_df = raw[["timestamp","price","size"]].copy() if "size" in raw.columns else raw[["timestamp","price"]].copy()
+                tick_df = tick_df.rename(columns={"size":"volume"})
+                save_ticks(tick_df, ex, sym)
+                log.info(f"Saved {len(tick_df)} ticks to parquet")
+            except Exception as te:
+                log.warning(f"Tick parquet save failed: {te}")
+
+        # ── Merge into 1m cache ──
+        existing_1m = load_cache(ex, sym, "1m")
+        if existing_1m is not None and len(existing_1m) > 0:
+            merged_1m = pd.concat([existing_1m, df_1m], ignore_index=True)
+        else:
+            merged_1m = df_1m.copy()
+        merged_1m = merged_1m.drop_duplicates("timestamp").sort_values("timestamp").reset_index(drop=True)
+        save_cache(merged_1m, ex, sym, "1m")
+
+        # ── Auto-aggregate 1m -> 30m ──
+        merged_30m = _resample_to_tf(merged_1m, "30min")
+        existing_30m = load_cache(ex, sym, "30m")
+        if existing_30m is not None and len(existing_30m) > 0:
+            merged_30m = pd.concat([existing_30m, merged_30m], ignore_index=True)
+        merged_30m = merged_30m.drop_duplicates("timestamp").sort_values("timestamp").reset_index(drop=True)
+        save_cache(merged_30m, ex, sym, "30m")
+
         return jsonify({
             "ok": True,
             "filename": fname,
-            "rows_added": len(df_new),
-            "total_cached": len(merged),
-            "first": str(merged["timestamp"].iloc[0])[:16],
-            "last":  str(merged["timestamp"].iloc[-1])[:16],
+            "detected": detected,
+            "rows_in_file": len(df_1m),
+            "total_1m": len(merged_1m),
+            "total_30m": len(merged_30m),
+            "first": str(merged_1m["timestamp"].iloc[0])[:16],
+            "last":  str(merged_1m["timestamp"].iloc[-1])[:16],
         })
     except Exception as e:
         import traceback
@@ -957,13 +1026,24 @@ def api_upload_status():
     sym = request.args.get("symbol",    "XMR/USDT:USDT")
     tf  = request.args.get("timeframe", "30m")
     df  = load_cache(ex, sym, tf)
+    ticks = tick_cache_info(ex, sym)
     if df is None:
-        return jsonify({"exists": False, "count": 0})
+        return jsonify({"exists": False, "count": 0, "ticks": ticks})
     return jsonify({"exists": True, "count": len(df),
                     "first": df["timestamp"].iloc[0].isoformat(),
-                    "last":  df["timestamp"].iloc[-1].isoformat()})
+                    "last":  df["timestamp"].iloc[-1].isoformat(),
+                    "ticks": ticks})
+
+@app.route("/api/tick/status")
+@login_required
+def api_tick_status():
+    ex  = request.args.get("exchange", "bybit")
+    sym = request.args.get("symbol",   "XMR/USDT:USDT")
+    return jsonify(tick_cache_info(ex, sym))
 
 if __name__=="__main__":
     cfg=load_bot_config()
-    if cfg.get("enabled"): start_bot()
+    if cfg.get("enabled"):
+        _bot_enabled=True
+        start_bot()
     app.run(host="0.0.0.0",port=5000,debug=False)
