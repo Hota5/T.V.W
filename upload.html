@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EMAX — Upload Candle Data</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDgwYTBkIi8+PHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmMGI5MGIiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjE0IiBmaWxsPSIjZjBiOTBiIj5FWDwvdGV4dD48L3N2Zz4=">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080a0d;--surf:#0e1117;--surf2:#131820;--b1:#1a2030;--b2:#222d40;
+  --y:#f0b90b;--c:#00d4ff;--g:#0ecb81;--r:#f6465d;--mut:#3d4d66;--t1:#dce3ee;--t2:#8899b8;--t3:#4d5e7a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:14px;min-height:100vh}
+a{color:var(--c);text-decoration:none}a:hover{text-decoration:underline}
+/* topbar */
+#topbar{height:48px;background:var(--surf);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 28px;gap:20px;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:4px;color:var(--y)}
+.logo span{color:var(--c)}
+.nav-link{font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)}
+.nav-link:hover{color:var(--t1);text-decoration:none}
+/* layout */
+.wrap{max-width:960px;margin:0 auto;padding:40px 24px}
+h1{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;color:var(--t1);margin-bottom:6px}
+.sub{font-size:0.75rem;color:var(--t3);letter-spacing:1px;margin-bottom:32px}
+/* config row */
+.cfg{display:grid;grid-template-columns:1fr 2fr 1fr;gap:12px;margin-bottom:24px;padding:20px;background:var(--surf);border:1px solid var(--b1)}
+.cfg-field label{display:block;font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
+.cfg-field select,.cfg-field input{width:100%;background:var(--surf2);border:1px solid var(--b2);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;padding:8px 10px;border-radius:2px;outline:none}
+.cfg-field select:focus,.cfg-field input:focus{border-color:var(--c)}
+/* drop zone */
+#dropzone{border:2px dashed var(--b2);border-radius:3px;padding:60px 40px;text-align:center;cursor:pointer;transition:border .2s,background .2s;margin-bottom:24px;background:var(--surf)}
+#dropzone.drag{border-color:var(--y);background:rgba(240,185,11,.04)}
+#dropzone.drag *{pointer-events:none}
+.dz-icon{font-size:2.5rem;margin-bottom:14px;opacity:.5}
+.dz-title{font-size:1rem;color:var(--t2);margin-bottom:8px}
+.dz-sub{font-size:0.72rem;color:var(--t3);line-height:2}
+#file-input{display:none}
+/* queue */
+#queue{margin-bottom:24px}
+.q-item{display:grid;grid-template-columns:1fr 100px 120px 60px;align-items:center;gap:12px;padding:10px 14px;background:var(--surf);border:1px solid var(--b1);margin-bottom:4px;font-size:0.78rem}
+.q-item:first-child{border-radius:2px 2px 0 0}.q-item:last-child{border-radius:0 0 2px 2px}
+.q-name{color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.q-size{color:var(--t3);text-align:right}
+.q-status{text-align:center;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase}
+.q-status.pending{color:var(--t3)}.q-status.uploading{color:var(--y)}.q-status.done{color:var(--g)}.q-status.err{color:var(--r)}
+.q-remove{text-align:center}.q-remove button{background:none;border:none;color:var(--t3);cursor:pointer;font-size:1rem;padding:2px 6px}
+.q-remove button:hover{color:var(--r)}
+/* progress bar */
+.pbar{height:3px;background:var(--b2);border-radius:1px;overflow:hidden;margin-top:3px}
+.pbar-fill{height:100%;background:var(--y);width:0%;transition:width .3s}
+/* controls */
+.ctl{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;padding:9px 18px;border-radius:2px;cursor:pointer;transition:.12s}
+.btn:hover{background:var(--b2);color:var(--t1)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.y{background:var(--y);border-color:var(--y);color:#000;font-weight:600}.btn.y:hover{background:#d4a30a}
+.btn.y:disabled{background:var(--b2);border-color:var(--b2);color:var(--t3)}
+/* summary */
+#summary{background:var(--surf);border:1px solid var(--b1);padding:20px 24px;display:none}
+.sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:12px}
+.sum-cell .sl{font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
+.sum-cell .sv{font-size:1.2rem;color:var(--t1)}
+/* spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:12px;height:12px;border:2px solid var(--b2);border-top-color:var(--y);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+/* cache status */
+#cache-status{font-size:0.75rem;color:var(--t3);padding:12px 16px;background:var(--surf);border:1px solid var(--b1);margin-bottom:16px}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <a href="/" class="logo">EMA<span>X</span></a>
+  <a href="/" class="nav-link">← Back to Platform</a>
+  <div style="flex:1"></div>
+  <span style="font-size:0.68rem;color:var(--t3)" id="topbar-cache"></span>
+</div>
+
+<div class="wrap">
+  <h1>Upload Candle Data</h1>
+  <div class="sub">Drag &amp; drop CSV or CSV.GZ files — all files merged into the cache automatically</div>
+
+  <!-- Target config -->
+  <div class="cfg">
+    <div class="cfg-field">
+      <label>Exchange</label>
+      <select id="cfg-ex">
+        <option value="bybit">Bybit</option>
+        <option value="pionex">Pionex</option>
+      </select>
+    </div>
+    <div class="cfg-field">
+      <label>Symbol (cache target)</label>
+      <input type="text" id="cfg-sym" value="XMR/USDT:USDT">
+    </div>
+    <div class="cfg-field">
+      <label>Timeframe</label>
+      <select id="cfg-tf">
+        <option value="1m">1m</option>
+        <option value="5m">5m</option>
+        <option value="15m">15m</option>
+        <option value="30m" selected>30m</option>
+        <option value="1h">1h</option>
+        <option value="4h">4h</option>
+        <option value="1d">1d</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="cache-status">Checking cache...</div>
+
+  <!-- Drop zone -->
+  <div id="dropzone" onclick="document.getElementById('file-input').click()">
+    <div class="dz-icon">📂</div>
+    <div class="dz-title">Drop files here or click to browse</div>
+    <div class="dz-sub">
+      Supports: <code style="color:var(--c)">XMRUSDT2025-11-10.csv.gz</code> &nbsp;·&nbsp; <code style="color:var(--c)">.csv</code> &nbsp;·&nbsp; <code style="color:var(--c)">.csv.gz</code><br>
+      200+ files / 2GB+ supported &nbsp;·&nbsp; Files processed sequentially, one at a time<br>
+      Duplicates automatically removed during merge
+    </div>
+  </div>
+  <input type="file" id="file-input" multiple accept=".csv,.gz,.csv.gz">
+
+  <!-- Queue controls -->
+  <div class="ctl" id="ctl" style="display:none">
+    <button class="btn y" id="btn-upload" onclick="startUpload()">▶ Upload All</button>
+    <button class="btn" onclick="clearQueue()">Clear Queue</button>
+    <span id="ctl-info" style="font-size:0.75rem;color:var(--t3)"></span>
+  </div>
+
+  <!-- File queue -->
+  <div id="queue"></div>
+
+  <!-- Summary -->
+  <div id="summary">
+    <div style="font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)">Upload Complete</div>
+    <div class="sum-grid" id="sum-grid"></div>
+  </div>
+</div>
+
+<script>
+let queue = []; // {file, status, rows, error}
+let uploading = false;
+let totalAdded = 0;
+
+const dz   = document.getElementById('dropzone');
+const fi   = document.getElementById('file-input');
+
+// ── Drag & Drop ──
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag');
+  addFiles([...e.dataTransfer.files]);
+});
+fi.addEventListener('change', () => { addFiles([...fi.files]); fi.value=''; });
+
+function addFiles(files) {
+  const valid = files.filter(f => f.name.endsWith('.csv') || f.name.endsWith('.gz') || f.name.endsWith('.csv.gz'));
+  if (!valid.length) { alert('Please select .csv or .csv.gz files'); return; }
+  valid.forEach(f => {
+    if (!queue.find(q => q.file.name === f.name && q.file.size === f.size)) {
+      queue.push({ file: f, status: 'pending', rows: 0, error: null });
+    }
+  });
+  renderQueue();
+  document.getElementById('ctl').style.display = 'flex';
+  updateCtlInfo();
+}
+
+function removeFile(i) {
+  if (queue[i].status === 'uploading') return;
+  queue.splice(i, 1); renderQueue(); updateCtlInfo();
+  if (!queue.length) document.getElementById('ctl').style.display = 'none';
+}
+
+function clearQueue() {
+  if (uploading) return;
+  queue = []; renderQueue();
+  document.getElementById('ctl').style.display = 'none';
+  document.getElementById('summary').style.display = 'none';
+}
+
+function updateCtlInfo() {
+  const total = queue.length;
+  const done  = queue.filter(q => q.status === 'done').length;
+  const size  = (queue.reduce((a,q) => a+q.file.size, 0) / 1048576).toFixed(1);
+  document.getElementById('ctl-info').textContent = `${total} files · ${size} MB${done>0?' · '+done+' done':''}`;
+}
+
+function fmtBytes(b) {
+  if (b > 1048576) return (b/1048576).toFixed(1)+' MB';
+  return (b/1024).toFixed(0)+' KB';
+}
+
+function renderQueue() {
+  const el = document.getElementById('queue');
+  if (!queue.length) { el.innerHTML = ''; return; }
+  el.innerHTML = queue.map((q, i) => {
+    const st = q.status;
+    const stHtml = st==='pending'   ? '<span class="q-status pending">Queued</span>'
+                 : st==='uploading' ? '<span class="q-status uploading"><span class="spin"></span>Uploading</span>'
+                 : st==='done'      ? `<span class="q-status done">✓ +${q.rows?.toLocaleString()||0} rows</span>`
+                 : `<span class="q-status err" title="${q.error}">✗ Error</span>`;
+    const pbHtml = st==='uploading' ? `<div class="pbar"><div class="pbar-fill" id="pb-${i}" style="width:0%"></div></div>` : '';
+    return `<div class="q-item" id="qi-${i}">
+      <div><div class="q-name" title="${q.file.name}">${q.file.name}</div>${pbHtml}</div>
+      <div class="q-size">${fmtBytes(q.file.size)}</div>
+      <div>${stHtml}</div>
+      <div class="q-remove">${st!=='uploading'?`<button onclick="removeFile(${i})">×</button>`:''}</div>
+    </div>`;
+  }).join('');
+}
+
+async function startUpload() {
+  if (uploading) return;
+  uploading = true;
+  document.getElementById('btn-upload').disabled = true;
+  document.getElementById('summary').style.display = 'none';
+  totalAdded = 0;
+  let doneCount = 0, errCount = 0;
+
+  const ex  = document.getElementById('cfg-ex').value;
+  const sym = document.getElementById('cfg-sym').value;
+  const tf  = document.getElementById('cfg-tf').value;
+
+  for (let i = 0; i < queue.length; i++) {
+    const q = queue[i];
+    if (q.status === 'done') { doneCount++; continue; }
+    q.status = 'uploading'; renderQueue();
+    // Animate fake progress while uploading
+    let pct = 0;
+    const prog = document.getElementById(`pb-${i}`);
+    const interval = setInterval(() => {
+      pct = Math.min(pct + Math.random()*15, 90);
+      if (prog) prog.style.width = pct + '%';
+    }, 300);
+    try {
+      const fd = new FormData();
+      fd.append('file', q.file);
+      fd.append('exchange', ex);
+      fd.append('symbol', sym);
+      fd.append('timeframe', tf);
+      const r = await fetch('/api/upload/candles', { method: 'POST', body: fd });
+      const d = await r.json();
+      clearInterval(interval);
+      if (prog) prog.style.width = '100%';
+      if (d.ok) {
+        q.status = 'done'; q.rows = d.rows_added; totalAdded += d.rows_added; doneCount++;
+      } else {
+        q.status = 'err'; q.error = d.error; errCount++;
+      }
+    } catch(e) {
+      clearInterval(interval);
+      q.status = 'err'; q.error = e.message; errCount++;
+    }
+    renderQueue(); updateCtlInfo();
+  }
+
+  uploading = false;
+  document.getElementById('btn-upload').disabled = false;
+  // Show summary
+  const status = await (await fetch(`/api/upload/status?exchange=${ex}&symbol=${encodeURIComponent(sym)}&timeframe=${tf}`)).json();
+  const sg = document.getElementById('sum-grid');
+  sg.innerHTML = `
+    <div class="sum-cell"><div class="sl">Files Processed</div><div class="sv" style="color:var(--c)">${doneCount}</div></div>
+    <div class="sum-cell"><div class="sl">Errors</div><div class="sv" style="color:${errCount>0?'var(--r)':'var(--g)'}">${errCount}</div></div>
+    <div class="sum-cell"><div class="sl">Total Cache</div><div class="sv" style="color:var(--g)">${status.count?.toLocaleString()||'—'}</div></div>
+    <div class="sum-cell"><div class="sl">Date Range</div><div class="sv" style="font-size:0.82rem;color:var(--t2)">${status.first?.slice(0,10)||'—'} → ${status.last?.slice(0,10)||'—'}</div></div>`;
+  document.getElementById('summary').style.display = 'block';
+  loadCacheStatus();
+}
+
+async function loadCacheStatus() {
+  const ex  = document.getElementById('cfg-ex').value;
+  const sym = document.getElementById('cfg-sym').value;
+  const tf  = document.getElementById('cfg-tf').value;
+  try {
+    const r = await fetch(`/api/upload/status?exchange=${ex}&symbol=${encodeURIComponent(sym)}&timeframe=${tf}`);
+    const d = await r.json();
+    const el = document.getElementById('cache-status');
+    const tb = document.getElementById('topbar-cache');
+    if (d.exists) {
+      el.innerHTML = `Current cache: <span style="color:var(--c)">${d.count?.toLocaleString()} candles</span> &nbsp;·&nbsp; <span style="color:var(--t2)">${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</span> &nbsp;·&nbsp; <a href="/">View in platform →</a>`;
+      tb.textContent = `${d.count?.toLocaleString()} candles cached`;
+    } else {
+      el.textContent = 'No cache yet for this symbol/timeframe — upload files to create it';
+    }
+  } catch(e) {}
+}
+
+['cfg-ex','cfg-sym','cfg-tf'].forEach(id => {
+  document.getElementById(id)?.addEventListener('change', loadCacheStatus);
+});
+loadCacheStatus();
+</script>
+</body>
+</html>

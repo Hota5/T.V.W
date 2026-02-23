@@ -63,6 +63,17 @@ else
     log "No dependency changes"
 fi
 
+
+# ── Patch nginx for large uploads if needed ──
+if ! grep -q "4G" /etc/nginx/sites-available/trader 2>/dev/null; then
+    log "Updating nginx for large file uploads..."
+    sed -i 's/client_max_body_size.*/client_max_body_size 4G;/' /etc/nginx/sites-available/trader
+    sed -i 's/proxy_read_timeout.*/proxy_read_timeout    1800;/' /etc/nginx/sites-available/trader
+    sed -i 's/proxy_send_timeout.*/proxy_send_timeout    1800;/' /etc/nginx/sites-available/trader
+    nginx -t > /dev/null 2>&1 && systemctl reload nginx
+    ok "Nginx updated"
+fi
+
 # ── Restart service ──
 log "Restarting service..."
 systemctl restart ${SERVICE_NAME}

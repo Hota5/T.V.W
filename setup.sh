@@ -75,7 +75,7 @@ After=network.target
 User=root
 WorkingDirectory=${APP_DIR}
 Environment="SECRET_KEY=${SECRET_KEY}"
-ExecStart=${APP_DIR}/venv/bin/gunicorn -w 2 -b 127.0.0.1:5000 --timeout 300 app:app
+ExecStart=${APP_DIR}/venv/bin/gunicorn -w 2 -b 127.0.0.1:5000 --timeout 600 app:app
 Restart=always
 RestartSec=10
 StandardOutput=append:${APP_DIR}/service.log
@@ -103,11 +103,12 @@ server {
     listen 80;
     server_name _;
 
-    proxy_read_timeout    600;
-    proxy_connect_timeout 600;
-    proxy_send_timeout    600;
+    proxy_read_timeout    1800;
+    proxy_connect_timeout 60;
+    proxy_send_timeout    1800;
+    proxy_send_timeout    1800;
 
-    client_max_body_size 50M;
+    client_max_body_size 4G;
 
     location / {
         proxy_pass http://127.0.0.1:5000;

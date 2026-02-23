@@ -2,1308 +2,1164 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDgwYTBkIi8+PHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmMGI5MGIiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjE0IiBmaWxsPSIjZjBiOTBiIj5FWDwvdGV4dD48L3N2Zz4=">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EMA CROSSOVER PLATFORM</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>EMAX Trading Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root {
-  --bg:       #080a0d;
-  --surface:  #0e1117;
-  --surface2: #131820;
-  --border:   #1a2030;
-  --border2:  #222d40;
-  --accent-1: #f0b90b;
-  --accent-2: #00d4ff;
-  --green:    #0ecb81;
-  --red:      #f6465d;
-  --muted:    #3d4d66;
-  --text:     #dce3ee;
-  --text2:    #7b8ba8;
-  --text3:    #4d5e7a;
+:root{
+  --bg:#080a0d;--surf:#0e1117;--surf2:#131820;--surf3:#181f2a;
+  --b1:#1a2030;--b2:#222d40;--b3:#2d3d56;
+  --y:#f0b90b;--c:#00d4ff;--g:#0ecb81;--r:#f6465d;
+  --mut:#3d4d66;--t1:#dce3ee;--t2:#8899b8;--t3:#4d5e7a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:0.72rem;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.5}
 /* ── TOPBAR ── */
-#topbar{height:42px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 36px;gap:0;flex-shrink:0}
-#topbar .logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--accent-1);margin-right:32px}
-#topbar .logo span{color:var(--accent-2)}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:0 18px;height:42px;font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;transition:color .15s}
-.tab-btn:hover{color:var(--text2)}
-.tab-btn.active{color:var(--text);border-bottom-color:var(--accent-1)}
-#topbar .spacer{flex:1}
-#bot-pill{display:flex;align-items:center;gap:7px;font-size:0.6rem;letter-spacing:1px;color:var(--text3)}
-#bot-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
-#bot-pill.running .dot{background:var(--green);box-shadow:0 0 6px var(--green)}
-#bot-pill.running{color:var(--green)}
+#topbar{height:48px;background:var(--surf);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 24px;gap:0;flex-shrink:0;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:4px;color:var(--y);margin-right:28px;flex-shrink:0}
+.logo span{color:var(--c)}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:0 20px;height:48px;font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;transition:color .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--t2)}.tab-btn.active{color:var(--t1);border-bottom-color:var(--y)}
+#topbar .sp{flex:1}
+#bot-pill{display:flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:1px;color:var(--t3);padding:4px 12px;border:1px solid var(--b1);border-radius:2px}
+#bot-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--mut)}
+#bot-pill.live{color:var(--g);border-color:rgba(14,203,129,.3);background:rgba(14,203,129,.06)}
+#bot-pill.live .dot{background:var(--g);box-shadow:0 0 8px var(--g)}
 /* ── LAYOUT ── */
-#main{display:flex;height:calc(100vh - 42px);overflow:hidden}
-#sidebar{width:280px;border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
-#content{flex:1;overflow-y:auto;padding:0}
-/* ── PANELS ── */
-.panel{padding:18px 20px;border-bottom:1px solid var(--border)}
-.panel-title{font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--border)}
-/* ── INPUTS ── */
-label.lbl{display:block;font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;margin-top:10px}
-label.lbl:first-child{margin-top:0}
-input[type=text],input[type=number],select{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:0.7rem;padding:6px 8px;border-radius:3px;outline:none;transition:border .15s}
-input[type=text]:focus,input[type=number]:focus,select:focus{border-color:var(--accent-2)}
-.input-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.checkbox-row{display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer}
-.checkbox-row input[type=checkbox]{width:13px;height:13px;accent-color:var(--accent-1);cursor:pointer}
-.checkbox-row span{font-size:0.65rem;color:var(--text2)}
+#main{display:flex;height:calc(100vh - 48px)}
+/* ── SIDEBAR ── */
+#sidebar{width:300px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto;overflow-x:hidden}
+#sidebar::-webkit-scrollbar{width:3px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;min-width:0}
+#content::-webkit-scrollbar{width:5px}
+#content::-webkit-scrollbar-thumb{background:var(--b2)}
+/* ── SIDEBAR PANELS ── */
+.spanel{padding:20px 20px 16px}
+.spanel+.spanel{border-top:1px solid var(--b1)}
+.ptitle{font-size:0.62rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);margin-bottom:14px;font-weight:500}
+.lbl{display:block;font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:5px;margin-top:14px}
+.lbl:first-of-type{margin-top:0}
+input[type=text],input[type=number],input[type=date],select{
+  width:100%;background:var(--surf2);border:1px solid var(--b2);color:var(--t1);
+  font-family:'IBM Plex Mono',monospace;font-size:0.82rem;padding:8px 10px;
+  border-radius:2px;outline:none;transition:border .15s}
+input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:focus{border-color:var(--c)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;align-items:center;gap:9px;margin-top:10px;cursor:pointer;user-select:none}
+.chk input[type=checkbox]{width:14px;height:14px;accent-color:var(--y);cursor:pointer;flex-shrink:0}
+.chk span{font-size:0.75rem;color:var(--t2)}
 /* ── BUTTONS ── */
-.btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);font-family:'IBM Plex Mono',monospace;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:3px;cursor:pointer;transition:background .12s,color .12s}
-.btn:hover{background:var(--border2);color:var(--text)}
-.btn.primary{background:var(--accent-1);border-color:var(--accent-1);color:#000;font-weight:600}
-.btn.primary:hover{background:#d4a30a;border-color:#d4a30a}
-.btn.cyan{background:var(--accent-2);border-color:var(--accent-2);color:#000;font-weight:600}
-.btn.cyan:hover{background:#00b8d9;border-color:#00b8d9}
-.btn.danger{border-color:var(--red);color:var(--red)}
-.btn.danger:hover{background:var(--red);color:#fff}
-.btn.sm{padding:4px 10px;font-size:0.6rem}
-.btn.active-state{background:var(--border2);color:var(--text)}
-.btn-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
-/* ── TABS VIEW ── */
-.tab-view{display:none}
-.tab-view.active{display:flex;flex-direction:column;height:100%}
+.btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;padding:8px 16px;border-radius:2px;cursor:pointer;transition:.12s;white-space:nowrap}
+.btn:hover{background:var(--b2);color:var(--t1)}
+.btn.y{background:var(--y);border-color:var(--y);color:#000;font-weight:600}
+.btn.y:hover{background:#d4a30a}
+.btn.c{background:var(--c);border-color:var(--c);color:#000;font-weight:600}
+.btn.c:hover{background:#00b8d9}
+.btn.danger{border-color:var(--r);color:var(--r)}
+.btn.danger:hover{background:var(--r);color:#fff}
+.btn.sm{padding:5px 11px;font-size:0.65rem}
+.btn.act{background:var(--surf3);color:var(--t1);border-color:var(--b3)}
+.brow{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+/* ── TABS ── */
+.tabview{display:none}.tabview.active{display:block}
 /* ── STATS GRID ── */
-.stats-grid{display:grid;gap:1px;background:var(--border);margin:0}
-.stats-grid.cols-4{grid-template-columns:repeat(4,1fr)}
-.stats-grid.cols-5{grid-template-columns:repeat(5,1fr)}
-.stats-grid.cols-6{grid-template-columns:repeat(6,1fr)}
-.stat-cell{background:var(--surface);padding:14px 18px}
-.stat-cell .s-label{font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
-.stat-cell .s-value{font-size:1.35rem;font-family:'IBM Plex Mono',monospace;font-weight:500;color:var(--text)}
-.stat-cell .s-sub{font-size:0.6rem;color:var(--text2);margin-top:3px}
-.s-value.green{color:var(--green)} .s-value.red{color:var(--red)}
-.s-value.cyan{color:var(--accent-2)} .s-value.yellow{color:var(--accent-1)}
-/* ── CHART AREA ── */
-#chart-area{background:var(--surface);border-bottom:1px solid var(--border);padding:0;position:relative}
-.chart-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid var(--border)}
-.chart-header .title{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-.chart-toggles{display:flex;gap:4px}
-.chart-canvas-wrap{padding:12px 18px;position:relative}
-.chart-canvas-wrap canvas{display:block}
+.sgrid{display:grid;gap:1px;background:var(--b1)}
+.sgrid.c4{grid-template-columns:repeat(4,1fr)}
+.sgrid.c5{grid-template-columns:repeat(5,1fr)}
+.sgrid.c3{grid-template-columns:repeat(3,1fr)}
+.sc{background:var(--surf);padding:18px 22px}
+.sc .sl{font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:7px}
+.sc .sv{font-size:1.5rem;font-weight:500;color:var(--t1);line-height:1}
+.sc .ss{font-size:0.7rem;color:var(--t2);margin-top:5px}
+.sv.g{color:var(--g)}.sv.r{color:var(--r)}.sv.c{color:var(--c)}.sv.y{color:var(--y)}
+/* ── CHART ── */
+.chart-wrap{background:var(--surf);border-bottom:1px solid var(--b1)}
+.chart-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--b1)}
+.chart-hdr .cht{font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
+.chart-togs{display:flex;gap:5px}
+.chart-body{padding:14px 20px}
 /* ── TABLE ── */
-.data-table{width:100%;border-collapse:collapse}
-.data-table th{background:var(--surface2);color:var(--text3);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);font-weight:400}
-.data-table th:first-child{text-align:left}
-.data-table td{padding:7px 10px;border-bottom:1px solid #0a0e15;text-align:right;font-size:0.68rem;color:var(--text2)}
-.data-table td:first-child{text-align:left;color:var(--text)}
-.data-table tr:hover td{background:#0f1520}
-.data-table .long{color:var(--green)} .data-table .short{color:var(--red)}
-/* ── OPT TABLE ── */
-.opt-table-wrap{overflow-x:auto;overflow-y:auto;max-height:400px}
-/* ── SECTION HEADER ── */
-.section-head{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface)}
-.section-head .title{font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-/* ── RANGE INPUTS (optimizer) ── */
-.range-row{display:grid;grid-template-columns:100px 1fr;align-items:center;gap:10px;margin-bottom:8px}
-.range-row .rname{font-size:0.62rem;color:var(--text2)}
-.range-row .rinputs{display:flex;gap:4px;align-items:center}
-.range-row .rinputs input{width:55px;text-align:center}
-.range-row .rinputs span{color:var(--text3);font-size:0.6rem}
-/* ── LIVE BOT ── */
-.bot-status-bar{background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:12px 16px;margin-bottom:12px}
-.signal-pill{display:inline-block;padding:2px 8px;border-radius:3px;font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;font-weight:500}
-.signal-pill.long{background:rgba(14,203,129,.15);color:var(--green);border:1px solid rgba(14,203,129,.3)}
-.signal-pill.short{background:rgba(246,70,93,.15);color:var(--red);border:1px solid rgba(246,70,93,.3)}
-.signal-pill.flat{background:var(--surface2);color:var(--text3);border:1px solid var(--border2)}
+.tbl{width:100%;border-collapse:collapse;font-size:0.78rem}
+.tbl th{background:var(--surf2);color:var(--t3);font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;padding:10px 12px;text-align:right;border-bottom:1px solid var(--b1);font-weight:400;white-space:nowrap}
+.tbl th:first-child{text-align:left}
+.tbl td{padding:9px 12px;border-bottom:1px solid #0a0e15;text-align:right;color:var(--t2)}
+.tbl td:first-child{text-align:left;color:var(--t1)}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+.tbl .long{color:var(--g)}.tbl .short{color:var(--r)}
+.tbl-wrap{overflow-x:auto;overflow-y:auto}
+/* ── SECTION HEAD ── */
+.shead{padding:12px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--surf)}
+.shead .ht{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
+/* ── STATUS ── */
+.msg{padding:10px 14px;font-size:0.75rem;border-radius:2px;margin-top:10px;line-height:1.5}
+.msg.info{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);color:var(--c)}
+.msg.err{background:rgba(246,70,93,.08);border:1px solid rgba(246,70,93,.25);color:var(--r)}
+.msg.ok{background:rgba(14,203,129,.07);border:1px solid rgba(14,203,129,.2);color:var(--g)}
 /* ── PROGRESS ── */
-.progress-bar-wrap{background:var(--surface2);border:1px solid var(--border2);border-radius:2px;height:6px;overflow:hidden;margin-top:8px}
-.progress-bar-fill{height:100%;background:var(--accent-1);transition:width .3s;border-radius:2px}
-/* ── STATUS MESSAGES ── */
-.status-msg{padding:8px 12px;font-size:0.65rem;border-radius:3px;margin-top:8px}
-.status-msg.info{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);color:var(--accent-2)}
-.status-msg.error{background:rgba(246,70,93,.08);border:1px solid rgba(246,70,93,.25);color:var(--red)}
-.status-msg.success{background:rgba(14,203,129,.07);border:1px solid rgba(14,203,129,.2);color:var(--green)}
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--surface)}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.pbar-wrap{background:var(--surf2);border:1px solid var(--b2);border-radius:2px;height:5px;overflow:hidden;margin-top:10px}
+.pbar-fill{height:100%;background:var(--y);transition:width .3s}
 /* ── SPINNER ── */
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent-1);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
-/* ── EMPTY STATE ── */
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:10px;color:var(--muted)}
-.empty-state .big{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px}
-.empty-state .sub{font-size:0.65rem;letter-spacing:1px}
-/* ── TOGGLE GROUP ── */
-.toggle-group{display:flex;gap:0;border:1px solid var(--border2);border-radius:3px;overflow:hidden}
-.toggle-group .btn{border:none;border-radius:0;border-right:1px solid var(--border2)}
-.toggle-group .btn:last-child{border-right:none}
+.spin{width:13px;height:13px;border:2px solid var(--b2);border-top-color:var(--y);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
+/* ── EMPTY ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:12px;color:var(--mut)}
+.empty .big{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:3px}
+.empty .sub{font-size:0.75rem;letter-spacing:1px}
+/* ── SIGNAL PILL ── */
+.pill{display:inline-block;padding:3px 10px;border-radius:2px;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;font-weight:500;border:1px solid}
+.pill.long{background:rgba(14,203,129,.12);color:var(--g);border-color:rgba(14,203,129,.3)}
+.pill.short{background:rgba(246,70,93,.12);color:var(--r);border-color:rgba(246,70,93,.3)}
+.pill.flat{background:var(--surf2);color:var(--t3);border-color:var(--b2)}
+/* ── DIVIDER ── */
+.div{height:1px;background:var(--b1);margin:14px 0}
+/* ── RANGE INPUTS ── */
+.rg-row{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.rg-row .rn{font-size:0.72rem;color:var(--t2);width:110px;flex-shrink:0}
+.rg-row input{width:55px;text-align:center;flex-shrink:0}
+.rg-row .sep{color:var(--mut);font-size:0.7rem;flex-shrink:0}
+/* ── OPT TABLE ── */
+.opt-tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:420px}
+/* ── COLORS ── */
+.tg{color:var(--g)}.tr{color:var(--r)}.ty{color:var(--y)}.tc{color:var(--c)}.tm{color:var(--mut)}.t1{color:var(--t1)}.t2{color:var(--t2)}
+/* ── PRESETS ── */
+.preset-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surf2);border:1px solid var(--b2);border-radius:2px;margin-bottom:6px}
+.preset-item .pn{font-size:0.75rem;color:var(--t1)}
+.preset-item .ps{font-size:0.65rem;color:var(--t3);margin-top:2px}
+/* ── CANDLE CHART ── */
+#candle-chart-container{background:var(--surf);border:1px solid var(--b1);margin:0;position:relative;min-height:320px}
 /* ── MISC ── */
-.divider{height:1px;background:var(--border);margin:10px 0}
-.text-muted{color:var(--text3);font-size:0.62rem}
-.text-green{color:var(--green)} .text-red{color:var(--red)} .text-yellow{color:var(--accent-1)} .text-cyan{color:var(--accent-2)}
-.nowrap{white-space:nowrap}
-.full-height{flex:1;overflow-y:auto}
-.padded{padding:18px 36px}
-#opt-progress-wrap{padding:0 20px 12px}
+.nw{white-space:nowrap}
+code{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--c);background:var(--surf2);padding:1px 5px;border-radius:2px}
 </style>
 </head>
 <body>
-
-<!-- ══════════════════ TOPBAR ══════════════════ -->
 <div id="topbar">
   <div class="logo">EMA<span>X</span></div>
-  <button class="tab-btn active" onclick="switchTab('backtest')">Backtest</button>
-  <button class="tab-btn" onclick="switchTab('optimizer')">Optimizer</button>
-  <button class="tab-btn" onclick="switchTab('live')">Live Bot</button>
-  <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
-  <div class="spacer"></div>
-  <div id="bot-pill"><div class="dot"></div><span id="bot-pill-text">BOT OFFLINE</span></div>
+  <button class="tab-btn active" onclick="goTab('backtest')">Backtest</button>
+  <button class="tab-btn" onclick="goTab('optimizer')">Optimizer</button>
+  <button class="tab-btn" onclick="goTab('live')">Live Bot</button>
+  <button class="tab-btn" onclick="goTab('settings')">Settings</button>
+  <a href="/upload" class="tab-btn" style="display:flex;align-items:center;text-decoration:none">Upload Data</a>
+  <div class="sp"></div>
+  <div id="bot-pill"><div class="dot"></div><span id="bot-pill-txt">BOT OFFLINE</span></div>
 </div>
 
 <div id="main">
-
-<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<!-- ═══════════ SIDEBAR ═══════════ -->
 <div id="sidebar">
 
-  <!-- Data Panel -->
-  <div class="panel">
-    <div class="panel-title">Data Source</div>
+  <!-- Data -->
+  <div class="spanel">
+    <div class="ptitle">Data Source</div>
     <label class="lbl">Exchange</label>
-    <select id="s-exchange"><option value="bybit">Bybit</option><option value="pionex">Pionex</option></select>
+    <select id="s-ex"><option value="bybit">Bybit</option><option value="pionex">Pionex</option></select>
     <label class="lbl">Symbol</label>
-    <input type="text" id="s-symbol" value="XMR/USDT:USDT">
+    <input type="text" id="s-sym" value="XMR/USDT:USDT">
     <label class="lbl">Timeframe</label>
-    <select id="s-timeframe">
-      <option value="1m">1m</option><option value="5m">5m</option>
-      <option value="15m">15m</option><option value="30m" selected>30m</option>
-      <option value="1h">1h</option><option value="4h">4h</option><option value="1d">1d</option>
+    <select id="s-tf">
+      <option value="1m">1m</option><option value="5m">5m</option><option value="15m">15m</option>
+      <option value="30m" selected>30m</option><option value="1h">1h</option><option value="4h">4h</option><option value="1d">1d</option>
     </select>
     <label class="lbl">Intrabar TF</label>
-    <select id="s-intrabar-tf">
-      <option value="1m" selected>1m</option><option value="5m">5m</option><option value="15m">15m</option>
-    </select>
-    <div class="checkbox-row"><input type="checkbox" id="s-use-intrabar" checked><span>Use intrabar simulation</span></div>
-    <div id="cache-info" class="text-muted" style="margin-top:8px">No cache</div>
-    <div class="btn-row">
-      <button class="btn cyan" onclick="fetchData(false)">Update Cache</button>
-      <button class="btn" onclick="fetchData(true)">Full Rescan</button>
+    <select id="s-itf"><option value="1m" selected>1m</option><option value="5m">5m</option><option value="15m">15m</option></select>
+    <div class="chk"><input type="checkbox" id="s-intra" checked><span>Intrabar simulation</span></div>
+    <div id="cache-info" style="margin-top:10px;font-size:0.72rem;color:var(--t3)">No cache loaded</div>
+    <div class="brow">
+      <button class="btn c sm" onclick="fetchData(false)">Update Cache</button>
+      <button class="btn sm" onclick="fetchData(true)">Full Rescan</button>
+      <button class="btn sm" onclick="checkIntegrity()">Check Integrity</button>
     </div>
-    <div id="fetch-status"></div>
+    <div id="fetch-msg"></div>
+    <div id="integrity-result" style="display:none;margin-top:10px;font-size:0.72rem"></div>
   </div>
 
-  <!-- Strategy Params -->
-  <div class="panel">
-    <div class="panel-title">Strategy</div>
-    <label class="lbl">EMA Fast / Slow</label>
-    <div class="input-row">
-      <input type="number" id="p-fast" value="9" min="1">
-      <input type="number" id="p-slow" value="21" min="1">
+  <!-- Date Range -->
+  <div class="spanel">
+    <div class="ptitle">Backtest Date Range</div>
+    <label class="lbl">From</label>
+    <input type="date" id="s-from">
+    <label class="lbl">To</label>
+    <input type="date" id="s-to">
+    <div class="brow">
+      <button class="btn sm" onclick="clearDateRange()">Clear (all data)</button>
     </div>
+  </div>
+
+  <!-- Strategy -->
+  <div class="spanel">
+    <div class="ptitle">Strategy</div>
+    <label class="lbl">Fast EMA / Slow EMA</label>
+    <div class="row2"><input type="number" id="p-fast" value="9" min="1"><input type="number" id="p-slow" value="21" min="1"></div>
     <label class="lbl">TP % / SL %</label>
-    <div class="input-row">
-      <input type="number" id="p-tp" value="2.0" step="0.1">
-      <input type="number" id="p-sl" value="1.0" step="0.1">
-    </div>
-    <div class="checkbox-row"><input type="checkbox" id="p-use-trailing" checked><span>Use trailing stop</span></div>
-    <div id="tsl-group">
-      <label class="lbl">Trail % (if no ATR)</label>
-      <input type="number" id="p-trail" value="1.0" step="0.1">
-      <div class="checkbox-row"><input type="checkbox" id="p-use-atr-tsl" checked><span>ATR trailing stop</span></div>
-      <label class="lbl">ATR Length / Multiplier</label>
-      <div class="input-row">
-        <input type="number" id="p-atr-len" value="9">
-        <input type="number" id="p-atr-mult" value="10.0" step="0.5">
-      </div>
-    </div>
+    <div class="row2"><input type="number" id="p-tp" value="2.0" step="0.1"><input type="number" id="p-sl" value="1.0" step="0.1"></div>
+    <div class="chk"><input type="checkbox" id="p-trailing" checked><span>Trailing stop</span></div>
+    <div class="chk"><input type="checkbox" id="p-atr-tsl" checked><span>ATR trailing</span></div>
+    <label class="lbl">ATR Length / Multiplier</label>
+    <div class="row2"><input type="number" id="p-atr-len" value="9"><input type="number" id="p-atr-mult" value="10.0" step="0.5"></div>
+    <label class="lbl">Trail % (non-ATR fallback)</label>
+    <input type="number" id="p-trail" value="1.0" step="0.1">
     <label class="lbl">TSL Mode</label>
-    <select id="p-tsl-mode"><option value="intrabar" selected>Intrabar</option><option value="barclose">Bar Close</option></select>
-    <div class="divider"></div>
-    <div class="checkbox-row"><input type="checkbox" id="p-all-exits"><span>Use all exits (+ opposite signal)</span></div>
-    <div class="checkbox-row"><input type="checkbox" id="p-tiered-tsl"><span>Tiered TSL</span></div>
-    <div id="tiered-group" style="display:none">
-      <label class="lbl">Tier 1 Profit% / TSL%</label>
-      <div class="input-row">
-        <input type="number" id="p-t1p" value="5.0" step="0.5">
-        <input type="number" id="p-t1t" value="3.0" step="0.5">
-      </div>
-      <label class="lbl">Tier 2 Profit% / TSL%</label>
-      <div class="input-row">
-        <input type="number" id="p-t2p" value="10.0" step="0.5">
-        <input type="number" id="p-t2t" value="2.0" step="0.5">
-      </div>
-      <label class="lbl">Tier 3 TSL%</label>
+    <select id="p-tsl"><option value="intrabar" selected>Intrabar</option><option value="barclose">Bar Close</option></select>
+    <div class="div"></div>
+    <div class="chk"><input type="checkbox" id="p-all-exits"><span>All exits (opposite signal)</span></div>
+    <div class="chk"><input type="checkbox" id="p-tiered" onchange="tog('tiered-g',this.checked)"><span>Tiered TSL</span></div>
+    <div id="tiered-g" style="display:none">
+      <label class="lbl">Tier1 Profit% / TSL%</label>
+      <div class="row2"><input type="number" id="p-t1p" value="5.0" step="0.5"><input type="number" id="p-t1t" value="3.0" step="0.5"></div>
+      <label class="lbl">Tier2 Profit% / TSL%</label>
+      <div class="row2"><input type="number" id="p-t2p" value="10.0" step="0.5"><input type="number" id="p-t2t" value="2.0" step="0.5"></div>
+      <label class="lbl">Tier3 TSL%</label>
       <input type="number" id="p-t3t" value="1.0" step="0.5">
     </div>
-    <div class="divider"></div>
-    <div class="checkbox-row"><input type="checkbox" id="p-vol-filter"><span>Volume filter</span></div>
-    <div id="vol-group" style="display:none">
-      <label class="lbl">Vol multiplier</label>
-      <input type="number" id="p-vol-mult" value="1.5" step="0.1">
+    <div class="div"></div>
+    <div class="chk"><input type="checkbox" id="p-vol" onchange="tog('vol-g',this.checked)"><span>Volume filter</span></div>
+    <div id="vol-g" style="display:none">
+      <label class="lbl">Vol multiplier</label><input type="number" id="p-vol-mult" value="1.5" step="0.1">
     </div>
-    <div class="checkbox-row"><input type="checkbox" id="p-adx-filter"><span>ADX filter</span></div>
-    <div id="adx-group" style="display:none">
+    <div class="chk"><input type="checkbox" id="p-adx" onchange="tog('adx-g',this.checked)"><span>ADX filter</span></div>
+    <div id="adx-g" style="display:none">
       <label class="lbl">ADX Length / Threshold</label>
-      <div class="input-row">
-        <input type="number" id="p-adx-len" value="14">
-        <input type="number" id="p-adx-thresh" value="25">
-      </div>
+      <div class="row2"><input type="number" id="p-adx-len" value="14"><input type="number" id="p-adx-thresh" value="25"></div>
     </div>
   </div>
 
-  <!-- Capital & Fees -->
-  <div class="panel">
-    <div class="panel-title">Capital & Costs</div>
+  <!-- Capital -->
+  <div class="spanel">
+    <div class="ptitle">Capital & Costs</div>
     <label class="lbl">Initial Capital ($)</label>
-    <input type="number" id="p-capital" value="1000" step="100">
+    <input type="number" id="p-cap" value="1000" step="100">
     <label class="lbl">Fee % (per side)</label>
     <input type="number" id="p-fee" value="0.055" step="0.001">
     <label class="lbl">Slippage %</label>
-    <input type="number" id="p-slippage" value="0.0143" step="0.001">
-    <div class="checkbox-row"><input type="checkbox" id="p-compounding" checked><span>Compounding</span></div>
+    <input type="number" id="p-slip" value="0.0143" step="0.001">
+    <div class="chk"><input type="checkbox" id="p-comp" checked><span>Compounding</span></div>
   </div>
 
-  <!-- Run button -->
-  <div class="panel">
-    <button class="btn primary" style="width:100%;padding:10px" onclick="runBacktest()">Run Backtest</button>
-    <div id="bt-status"></div>
+  <!-- Presets -->
+  <div class="spanel">
+    <div class="ptitle">Presets</div>
+    <div style="display:flex;gap:7px;margin-bottom:10px">
+      <input type="text" id="preset-name" placeholder="preset name" style="flex:1">
+      <button class="btn sm y" onclick="savePreset()">Save</button>
+    </div>
+    <div id="presets-list"></div>
   </div>
 
-</div><!-- /sidebar -->
+  <!-- Run -->
+  <div class="spanel">
+    <button class="btn y" style="width:100%;padding:11px;font-size:0.8rem" onclick="runBacktest()">▶ Run Backtest</button>
+    <div id="bt-msg"></div>
+  </div>
 
-<!-- ══════════════════ CONTENT ══════════════════ -->
+</div>
+<!-- ═══════════ CONTENT ═══════════ -->
 <div id="content">
 
-  <!-- ─── BACKTEST TAB ─── -->
-  <div id="tab-backtest" class="tab-view active">
-    <div id="bt-empty" class="empty-state" style="flex:1">
-      <div class="big">NO RESULTS YET</div>
-      <div class="sub">Configure settings and run a backtest</div>
+<!-- ─── BACKTEST ─── -->
+<div id="tab-backtest" class="tabview active">
+  <div id="bt-empty" class="empty">
+    <div class="big">NO RESULTS</div>
+    <div class="sub">Configure settings and run a backtest</div>
+  </div>
+  <div id="bt-results" style="display:none">
+    <div id="bt-stats" class="sgrid c4"></div>
+    <!-- chart -->
+    <div class="chart-wrap">
+      <div class="chart-hdr">
+        <span class="cht" id="chart-title">EQUITY CURVE</span>
+        <div class="chart-togs">
+          <button class="btn sm act" id="tog-eq" onclick="togChart('eq')">Equity</button>
+          <button class="btn sm act" id="tog-bh" onclick="togChart('bh')">Buy &amp; Hold</button>
+          <button class="btn sm" id="tog-dd" onclick="togChart('dd')">Drawdown</button>
+        </div>
+      </div>
+      <div class="chart-body"><canvas id="eq-chart" height="200"></canvas></div>
+      <div id="dd-wrap" style="display:none;border-top:1px solid var(--b1)">
+        <div class="chart-body"><canvas id="dd-chart" height="80"></canvas></div>
+      </div>
     </div>
-    <div id="bt-results" style="display:none;flex-direction:column;height:100%">
-      <!-- Stats row -->
-      <div id="bt-stats" class="stats-grid cols-4" style="flex-shrink:0"></div>
-      <!-- Chart -->
-      <div id="chart-area" style="flex-shrink:0">
-        <div class="chart-header">
-          <span class="title" id="chart-title">EQUITY CURVE</span>
-          <div class="chart-toggles">
-            <button class="btn sm active-state" id="tog-equity" onclick="toggleChart('equity')">Equity</button>
-            <button class="btn sm active-state" id="tog-bh" onclick="toggleChart('bh')">Buy &amp; Hold</button>
-            <button class="btn sm" id="tog-dd" onclick="toggleChart('dd')">Drawdown</button>
-          </div>
-        </div>
-        <div class="chart-canvas-wrap">
-          <canvas id="equity-chart" height="180"></canvas>
-        </div>
-        <div id="dd-chart-wrap" style="display:none;border-top:1px solid var(--border)">
-          <div class="chart-canvas-wrap">
-            <canvas id="dd-chart" height="80"></canvas>
-          </div>
-        </div>
+    <div id="bt-stats2" class="sgrid c5" style="border-top:1px solid var(--b1)"></div>
+    <div class="shead">
+      <span class="ht">TRADES</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="bt-trade-cnt" class="tm" style="font-size:0.7rem"></span>
+        <button class="btn sm" id="bt-export-btn" onclick="exportCSV()" style="display:none">Export CSV</button>
       </div>
-      <!-- Extra stats row -->
-      <div id="bt-stats2" class="stats-grid cols-5" style="flex-shrink:0;border-top:1px solid var(--border)"></div>
-      <!-- Trades table -->
-      <div class="section-head" style="flex-shrink:0">
-        <span class="title">RECENT TRADES</span>
-        <span id="bt-trade-count" class="text-muted"></span>
-      </div>
-      <div class="full-height" style="overflow-y:auto">
-        <table class="data-table" id="bt-trades-table">
-          <thead><tr>
-            <th style="text-align:left">Entry</th>
-            <th style="text-align:left">Exit</th>
-            <th>Dir</th>
-            <th>Entry $</th>
-            <th>Exit $</th>
-            <th>P&amp;L %</th>
-            <th>P&amp;L $</th>
-            <th>Reason</th>
-          </tr></thead>
-          <tbody id="bt-trades-body"></tbody>
-        </table>
-      </div>
+    </div>
+    <div class="tbl-wrap" style="max-height:500px">
+      <table class="tbl">
+        <thead><tr>
+          <th style="text-align:left">Entry</th><th style="text-align:left">Exit</th>
+          <th>Dir</th><th>Entry $</th><th>Exit $</th><th>P&L %</th><th>P&L $</th><th>Reason</th>
+        </tr></thead>
+        <tbody id="bt-tbody"></tbody>
+      </table>
     </div>
   </div>
+</div>
 
-  <!-- ─── OPTIMIZER TAB ─── -->
-  <div id="tab-optimizer" class="tab-view" style="flex-direction:row;height:100%">
+<!-- ─── OPTIMIZER ─── -->
+<div id="tab-optimizer" class="tabview">
+  <div style="display:flex;height:100%">
+    <!-- opt sidebar -->
+    <div style="width:320px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto">
+      <div class="spanel">
+        <div class="ptitle">Parameter Ranges <span class="tm" style="font-size:0.62rem">min : step : max</span></div>
 
-    <!-- Opt sidebar -->
-    <div style="width:300px;border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;flex-shrink:0">
-      <div class="panel">
-        <div class="panel-title">Parameter Ranges</div>
-        <div class="text-muted" style="margin-bottom:10px">Set min:step:max for each param</div>
-
-        <div id="opt-ranges">
-          <!-- Fast EMA -->
-          <div style="margin-bottom:10px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <input type="checkbox" id="opt-fast-en" style="width:13px;height:13px;accent-color:var(--accent-1)">
-              <span style="font-size:0.62rem;color:var(--text2)">Fast EMA</span>
-            </div>
-            <div style="display:flex;gap:4px;align-items:center">
-              <input type="number" id="opt-fast-min" value="5" min="1" style="width:55px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-fast-step" value="2" min="1" style="width:45px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-fast-max" value="20" min="1" style="width:55px;text-align:center">
-            </div>
+        <!-- Each param row -->
+        <div id="opt-params">
+          <!-- fast ema -->
+          <div class="rg-row">
+            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
+              <input type="checkbox" id="op-fast" style="accent-color:var(--y)">
+              <span class="rn" style="width:auto;font-size:0.72rem;color:var(--t2)">Fast EMA</span>
+            </label>
+            <input type="number" id="op-fast-a" value="5" min="1">
+            <span class="sep">:</span>
+            <input type="number" id="op-fast-s" value="2" min="1" style="width:45px">
+            <span class="sep">:</span>
+            <input type="number" id="op-fast-b" value="20" min="1">
           </div>
-          <!-- Slow EMA -->
-          <div style="margin-bottom:10px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <input type="checkbox" id="opt-slow-en" style="width:13px;height:13px;accent-color:var(--accent-1)">
-              <span style="font-size:0.62rem;color:var(--text2)">Slow EMA</span>
-            </div>
-            <div style="display:flex;gap:4px;align-items:center">
-              <input type="number" id="opt-slow-min" value="15" min="1" style="width:55px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-slow-step" value="3" min="1" style="width:45px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-slow-max" value="40" min="1" style="width:55px;text-align:center">
-            </div>
+          <div class="rg-row">
+            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
+              <input type="checkbox" id="op-slow" style="accent-color:var(--y)">
+              <span style="font-size:0.72rem;color:var(--t2)">Slow EMA</span>
+            </label>
+            <input type="number" id="op-slow-a" value="15" min="1">
+            <span class="sep">:</span>
+            <input type="number" id="op-slow-s" value="3" min="1" style="width:45px">
+            <span class="sep">:</span>
+            <input type="number" id="op-slow-b" value="40" min="1">
           </div>
-          <!-- ATR Length -->
-          <div style="margin-bottom:10px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <input type="checkbox" id="opt-atrlen-en" style="width:13px;height:13px;accent-color:var(--accent-1)">
-              <span style="font-size:0.62rem;color:var(--text2)">ATR Length</span>
-            </div>
-            <div style="display:flex;gap:4px;align-items:center">
-              <input type="number" id="opt-atrlen-min" value="5" min="1" style="width:55px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-atrlen-step" value="2" min="1" style="width:45px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-atrlen-max" value="20" min="1" style="width:55px;text-align:center">
-            </div>
+          <div class="rg-row">
+            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
+              <input type="checkbox" id="op-atrlen" style="accent-color:var(--y)">
+              <span style="font-size:0.72rem;color:var(--t2)">ATR Length</span>
+            </label>
+            <input type="number" id="op-atrlen-a" value="5" min="1">
+            <span class="sep">:</span>
+            <input type="number" id="op-atrlen-s" value="2" min="1" style="width:45px">
+            <span class="sep">:</span>
+            <input type="number" id="op-atrlen-b" value="20" min="1">
           </div>
-          <!-- ATR Mult -->
-          <div style="margin-bottom:10px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <input type="checkbox" id="opt-atrmult-en" style="width:13px;height:13px;accent-color:var(--accent-1)">
-              <span style="font-size:0.62rem;color:var(--text2)">ATR Multiplier</span>
-            </div>
-            <div style="display:flex;gap:4px;align-items:center">
-              <input type="number" id="opt-atrmult-min" value="5" step="0.5" style="width:55px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-atrmult-step" value="1" step="0.5" style="width:45px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-atrmult-max" value="15" step="0.5" style="width:55px;text-align:center">
-            </div>
+          <div class="rg-row">
+            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
+              <input type="checkbox" id="op-atrmult" style="accent-color:var(--y)">
+              <span style="font-size:0.72rem;color:var(--t2)">ATR Mult</span>
+            </label>
+            <input type="number" id="op-atrmult-a" value="5" step="0.5">
+            <span class="sep">:</span>
+            <input type="number" id="op-atrmult-s" value="1" step="0.5" style="width:45px">
+            <span class="sep">:</span>
+            <input type="number" id="op-atrmult-b" value="15" step="0.5">
           </div>
-          <!-- TP -->
-          <div style="margin-bottom:10px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <input type="checkbox" id="opt-tp-en" style="width:13px;height:13px;accent-color:var(--accent-1)">
-              <span style="font-size:0.62rem;color:var(--text2)">TP %</span>
-            </div>
-            <div style="display:flex;gap:4px;align-items:center">
-              <input type="number" id="opt-tp-min" value="1" step="0.5" style="width:55px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-tp-step" value="0.5" step="0.5" style="width:45px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-tp-max" value="5" step="0.5" style="width:55px;text-align:center">
-            </div>
+          <div class="rg-row">
+            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
+              <input type="checkbox" id="op-tp" style="accent-color:var(--y)">
+              <span style="font-size:0.72rem;color:var(--t2)">TP %</span>
+            </label>
+            <input type="number" id="op-tp-a" value="1" step="0.5">
+            <span class="sep">:</span>
+            <input type="number" id="op-tp-s" value="0.5" step="0.5" style="width:45px">
+            <span class="sep">:</span>
+            <input type="number" id="op-tp-b" value="5" step="0.5">
           </div>
-          <!-- Trail % -->
-          <div style="margin-bottom:10px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <input type="checkbox" id="opt-trail-en" style="width:13px;height:13px;accent-color:var(--accent-1)">
-              <span style="font-size:0.62rem;color:var(--text2)">Trail %</span>
-            </div>
-            <div style="display:flex;gap:4px;align-items:center">
-              <input type="number" id="opt-trail-min" value="0.5" step="0.25" style="width:55px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-trail-step" value="0.25" step="0.25" style="width:45px;text-align:center">
-              <span class="text-muted">:</span>
-              <input type="number" id="opt-trail-max" value="3" step="0.25" style="width:55px;text-align:center">
-            </div>
+          <div class="rg-row">
+            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
+              <input type="checkbox" id="op-trail" style="accent-color:var(--y)">
+              <span style="font-size:0.72rem;color:var(--t2)">Trail %</span>
+            </label>
+            <input type="number" id="op-trail-a" value="0.5" step="0.25">
+            <span class="sep">:</span>
+            <input type="number" id="op-trail-s" value="0.25" step="0.25" style="width:45px">
+            <span class="sep">:</span>
+            <input type="number" id="op-trail-b" value="3" step="0.25">
           </div>
         </div>
 
-        <div class="divider"></div>
+        <div class="div"></div>
         <label class="lbl">Walk-forward split</label>
-        <select id="opt-wf-split">
+        <select id="op-wf">
+          <option value="">100% in-sample (no holdout)</option>
           <option value="0.6">60% in-sample / 40% OOS</option>
           <option value="0.7" selected>70% in-sample / 30% OOS</option>
           <option value="0.8">80% in-sample / 20% OOS</option>
         </select>
-        <label class="lbl">Max drawdown filter (%)</label>
-        <input type="number" id="opt-dd-limit" value="-60">
-        <div class="checkbox-row"><input type="checkbox" id="opt-use-cache" checked><span>Use combo cache (skip re-runs)</span></div>
-        <div id="opt-combo-preview" class="text-muted" style="margin-top:8px"></div>
-        <div class="btn-row">
-          <button class="btn primary" style="flex:1;padding:9px" onclick="runOptimizer()">Run Optimizer</button>
+        <label class="lbl">Max DD filter (%)</label>
+        <input type="number" id="op-dd" value="-60">
+        <div class="chk"><input type="checkbox" id="op-cache" checked><span>Skip already-cached combos</span></div>
+        <div id="op-combo-preview" style="margin-top:10px;font-size:0.72rem;color:var(--t3)">Select params above</div>
+        <div class="brow">
+          <button class="btn y" style="flex:1;padding:10px" onclick="runOpt()">▶ Run Optimizer</button>
         </div>
-        <div id="opt-status"></div>
-        <div id="opt-progress-wrap" style="display:none;padding:0 0 0 0;margin-top:8px">
-          <div style="font-size:0.6rem;color:var(--text3);margin-bottom:4px" id="opt-progress-text">0 / 0</div>
-          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="opt-progress-bar" style="width:0%"></div></div>
+        <div class="brow">
+          <button class="btn sm" onclick="exportCombos()">Export Combos CSV</button>
+          <label class="btn sm" style="cursor:pointer">Upload Results <input type="file" accept=".csv" style="display:none" onchange="uploadResults(this)"></label>
+        </div>
+        <div id="op-msg"></div>
+        <div id="op-prog-wrap" style="display:none;margin-top:10px">
+          <div style="font-size:0.68rem;color:var(--t3);margin-bottom:5px" id="op-prog-txt">0 / 0</div>
+          <div class="pbar-wrap"><div class="pbar-fill" id="op-prog-bar" style="width:0%"></div></div>
         </div>
       </div>
     </div>
 
-    <!-- Opt results area -->
-    <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column">
-      <div id="opt-empty" class="empty-state" style="flex:1">
+    <!-- opt results -->
+    <div style="flex:1;overflow-y:auto;min-width:0">
+      <div id="op-empty" class="empty">
         <div class="big">OPTIMIZER</div>
-        <div class="sub">Enable params, set ranges, run</div>
+        <div class="sub">Enable params and run</div>
       </div>
-      <div id="opt-results" style="display:none;flex-direction:column">
-        <!-- Period info -->
-        <div id="opt-period-bar" class="stats-grid cols-4" style="flex-shrink:0"></div>
-        <!-- IS results -->
-        <div class="section-head">
-          <span class="title">IN-SAMPLE RESULTS (top 50 by score)</span>
-          <span id="opt-total-text" class="text-muted"></span>
-        </div>
-        <div class="opt-table-wrap">
-          <table class="data-table" id="opt-is-table">
-            <thead><tr id="opt-is-head"></tr></thead>
-            <tbody id="opt-is-body"></tbody>
-          </table>
-        </div>
-        <!-- OOS results -->
-        <div class="section-head" style="border-top:1px solid var(--border)">
-          <span class="title">OUT-OF-SAMPLE (top 20 holdout validation)</span>
-          <span class="text-muted">never seen by optimizer</span>
-        </div>
-        <div class="opt-table-wrap">
-          <table class="data-table" id="opt-oos-table">
-            <thead><tr id="opt-oos-head"></tr></thead>
-            <tbody id="opt-oos-body"></tbody>
-          </table>
-        </div>
-        <!-- Apply best button -->
-        <div style="padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
-          <button class="btn cyan" onclick="applyBestParams()">Apply Best Params to Backtest</button>
-          <span id="apply-status" class="text-muted"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── LIVE BOT TAB ─── -->
-  <div id="tab-live" class="tab-view" style="overflow-y:auto">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)">
-
-      <!-- Left: status + controls -->
-      <div style="background:var(--surface);padding:20px 24px">
-        <div class="panel-title">BOT STATUS</div>
-        <div class="bot-status-bar" id="live-status-box">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-            <div>
-              <div style="font-size:0.6rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">Position</div>
-              <div id="live-position" class="signal-pill flat">FLAT</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:0.6rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">Status</div>
-              <div id="live-run-status" style="font-size:0.7rem;color:var(--text3)">Offline</div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
-            <div>
-              <div style="font-size:0.58rem;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase">Entry</div>
-              <div id="live-entry-price" style="font-size:0.85rem;color:var(--text);margin-top:3px">—</div>
-            </div>
-            <div>
-              <div style="font-size:0.58rem;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase">Trail Stop</div>
-              <div id="live-trail-stop" style="font-size:0.85rem;color:var(--text);margin-top:3px">—</div>
-            </div>
-            <div>
-              <div style="font-size:0.58rem;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase">TSL Active</div>
-              <div id="live-trail-act" style="font-size:0.85rem;color:var(--text);margin-top:3px">—</div>
-            </div>
+      <div id="op-results" style="display:none">
+        <div id="op-period" class="sgrid c4"></div>
+        <div class="shead">
+          <span class="ht">IN-SAMPLE — top 50 by score</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span id="op-total-txt" class="tm" style="font-size:0.7rem"></span>
+            <button class="btn sm c" onclick="applyBest()">Apply Best to Backtest</button>
           </div>
         </div>
-        <div class="btn-row">
-          <button class="btn cyan" onclick="botStart()">Start Bot</button>
-          <button class="btn danger" onclick="botStop()">Stop Bot</button>
+        <div class="opt-tbl-wrap">
+          <table class="tbl" id="op-is-tbl">
+            <thead><tr id="op-is-head"></tr></thead>
+            <tbody id="op-is-body"></tbody>
+          </table>
         </div>
-        <div id="live-bot-msg" style="margin-top:8px"></div>
-
-        <div class="divider" style="margin-top:16px"></div>
-        <div class="panel-title" style="margin-top:12px">SIGNAL LOG</div>
-        <div style="overflow-x:auto;max-height:350px;overflow-y:auto">
-          <table class="data-table" id="signals-table">
-            <thead><tr>
-              <th style="text-align:left">Time (UTC)</th>
-              <th>Symbol</th>
-              <th>Action</th>
-              <th>Dir</th>
-              <th>Price</th>
-              <th style="text-align:left">Note</th>
-            </tr></thead>
-            <tbody id="signals-body"></tbody>
+        <div class="shead" style="margin-top:0">
+          <span class="ht">OUT-OF-SAMPLE holdout</span>
+          <span class="tm" style="font-size:0.7rem">never seen by optimizer</span>
+        </div>
+        <div class="opt-tbl-wrap">
+          <table class="tbl" id="op-oos-tbl">
+            <thead><tr id="op-oos-head"></tr></thead>
+            <tbody id="op-oos-body"></tbody>
           </table>
         </div>
       </div>
-
-      <!-- Right: config -->
-      <div style="background:var(--surface);padding:20px 24px">
-        <div class="panel-title">BOT CONFIGURATION</div>
-        <div class="text-muted" style="margin-bottom:12px">Changes apply on next bar close. No restart needed.</div>
-
-        <label class="lbl">Symbol</label>
-        <input type="text" id="bc-symbol" value="XMR/USDT:USDT">
-        <label class="lbl">Timeframe</label>
-        <select id="bc-timeframe">
-          <option value="5m">5m</option><option value="15m">15m</option>
-          <option value="30m" selected>30m</option><option value="1h">1h</option>
-        </select>
-        <label class="lbl">Fast EMA / Slow EMA</label>
-        <div class="input-row">
-          <input type="number" id="bc-fast" value="9" min="1">
-          <input type="number" id="bc-slow" value="21" min="1">
-        </div>
-        <label class="lbl">ATR Length / Multiplier</label>
-        <div class="input-row">
-          <input type="number" id="bc-atr-len" value="9">
-          <input type="number" id="bc-atr-mult" value="10.0" step="0.5">
-        </div>
-        <label class="lbl">TP % / Trail %</label>
-        <div class="input-row">
-          <input type="number" id="bc-tp" value="2.0" step="0.1">
-          <input type="number" id="bc-trail" value="1.0" step="0.1">
-        </div>
-        <div class="checkbox-row"><input type="checkbox" id="bc-use-atr-tsl" checked><span>Use ATR trailing stop</span></div>
-        <label class="lbl">TSL Mode</label>
-        <select id="bc-tsl-mode"><option value="barclose" selected>Bar Close</option><option value="intrabar">Intrabar</option></select>
-        <label class="lbl">Tick Size</label>
-        <input type="number" id="bc-tick" value="0.01" step="0.01">
-
-        <div class="divider"></div>
-        <div class="panel-title" style="margin-top:4px">WEBHOOK (PIONEX)</div>
-        <label class="lbl">Webhook URL</label>
-        <input type="text" id="bc-webhook-url" placeholder="https://www.pionex.com/signal/...">
-        <label class="lbl">Signal Type (UUID)</label>
-        <input type="text" id="bc-signal-type" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-        <label class="lbl">Pionex Symbol</label>
-        <input type="text" id="bc-pionex-symbol" value="XMR_USDT">
-        <label class="lbl">Contracts</label>
-        <input type="text" id="bc-contracts" value="0.1">
-
-        <div class="btn-row" style="margin-top:16px">
-          <button class="btn primary" style="flex:1;padding:9px" onclick="saveBotConfig()">Save Config</button>
-        </div>
-        <div id="bot-config-msg" style="margin-top:8px"></div>
-      </div>
     </div>
   </div>
+</div>
 
+<!-- ─── LIVE BOT ─── -->
+<div id="tab-live" class="tabview">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1)">
 
-  <!-- ─── SETTINGS TAB ─── -->
-  <div id="tab-settings" class="tab-view" style="overflow-y:auto">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)">
-
-      <!-- Change Password -->
-      <div style="background:var(--surface);padding:24px 28px">
-        <div class="panel-title">CHANGE PASSWORD</div>
-        <label class="lbl">Current Password</label>
-        <input type="password" id="set-pw-current" autocomplete="current-password">
-        <label class="lbl">New Password</label>
-        <input type="password" id="set-pw-new" autocomplete="new-password">
-        <label class="lbl">Confirm New Password</label>
-        <input type="password" id="set-pw-confirm" autocomplete="new-password">
-        <div class="btn-row" style="margin-top:14px">
-          <button class="btn primary" style="flex:1;padding:9px" onclick="changePw()">Update Password</button>
+    <!-- Left: status + chart + signals -->
+    <div style="background:var(--surf);padding:24px">
+      <div class="ptitle">Position Status</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px">
+        <div>
+          <div style="font-size:0.62rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Position</div>
+          <div id="live-pos" class="pill flat">FLAT</div>
         </div>
-        <div id="set-pw-msg" style="margin-top:8px"></div>
-
-        <div class="divider" style="margin-top:24px"></div>
-        <div class="panel-title" style="margin-top:16px">CHANGE USERNAME</div>
-        <label class="lbl">New Username</label>
-        <input type="text" id="set-uname-new" autocomplete="username">
-        <label class="lbl">Current Password (to confirm)</label>
-        <input type="password" id="set-uname-pw" autocomplete="current-password">
-        <div class="btn-row" style="margin-top:14px">
-          <button class="btn cyan" style="flex:1;padding:9px" onclick="changeUsername()">Update Username</button>
+        <div>
+          <div style="font-size:0.62rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Status</div>
+          <div id="live-status" style="font-size:0.82rem;color:var(--t3)">Offline</div>
         </div>
-        <div id="set-uname-msg" style="margin-top:8px"></div>
+        <div>
+          <div style="font-size:0.62rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Entry Price</div>
+          <div id="live-ep" style="font-size:0.9rem;color:var(--t1)">—</div>
+        </div>
+        <div>
+          <div style="font-size:0.62rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Trail Stop</div>
+          <div id="live-tsl" style="font-size:0.9rem;color:var(--t1)">—</div>
+        </div>
+      </div>
+      <div class="brow" style="margin-bottom:16px">
+        <button class="btn c" onclick="botStart()">▶ Start Bot</button>
+        <button class="btn danger" onclick="botStop()">■ Stop Bot</button>
+        <button class="btn sm" onclick="loadLiveCandles()">Refresh Chart</button>
+      </div>
+      <div id="live-bot-msg"></div>
+
+      <!-- Candle chart -->
+      <div id="candle-chart-container">
+        <div class="shead" style="background:transparent;border-bottom:1px solid var(--b1)">
+          <span class="ht" id="live-chart-title">LIVE CHART</span>
+          <span id="live-chart-msg" class="tm" style="font-size:0.7rem"></span>
+        </div>
+        <div style="padding:12px"><canvas id="candle-chart" height="250"></canvas></div>
       </div>
 
-      <!-- Info -->
-      <div style="background:var(--surface);padding:24px 28px">
-        <div class="panel-title">SECURITY INFO</div>
-        <div style="color:var(--text2);font-size:0.68rem;line-height:1.8">
-          <p style="margin-bottom:12px">Your platform is protected by username/password login. Sessions stay active for 30 days.</p>
-          <p style="margin-bottom:12px">Credentials are stored as a SHA-256 hash in <code style="color:var(--accent-2);font-size:0.65rem">auth.json</code> on your server — your actual password is never saved in plain text.</p>
-          <p style="margin-bottom:12px">Passwords must be at least 8 characters.</p>
-          <p style="color:var(--accent-1)">⚠ Change the default password (changeme123) immediately after first login.</p>
-        </div>
-        <div class="divider" style="margin-top:24px"></div>
-        <div class="panel-title" style="margin-top:16px">SESSION</div>
-        <div class="btn-row" style="margin-top:8px">
-          <a href="/logout" class="btn danger" style="text-decoration:none;padding:8px 16px">Log Out</a>
-        </div>
-        <div style="color:var(--text3);font-size:0.62rem;margin-top:10px">
-          Logging out clears your session cookie.
-        </div>
+      <div class="div" style="margin-top:16px"></div>
+      <div class="ptitle">Signal Log</div>
+      <div class="tbl-wrap" style="max-height:300px">
+        <table class="tbl">
+          <thead><tr>
+            <th style="text-align:left">Time (UTC)</th><th>Symbol</th><th>Action</th><th>Dir</th><th>Price</th><th style="text-align:left">Note</th>
+          </tr></thead>
+          <tbody id="live-sigs"></tbody>
+        </table>
       </div>
     </div>
+
+    <!-- Right: full config (same as backtest sidebar) -->
+    <div style="background:var(--surf);padding:24px;overflow-y:auto">
+      <div class="ptitle">Bot Configuration <span class="tm" style="font-size:0.62rem">— changes take effect on next bar close</span></div>
+
+      <label class="lbl">Symbol</label><input type="text" id="bc-sym" value="XMR/USDT:USDT">
+      <label class="lbl">Timeframe</label>
+      <select id="bc-tf">
+        <option value="5m">5m</option><option value="15m">15m</option>
+        <option value="30m" selected>30m</option><option value="1h">1h</option>
+      </select>
+      <label class="lbl">Fast EMA / Slow EMA</label>
+      <div class="row2"><input type="number" id="bc-fast" value="9"><input type="number" id="bc-slow" value="21"></div>
+      <label class="lbl">TP % / SL %</label>
+      <div class="row2"><input type="number" id="bc-tp" value="2.0" step="0.1"><input type="number" id="bc-sl" value="1.0" step="0.1"></div>
+      <div class="chk"><input type="checkbox" id="bc-trailing" checked><span>Trailing stop</span></div>
+      <div class="chk"><input type="checkbox" id="bc-atr-tsl" checked><span>ATR trailing</span></div>
+      <label class="lbl">ATR Length / Multiplier</label>
+      <div class="row2"><input type="number" id="bc-atr-len" value="9"><input type="number" id="bc-atr-mult" value="10.0" step="0.5"></div>
+      <label class="lbl">Trail % (non-ATR)</label>
+      <input type="number" id="bc-trail" value="1.0" step="0.1">
+      <label class="lbl">TSL Mode</label>
+      <select id="bc-tsl"><option value="barclose" selected>Bar Close</option><option value="intrabar">Intrabar</option></select>
+      <label class="lbl">Tick Size</label>
+      <input type="number" id="bc-tick" value="0.01" step="0.01">
+      <div class="chk"><input type="checkbox" id="bc-tiered" onchange="tog('bc-tiered-g',this.checked)"><span>Tiered TSL</span></div>
+      <div id="bc-tiered-g" style="display:none">
+        <label class="lbl">Tier1 Profit% / TSL%</label>
+        <div class="row2"><input type="number" id="bc-t1p" value="5.0" step="0.5"><input type="number" id="bc-t1t" value="3.0" step="0.5"></div>
+        <label class="lbl">Tier2 Profit% / TSL%</label>
+        <div class="row2"><input type="number" id="bc-t2p" value="10.0" step="0.5"><input type="number" id="bc-t2t" value="2.0" step="0.5"></div>
+        <label class="lbl">Tier3 TSL%</label>
+        <input type="number" id="bc-t3t" value="1.0" step="0.5">
+      </div>
+      <div class="chk"><input type="checkbox" id="bc-vol" onchange="tog('bc-vol-g',this.checked)"><span>Volume filter</span></div>
+      <div id="bc-vol-g" style="display:none">
+        <label class="lbl">Vol multiplier</label><input type="number" id="bc-vol-mult" value="1.5" step="0.1">
+      </div>
+      <div class="chk"><input type="checkbox" id="bc-adx" onchange="tog('bc-adx-g',this.checked)"><span>ADX filter</span></div>
+      <div id="bc-adx-g" style="display:none">
+        <label class="lbl">ADX Length / Threshold</label>
+        <div class="row2"><input type="number" id="bc-adx-len" value="14"><input type="number" id="bc-adx-thresh" value="25"></div>
+      </div>
+
+      <div class="div"></div>
+      <div class="ptitle">Webhook (Pionex)</div>
+      <label class="lbl">Webhook URL</label>
+      <input type="text" id="bc-webhook" placeholder="https://www.pionex.com/signal/...">
+      <label class="lbl">Signal Type (UUID)</label>
+      <input type="text" id="bc-sigtype" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+      <label class="lbl">Pionex Symbol</label>
+      <input type="text" id="bc-psym" value="XMR_USDT">
+      <label class="lbl">Contracts</label>
+      <input type="text" id="bc-contracts" value="0.1">
+
+      <div class="brow" style="margin-top:18px">
+        <button class="btn y" style="flex:1;padding:10px" onclick="saveBotCfg()">Save Config</button>
+      </div>
+      <div id="bc-msg"></div>
+    </div>
   </div>
+</div>
+
+<!-- ─── SETTINGS ─── -->
+<div id="tab-settings" class="tabview">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);max-width:900px">
+    <div style="background:var(--surf);padding:28px">
+      <div class="ptitle">Change Password</div>
+      <label class="lbl">Current Password</label>
+      <input type="password" id="set-pw-cur" autocomplete="current-password">
+      <label class="lbl">New Password</label>
+      <input type="password" id="set-pw-new" autocomplete="new-password">
+      <label class="lbl">Confirm New Password</label>
+      <input type="password" id="set-pw-conf" autocomplete="new-password">
+      <div class="brow"><button class="btn y" style="flex:1;padding:10px" onclick="changePw()">Update Password</button></div>
+      <div id="set-pw-msg"></div>
+      <div class="div" style="margin-top:20px"></div>
+      <div class="ptitle">Change Username</div>
+      <label class="lbl">New Username</label>
+      <input type="text" id="set-uname" autocomplete="username">
+      <label class="lbl">Current Password</label>
+      <input type="password" id="set-uname-pw" autocomplete="current-password">
+      <div class="brow"><button class="btn c" style="flex:1;padding:10px" onclick="changeUname()">Update Username</button></div>
+      <div id="set-uname-msg"></div>
+    </div>
+    <div style="background:var(--surf);padding:28px">
+      <div class="ptitle">Security Info</div>
+      <div style="color:var(--t2);font-size:0.8rem;line-height:2">
+        <p>Sessions stay active for 30 days.</p>
+        <p>Passwords stored as SHA-256 hashes in <code>auth.json</code>.</p>
+        <p style="color:var(--y);margin-top:8px">⚠ Change the default password (changeme123) immediately.</p>
+      </div>
+      <div class="div" style="margin-top:20px"></div>
+      <div class="ptitle">Session</div>
+      <a href="/logout" class="btn danger" style="display:inline-block;text-decoration:none;margin-top:8px;padding:9px 20px">Log Out</a>
+    </div>
+  </div>
+</div>
 
 </div><!-- /content -->
 </div><!-- /main -->
 
 <script>
-// ══════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════
-let currentTab = 'backtest';
-let equityChart = null;
-let ddChart = null;
-let chartState = {equity: true, bh: true, dd: false};
-let currentResult = null;
-let currentOptJob = null;
-let optResults = null;
-let btPollInterval = null;
-let optPollInterval = null;
-let botPollInterval = null;
-let fetchPollInterval = null;
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let curTab='backtest', curResult=null, curCK=null, curOptJob=null, optResults=null;
+let chartState={eq:true,bh:true,dd:false};
+let eqChart=null, ddChart=null, candleChart=null;
+let btPoll=null, optPoll=null, botPoll=null, fetchPoll=null;
 
-// ══════════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════════
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['backtest','optimizer','live','settings'][i] === tab);
+// ── TAB ──
+function goTab(t){
+  curTab=t;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['backtest','optimizer','live','settings'][i]===t);
   });
-  document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  if (tab === 'live') startBotPoll();
+  document.querySelectorAll('.tabview').forEach(v=>v.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  if(t==='live'){startBotPoll(); loadLiveCandles();}
   else stopBotPoll();
+  if(t==='backtest') loadPresets();
 }
 
-// ══════════════════════════════════════════════
-//  SIDEBAR TOGGLES
-// ══════════════════════════════════════════════
-document.getElementById('p-tiered-tsl').addEventListener('change', e => {
-  document.getElementById('tiered-group').style.display = e.target.checked ? '' : 'none';
-});
-document.getElementById('p-vol-filter').addEventListener('change', e => {
-  document.getElementById('vol-group').style.display = e.target.checked ? '' : 'none';
-});
-document.getElementById('p-adx-filter').addEventListener('change', e => {
-  document.getElementById('adx-group').style.display = e.target.checked ? '' : 'none';
-});
+// ── HELPERS ──
+function v(id){return document.getElementById(id)?.value??'';}
+function el(id){return document.getElementById(id);}
+function tog(id,show){el(id).style.display=show?'':'none';}
+function showMsg(id,html,type){el(id).innerHTML=`<div class="msg ${type}">${html}</div>`;}
+function fmtN(n,dec=2){return n==null?'—':Number(n).toFixed(dec);}
+function colorVal(n){return n>=0?'tg':'tr';}
 
-// Combo preview update
-['opt-fast-en','opt-fast-min','opt-fast-step','opt-fast-max',
- 'opt-slow-en','opt-slow-min','opt-slow-step','opt-slow-max',
- 'opt-atrlen-en','opt-atrlen-min','opt-atrlen-step','opt-atrlen-max',
- 'opt-atrmult-en','opt-atrmult-min','opt-atrmult-step','opt-atrmult-max',
- 'opt-tp-en','opt-tp-min','opt-tp-step','opt-tp-max',
- 'opt-trail-en','opt-trail-min','opt-trail-step','opt-trail-max',
-].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('change', updateComboPreview);
-});
-function updateComboPreview() {
-  const ranges = buildOptRanges();
-  const total = Object.values(ranges).reduce((a,v)=>a*v.length, 1);
-  document.getElementById('opt-combo-preview').textContent =
-    total > 0 ? `${total.toLocaleString()} combinations` : 'No params selected';
+// ── CACHE STATUS ──
+async function checkCacheStatus(){
+  try{
+    const r=await fetch(`/api/cache/status?exchange=${v('s-ex')}&symbol=${encodeURIComponent(v('s-sym'))}&timeframe=${v('s-tf')}`);
+    const d=await r.json();
+    el('cache-info').innerHTML=d.exists
+      ?`<span class="tc">${d.count.toLocaleString()} candles</span> &nbsp;·&nbsp; <span class="t2">${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</span>`
+      :'<span class="tm">No cache</span>';
+  }catch(e){}
 }
-
-// ══════════════════════════════════════════════
-//  CACHE STATUS
-// ══════════════════════════════════════════════
-async function checkCacheStatus() {
-  const ex = v('s-exchange'), sym = v('s-symbol'), tf = v('s-timeframe');
-  try {
-    const r = await fetch(`/api/cache/status?exchange=${ex}&symbol=${encodeURIComponent(sym)}&timeframe=${tf}`);
-    const d = await r.json();
-    const el = document.getElementById('cache-info');
-    if (d.exists) {
-      el.innerHTML = `<span class="text-cyan">${d.count.toLocaleString()} candles</span><br>`+
-        `<span>${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</span>`;
-    } else {
-      el.textContent = 'No cache';
-    }
-  } catch(e){}
-}
-['s-exchange','s-symbol','s-timeframe'].forEach(id => {
-  document.getElementById(id).addEventListener('change', checkCacheStatus);
-});
+['s-ex','s-sym','s-tf'].forEach(id=>el(id)?.addEventListener('change',checkCacheStatus));
 checkCacheStatus();
 
-// ══════════════════════════════════════════════
-//  DATA FETCH
-// ══════════════════════════════════════════════
-async function fetchData(forceFull) {
-  const ex = v('s-exchange'), sym = v('s-symbol'), tf = v('s-timeframe');
-  showStatus('fetch-status', 'Fetching...', 'info');
-  await fetch('/api/data/fetch', {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({exchange:ex, symbol:sym, timeframe:tf, force_full:forceFull})});
+async function checkIntegrity(){
+  el('integrity-result').style.display='block';
+  el('integrity-result').innerHTML='<span class="spin"></span> Checking...';
+  const r=await fetch(`/api/cache/integrity?exchange=${v('s-ex')}&symbol=${encodeURIComponent(v('s-sym'))}&timeframe=${v('s-tf')}`);
+  const d=await r.json();
+  if(d.error){el('integrity-result').innerHTML=`<span class="tr">${d.error}</span>`;return;}
+  const gapHtml=d.gaps?.length>0
+    ?d.gaps.map(g=>`<div class="tr">Gap: ${g.from} → ${g.to} (${g.hours}h, ~${g.missing_bars} bars)</div>`).join('')
+    :'<span class="tg">✓ No gaps found</span>';
+  el('integrity-result').innerHTML=`<div class="tg">${d.total?.toLocaleString()} candles &nbsp;·&nbsp; ${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</div>
+    <div style="margin-top:6px">${gapHtml}</div>
+    ${d.duplicates>0?`<div class="tr">${d.duplicates} duplicate timestamps</div>`:''}`;
+}
 
-  clearInterval(fetchPollInterval);
-  fetchPollInterval = setInterval(async () => {
-    const r = await fetch(`/api/data/fetch/status?exchange=${ex}&symbol=${encodeURIComponent(sym)}&timeframe=${tf}`);
-    const d = await r.json();
-    if (d.status === 'done') {
-      clearInterval(fetchPollInterval);
-      showStatus('fetch-status', `✓ ${d.new} new candles | ${d.total.toLocaleString()} total`, 'success');
+function clearDateRange(){el('s-from').value='';el('s-to').value='';}
+
+// ── FETCH ──
+async function fetchData(full){
+  showMsg('fetch-msg','<span class="spin"></span> Fetching...','info');
+  await fetch('/api/data/fetch',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({exchange:v('s-ex'),symbol:v('s-sym'),timeframe:v('s-tf'),force_full:full})});
+  clearInterval(fetchPoll);
+  const ex=v('s-ex'),sym=v('s-sym'),tf=v('s-tf');
+  fetchPoll=setInterval(async()=>{
+    const r=await fetch(`/api/data/fetch/status?exchange=${ex}&symbol=${encodeURIComponent(sym)}&timeframe=${tf}`);
+    const d=await r.json();
+    if(d.status==='done'){
+      clearInterval(fetchPoll);
+      showMsg('fetch-msg',`✓ ${d.new} new candles | ${d.total?.toLocaleString()} total`,'ok');
       checkCacheStatus();
-    } else if (d.status === 'error') {
-      clearInterval(fetchPollInterval);
-      showStatus('fetch-status', d.message, 'error');
-    } else {
-      showStatus('fetch-status', `<span class="spinner"></span> ${d.message || 'Fetching...'}`, 'info');
+    }else if(d.status==='error'){
+      clearInterval(fetchPoll); showMsg('fetch-msg',d.message,'err');
+    }else{
+      showMsg('fetch-msg',`<span class="spin"></span> ${d.message||'Working...'}`,'info');
     }
-  }, 1000);
+  },1200);
 }
 
-// ══════════════════════════════════════════════
-//  BUILD CONFIG FROM UI
-// ══════════════════════════════════════════════
-function buildConfig() {
-  return {
-    exchange:    v('s-exchange'),
-    symbol:      v('s-symbol'),
-    timeframe:   v('s-timeframe'),
-    intrabar_tf: v('s-intrabar-tf'),
-    use_intrabar: document.getElementById('s-use-intrabar').checked,
-    capital:     parseFloat(v('p-capital')),
-    fee_pct:     parseFloat(v('p-fee')),
-    slippage_pct: parseFloat(v('p-slippage')),
-    compounding: document.getElementById('p-compounding').checked,
-    tsl_mode:    v('p-tsl-mode'),
-    params: {
-      fast_length:    parseInt(v('p-fast')),
-      slow_length:    parseInt(v('p-slow')),
-      tp_perc:        parseFloat(v('p-tp')),
-      sl_perc:        parseFloat(v('p-sl')),
-      trail_perc:     parseFloat(v('p-trail')),
-      use_trailing:   document.getElementById('p-use-trailing').checked,
-      use_all_exits:  document.getElementById('p-all-exits').checked,
-      use_atr_tsl:    document.getElementById('p-use-atr-tsl').checked,
-      atr_length:     parseInt(v('p-atr-len')),
-      atr_multiplier: parseFloat(v('p-atr-mult')),
-      use_tiered_tsl: document.getElementById('p-tiered-tsl').checked,
-      tier1_profit:   parseFloat(v('p-t1p')),
-      tier1_tsl:      parseFloat(v('p-t1t')),
-      tier2_profit:   parseFloat(v('p-t2p')),
-      tier2_tsl:      parseFloat(v('p-t2t')),
-      tier3_tsl:      parseFloat(v('p-t3t')),
-      use_vol_filter: document.getElementById('p-vol-filter').checked,
-      vol_multiplier: parseFloat(v('p-vol-mult') || 1.5),
-      use_adx_filter: document.getElementById('p-adx-filter').checked,
-      adx_length:     parseInt(v('p-adx-len') || 14),
-      adx_threshold:  parseInt(v('p-adx-thresh') || 25),
+// ── BUILD CONFIG ──
+function buildConfig(){
+  return{
+    exchange:v('s-ex'),symbol:v('s-sym'),timeframe:v('s-tf'),
+    intrabar_tf:v('s-itf'),use_intrabar:el('s-intra').checked,
+    capital:parseFloat(v('p-cap')),fee_pct:parseFloat(v('p-fee')),
+    slippage_pct:parseFloat(v('p-slip')),compounding:el('p-comp').checked,
+    tsl_mode:v('p-tsl'),
+    date_from:v('s-from')||null,date_to:v('s-to')||null,
+    params:{
+      fast_length:parseInt(v('p-fast')),slow_length:parseInt(v('p-slow')),
+      tp_perc:parseFloat(v('p-tp')),sl_perc:parseFloat(v('p-sl')),
+      trail_perc:parseFloat(v('p-trail')),
+      use_trailing:el('p-trailing').checked,use_all_exits:el('p-all-exits').checked,
+      use_atr_tsl:el('p-atr-tsl').checked,
+      atr_length:parseInt(v('p-atr-len')),atr_multiplier:parseFloat(v('p-atr-mult')),
+      use_tiered_tsl:el('p-tiered').checked,
+      tier1_profit:parseFloat(v('p-t1p')||5),tier1_tsl:parseFloat(v('p-t1t')||3),
+      tier2_profit:parseFloat(v('p-t2p')||10),tier2_tsl:parseFloat(v('p-t2t')||2),tier3_tsl:parseFloat(v('p-t3t')||1),
+      use_vol_filter:el('p-vol').checked,vol_multiplier:parseFloat(v('p-vol-mult')||1.5),
+      use_adx_filter:el('p-adx').checked,adx_length:parseInt(v('p-adx-len')||14),adx_threshold:parseInt(v('p-adx-thresh')||25),
     }
   };
 }
 
-// ══════════════════════════════════════════════
-//  BACKTEST
-// ══════════════════════════════════════════════
-async function runBacktest(forceCfg) {
-  const cfg = forceCfg || buildConfig();
-  showStatus('bt-status', '<span class="spinner"></span> Running...', 'info');
-
-  const r = await fetch('/api/backtest/run', {method:'POST',
-    headers:{'Content-Type':'application/json'}, body: JSON.stringify(cfg)});
-  const d = await r.json();
-
-  if (d.cached) {
-    const res = await fetch(`/api/backtest/result/${d.hash}`);
-    renderBacktest(await res.json());
-    showStatus('bt-status', '✓ Loaded from cache', 'success');
-    return;
+// ── BACKTEST ──
+async function runBacktest(overrideCfg){
+  const cfg=overrideCfg||buildConfig();
+  showMsg('bt-msg','<span class="spin"></span> Running...','info');
+  const r=await fetch('/api/backtest/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});
+  const d=await r.json();
+  if(d.error){showMsg('bt-msg',d.error,'err');return;}
+  if(d.cached){
+    const res=await(await fetch(`/api/backtest/result/${d.jid.replace('bt_','')}`)).json();
+    renderBT(res);showMsg('bt-msg','✓ Loaded from cache','ok');return;
   }
-
-  clearInterval(btPollInterval);
-  btPollInterval = setInterval(async () => {
-    const s = await (await fetch(`/api/backtest/status/${d.hash}`)).json();
-    if (s.status === 'done') {
-      clearInterval(btPollInterval);
-      const res = await fetch(`/api/backtest/result/${s.hash}`);
-      renderBacktest(await res.json());
-      showStatus('bt-status', '✓ Complete', 'success');
-    } else if (s.status === 'error') {
-      clearInterval(btPollInterval);
-      showStatus('bt-status', s.message, 'error');
-    }
-  }, 500);
+  clearInterval(btPoll);
+  btPoll=setInterval(async()=>{
+    const s=await(await fetch(`/api/backtest/status/${d.jid}`)).json();
+    if(s.status==='done'){
+      clearInterval(btPoll);
+      const res=await(await fetch(`/api/backtest/result/${s.combo_key}`)).json();
+      renderBT(res);showMsg('bt-msg',`✓ Done${s.cached?' (cached)':''}`,'ok');
+    }else if(s.status==='error'){clearInterval(btPoll);showMsg('bt-msg',s.message,'err');}
+  },600);
 }
 
-function renderBacktest(data) {
-  currentResult = data;
-  const s = data.summary;
-  document.getElementById('bt-empty').style.display = 'none';
-  document.getElementById('bt-results').style.display = 'flex';
-
-  // Stats row 1
-  const ret_col = s.total_return >= 0 ? 'green' : 'red';
-  document.getElementById('bt-stats').innerHTML = `
-    <div class="stat-cell"><div class="s-label">Total Return</div>
-      <div class="s-value ${ret_col}">${s.total_return >= 0 ? '+' : ''}${s.total_return}%</div>
-      <div class="s-sub">$${s.initial_capital.toLocaleString()} → $${s.final_capital.toLocaleString()}</div></div>
-    <div class="stat-cell"><div class="s-label">Win Rate</div>
-      <div class="s-value cyan">${s.win_rate}%</div>
-      <div class="s-sub">${s.wins}W / ${s.losses}L / ${s.total_trades} trades</div></div>
-    <div class="stat-cell"><div class="s-label">Max Drawdown</div>
-      <div class="s-value red">${s.max_dd}%</div>
-      <div class="s-sub">mark-to-market</div></div>
-    <div class="stat-cell"><div class="s-label">Profit Factor</div>
-      <div class="s-value ${s.profit_factor >= 2 ? 'green' : s.profit_factor >= 1.5 ? 'yellow' : 'red'}">${s.profit_factor}</div>
-      <div class="s-sub">gross wins / gross losses</div></div>`;
-
-  // Stats row 2
-  document.getElementById('bt-stats2').innerHTML = `
-    <div class="stat-cell"><div class="s-label">Avg Win</div>
-      <div class="s-value green">+${s.avg_win}%</div></div>
-    <div class="stat-cell"><div class="s-label">Avg Loss</div>
-      <div class="s-value red">${s.avg_loss}%</div></div>
-    <div class="stat-cell"><div class="s-label">Total Fees</div>
-      <div class="s-value" style="color:var(--text2)">$${s.total_fees}</div></div>
-    <div class="stat-cell"><div class="s-label">Exits</div>
-      <div class="s-value" style="font-size:0.85rem;color:var(--text2)">
-        TP:${s.exit_tp} TSL:${s.exit_tsl} SL:${s.exit_sl} Sig:${s.exit_signal}</div></div>
-    <div class="stat-cell"><div class="s-label">Data Range</div>
-      <div class="s-value" style="font-size:0.68rem;color:var(--text2)">${s.data_from?.slice(0,10)}</div>
-      <div class="s-sub">→ ${s.data_to?.slice(0,10)}</div></div>`;
-
-  document.getElementById('chart-title').textContent = `${buildConfig().symbol} ${buildConfig().timeframe} · EMA ${buildConfig().params.fast_length}/${buildConfig().params.slow_length}`;
-
+function renderBT(data){
+  curResult=data; curCK=data.combo_key;
+  el('bt-empty').style.display='none'; el('bt-results').style.display='block';
+  const s=data.summary; const rc=s.total_return>=0?'g':'r';
+  el('bt-stats').innerHTML=`
+    <div class="sc"><div class="sl">Total Return</div><div class="sv ${rc}">${s.total_return>=0?'+':''}${fmtN(s.total_return)}%</div><div class="ss">$${fmtN(s.initial_capital,0)} → $${fmtN(s.final_capital,0)}</div></div>
+    <div class="sc"><div class="sl">Win Rate</div><div class="sv c">${fmtN(s.win_rate)}%</div><div class="ss">${s.wins}W / ${s.losses}L / ${s.total_trades} trades</div></div>
+    <div class="sc"><div class="sl">Max Drawdown</div><div class="sv r">${fmtN(s.max_dd)}%</div><div class="ss">mark-to-market</div></div>
+    <div class="sc"><div class="sl">Profit Factor</div><div class="sv ${s.profit_factor>=2?'g':s.profit_factor>=1.5?'y':'r'}">${fmtN(s.profit_factor,3)}</div><div class="ss">gross W / gross L</div></div>`;
+  el('bt-stats2').innerHTML=`
+    <div class="sc"><div class="sl">Avg Win</div><div class="sv g">+${fmtN(s.avg_win,3)}%</div></div>
+    <div class="sc"><div class="sl">Avg Loss</div><div class="sv r">${fmtN(s.avg_loss,3)}%</div></div>
+    <div class="sc"><div class="sl">Total Fees</div><div class="sv t2">$${fmtN(s.total_fees,2)}</div></div>
+    <div class="sc"><div class="sl">Exits</div><div class="sv t2" style="font-size:0.9rem">TP:${s.exit_tp} TSL:${s.exit_tsl} SL:${s.exit_sl} Sig:${s.exit_signal}</div></div>
+    <div class="sc"><div class="sl">Data Range</div><div class="sv t2" style="font-size:0.85rem">${s.data_from?.slice(0,10)}</div><div class="ss">→ ${s.data_to?.slice(0,10)}</div></div>`;
+  const cfg=buildConfig();
+  el('chart-title').textContent=`${cfg.symbol} ${cfg.timeframe} · EMA ${cfg.params.fast_length}/${cfg.params.slow_length}${data.saved_at?' · cached '+data.saved_at?.slice(0,10):''}`;
   renderCharts(data);
-  renderTradesTable(data.trades);
-  document.getElementById('bt-trade-count').textContent = `${data.all_trades_count} total (showing last ${data.trades.length})`;
+  renderTradesTbl(data.trades);
+  el('bt-trade-cnt').textContent=`${data.all_trades_count} total (showing last ${data.trades.length})`;
+  el('bt-export-btn').style.display='inline-block';
 }
 
-// ══════════════════════════════════════════════
-//  CHARTS
-// ══════════════════════════════════════════════
-function renderCharts(data) {
-  if (equityChart) { equityChart.destroy(); equityChart = null; }
-  if (ddChart)     { ddChart.destroy(); ddChart = null; }
-
-  const baseOpts = {
-    responsive: true, maintainAspectRatio: false,
-    interaction: {mode:'index', intersect:false},
-    animation: false,
-    plugins: {
-      legend: {labels: {color:'#7b8ba8', font:{family:'IBM Plex Mono', size:10}, boxWidth:12}},
-      tooltip: {backgroundColor:'#0e1117', borderColor:'#1a2030', borderWidth:1,
-                titleColor:'#7b8ba8', bodyColor:'#dce3ee', titleFont:{family:'IBM Plex Mono',size:10},
-                bodyFont:{family:'IBM Plex Mono',size:10}}
-    },
-    scales: {
-      x: {ticks:{color:'#4d5e7a',maxTicksLimit:8,font:{family:'IBM Plex Mono',size:9}},
-          grid:{color:'#0d1219'},border:{color:'#1a2030'}},
-      y: {ticks:{color:'#4d5e7a',font:{family:'IBM Plex Mono',size:9}},
-          grid:{color:'#0d1219'},border:{color:'#1a2030'}}
+function renderCharts(data){
+  if(eqChart){eqChart.destroy();eqChart=null;}
+  if(ddChart){ddChart.destroy();ddChart=null;}
+  const base={
+    responsive:true,maintainAspectRatio:false,animation:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{legend:{labels:{color:'#8899b8',font:{family:'IBM Plex Mono',size:11},boxWidth:14,padding:16}},
+             tooltip:{backgroundColor:'#0e1117',borderColor:'#1a2030',borderWidth:1,titleColor:'#8899b8',bodyColor:'#dce3ee',
+                      titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}}},
+    scales:{
+      x:{ticks:{color:'#4d5e7a',maxTicksLimit:9,font:{family:'IBM Plex Mono',size:10}},grid:{color:'#0d1219'},border:{color:'#1a2030'}},
+      y:{ticks:{color:'#4d5e7a',font:{family:'IBM Plex Mono',size:10}},grid:{color:'#0d1219'},border:{color:'#1a2030'}}
     }
   };
-
-  const datasets = [];
-  if (chartState.equity) datasets.push({
-    label:'Equity', data:data.equity_curve.values,
-    borderColor:'#0ecb81', backgroundColor:'rgba(14,203,129,0.05)',
-    borderWidth:1.5, pointRadius:0, fill:true, tension:0.2
-  });
-  if (chartState.bh) datasets.push({
-    label:'Buy & Hold', data:data.bh_curve.values,
-    borderColor:'#3d4d66', backgroundColor:'transparent',
-    borderWidth:1, pointRadius:0, borderDash:[4,4], tension:0.2
-  });
-
-  // Align labels: equity uses trade dates, BH uses all candle dates
-  const labels = chartState.equity
-    ? data.equity_curve.dates
-    : data.bh_curve.dates;
-
-  const ctx = document.getElementById('equity-chart').getContext('2d');
-  equityChart = new Chart(ctx, {type:'line', data:{labels, datasets}, options:{
-    ...baseOpts, plugins:{...baseOpts.plugins},
-  }});
-
-  // Drawdown chart
-  if (chartState.dd) {
-    document.getElementById('dd-chart-wrap').style.display = '';
-    const ddCtx = document.getElementById('dd-chart').getContext('2d');
-    ddChart = new Chart(ddCtx, {type:'line', data:{
-      labels: data.drawdown_series.dates,
-      datasets:[{label:'Drawdown %', data:data.drawdown_series.values,
-        borderColor:'#f6465d', backgroundColor:'rgba(246,70,93,0.08)',
-        borderWidth:1, pointRadius:0, fill:true, tension:0.2}]
-    }, options:{...baseOpts, plugins:{...baseOpts.plugins, legend:{display:false}}}});
-  } else {
-    document.getElementById('dd-chart-wrap').style.display = 'none';
-  }
+  const datasets=[];
+  if(chartState.eq) datasets.push({label:'Equity ($)',data:data.equity_curve.values,borderColor:'#0ecb81',backgroundColor:'rgba(14,203,129,0.06)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.2});
+  if(chartState.bh) datasets.push({label:'Buy & Hold',data:data.bh_curve.values,borderColor:'#3d4d66',backgroundColor:'transparent',borderWidth:1,pointRadius:0,borderDash:[5,5],tension:0.1});
+  const labels=chartState.eq?data.equity_curve.dates:data.bh_curve.dates;
+  eqChart=new Chart(el('eq-chart').getContext('2d'),{type:'line',data:{labels,datasets},options:{...base}});
+  if(chartState.dd){
+    el('dd-wrap').style.display='';
+    ddChart=new Chart(el('dd-chart').getContext('2d'),{type:'line',data:{
+      labels:data.drawdown_series.dates,
+      datasets:[{label:'Drawdown %',data:data.drawdown_series.values,borderColor:'#f6465d',backgroundColor:'rgba(246,70,93,0.09)',borderWidth:1,pointRadius:0,fill:true,tension:0.2}]
+    },options:{...base,plugins:{...base.plugins,legend:{display:false}}}});
+  }else{el('dd-wrap').style.display='none';}
 }
 
-function toggleChart(which) {
-  chartState[which] = !chartState[which];
-  const btn = document.getElementById('tog-'+which);
-  btn.classList.toggle('active-state', chartState[which]);
-  if (currentResult) renderCharts(currentResult);
+function togChart(which){
+  chartState[which]=!chartState[which];
+  el('tog-'+which).classList.toggle('act',chartState[which]);
+  if(curResult) renderCharts(curResult);
 }
 
-// ══════════════════════════════════════════════
-//  TRADES TABLE
-// ══════════════════════════════════════════════
-function renderTradesTable(trades) {
-  const tbody = document.getElementById('bt-trades-body');
-  tbody.innerHTML = [...trades].reverse().map(t => {
-    const ppos = t.pnl_pct >= 0;
-    return `<tr>
-      <td class="nowrap">${t.entry_time?.slice(0,16) || ''}</td>
-      <td class="nowrap">${t.exit_time?.slice(0,16) || ''}</td>
+function renderTradesTbl(trades){
+  el('bt-tbody').innerHTML=[...trades].reverse().map(t=>{
+    const p=t.pnl_pct>=0;
+    return`<tr>
+      <td class="nw">${t.entry_time?.slice(0,16)||''}</td>
+      <td class="nw">${t.exit_time?.slice(0,16)||''}</td>
       <td class="${t.direction}">${t.direction.toUpperCase()}</td>
-      <td>${t.entry_price?.toFixed(4) || ''}</td>
-      <td>${t.exit_price?.toFixed(4) || ''}</td>
-      <td class="${ppos?'text-green':'text-red'}">${ppos?'+':''}${t.pnl_pct?.toFixed(3) || 0}%</td>
-      <td class="${ppos?'text-green':'text-red'}">${ppos?'+':''}${t.pnl_usdt?.toFixed(2) || 0}</td>
-      <td>${t.exit_reason || ''}</td>
+      <td>${fmtN(t.entry_price,4)}</td><td>${fmtN(t.exit_price,4)}</td>
+      <td class="${p?'tg':'tr'}">${p?'+':''}${fmtN(t.pnl_pct,3)}%</td>
+      <td class="${p?'tg':'tr'}">${p?'+':''}${fmtN(t.pnl_usdt,2)}</td>
+      <td>${t.exit_reason}</td>
     </tr>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════════
-//  OPTIMIZER
-// ══════════════════════════════════════════════
-function buildOptRanges() {
-  const defs = [
-    ['fast_length',    'opt-fast',    true],
-    ['slow_length',    'opt-slow',    true],
-    ['atr_length',     'opt-atrlen',  true],
-    ['atr_multiplier', 'opt-atrmult', false],
-    ['tp_perc',        'opt-tp',      false],
-    ['trail_perc',     'opt-trail',   false],
+function exportCSV(){
+  if(curCK) window.open(`/api/backtest/export-csv/${curCK}`,'_blank');
+}
+
+// ── PRESETS ──
+async function loadPresets(){
+  const r=await fetch('/api/presets'); const p=await r.json();
+  const keys=Object.keys(p);
+  el('presets-list').innerHTML=keys.length===0
+    ?'<div class="tm" style="font-size:0.72rem">No saved presets</div>'
+    :keys.map(n=>{
+      const pr=p[n];
+      const stats=pr.stats||{};
+      return`<div class="preset-item">
+        <div>
+          <div class="pn">${n}</div>
+          <div class="ps">${stats.total_return!=null?`${stats.total_return>=0?'+':''}${fmtN(stats.total_return)}% &nbsp;·&nbsp; DD:${fmtN(stats.max_dd)}% &nbsp;·&nbsp; WR:${fmtN(stats.win_rate)}%`:pr.saved_at?.slice(0,10)||''}</div>
+        </div>
+        <div style="display:flex;gap:5px">
+          <button class="btn sm" onclick="loadPreset('${n}')">Load</button>
+          <button class="btn sm danger" onclick="deletePreset('${n}')">×</button>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+async function savePreset(){
+  const name=v('preset-name').trim();
+  if(!name){showMsg('bt-msg','Enter a preset name','err');return;}
+  const cfg=buildConfig();
+  const stats=curResult?.summary?{total_return:curResult.summary.total_return,max_dd:curResult.summary.max_dd,win_rate:curResult.summary.win_rate}:{};
+  await fetch('/api/presets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,config:cfg,stats})});
+  el('preset-name').value=''; loadPresets(); showMsg('bt-msg','✓ Preset saved','ok');
+}
+
+async function loadPreset(n){
+  const r=await fetch('/api/presets'); const p=(await r.json())[n];
+  if(!p) return;
+  const cfg=p.config;
+  // Apply to sidebar
+  if(cfg.exchange) el('s-ex').value=cfg.exchange;
+  if(cfg.symbol) el('s-sym').value=cfg.symbol;
+  if(cfg.timeframe){const s=el('s-tf');for(let i=0;i<s.options.length;i++)if(s.options[i].value===cfg.timeframe)s.selectedIndex=i;}
+  if(cfg.capital) el('p-cap').value=cfg.capital;
+  if(cfg.fee_pct) el('p-fee').value=cfg.fee_pct;
+  if(cfg.params){
+    const pm=cfg.params;
+    if(pm.fast_length) el('p-fast').value=pm.fast_length;
+    if(pm.slow_length) el('p-slow').value=pm.slow_length;
+    if(pm.tp_perc) el('p-tp').value=pm.tp_perc;
+    if(pm.sl_perc) el('p-sl').value=pm.sl_perc;
+    if(pm.atr_length) el('p-atr-len').value=pm.atr_length;
+    if(pm.atr_multiplier) el('p-atr-mult').value=pm.atr_multiplier;
+    if(pm.trail_perc) el('p-trail').value=pm.trail_perc;
+    el('p-trailing').checked=pm.use_trailing!==false;
+    el('p-atr-tsl').checked=pm.use_atr_tsl!==false;
+    el('p-comp').checked=cfg.compounding!==false;
+  }
+  showMsg('bt-msg',`✓ Preset "${n}" loaded`,'ok');
+  checkCacheStatus();
+}
+
+async function deletePreset(n){
+  await fetch(`/api/presets/${encodeURIComponent(n)}`,{method:'DELETE'});
+  loadPresets();
+}
+
+// ── OPTIMIZER ──
+function buildOptRanges(){
+  const defs=[
+    ['fast_length','op-fast',true],['slow_length','op-slow',true],
+    ['atr_length','op-atrlen',true],['atr_multiplier','op-atrmult',false],
+    ['tp_perc','op-tp',false],['trail_perc','op-trail',false]
   ];
-  const ranges = {};
-  for (const [key, prefix, isInt] of defs) {
-    const en = document.getElementById(prefix+'-en');
-    if (!en || !en.checked) continue;
-    const mn   = parseFloat(document.getElementById(prefix+'-min').value);
-    const step = parseFloat(document.getElementById(prefix+'-step').value);
-    const mx   = parseFloat(document.getElementById(prefix+'-max').value);
-    if (isNaN(mn)||isNaN(step)||isNaN(mx)||step<=0) continue;
-    const vals = [];
-    for (let x = mn; x <= mx + step*0.001; x += step) {
-      vals.push(isInt ? Math.round(x) : Math.round(x*1000)/1000);
-    }
-    ranges[key] = [...new Set(vals)];
+  const ranges={};
+  for(const [key,pfx,isInt] of defs){
+    if(!el(pfx)?.checked) continue;
+    const a=parseFloat(el(pfx+'-a').value), s=parseFloat(el(pfx+'-s').value), b=parseFloat(el(pfx+'-b').value);
+    if(isNaN(a)||isNaN(s)||isNaN(b)||s<=0) continue;
+    const vals=[];
+    for(let x=a;x<=b+s*0.001;x+=s) vals.push(isInt?Math.round(x):Math.round(x*10000)/10000);
+    ranges[key]=[...new Set(vals)];
   }
   return ranges;
 }
 
-async function runOptimizer() {
-  const ranges = buildOptRanges();
-  if (Object.keys(ranges).length === 0) {
-    showStatus('opt-status', 'Enable at least one parameter range', 'error');
-    return;
-  }
-  const cfg = buildConfig();
-  const body = {
-    config: cfg,
-    ranges: ranges,
-    dd_limit: parseFloat(v('opt-dd-limit')),
-    wf_split: parseFloat(v('opt-wf-split')),
-    use_cache: document.getElementById('opt-use-cache').checked,
-  };
+// Combo preview
+['op-fast','op-fast-a','op-fast-s','op-fast-b','op-slow','op-slow-a','op-slow-s','op-slow-b',
+ 'op-atrlen','op-atrlen-a','op-atrlen-s','op-atrlen-b','op-atrmult','op-atrmult-a','op-atrmult-s','op-atrmult-b',
+ 'op-tp','op-tp-a','op-tp-s','op-tp-b','op-trail','op-trail-a','op-trail-s','op-trail-b']
+.forEach(id=>{const e=el(id);if(e)e.addEventListener('change',updateComboPreview);});
 
-  showStatus('opt-status', '<span class="spinner"></span> Starting...', 'info');
-  document.getElementById('opt-progress-wrap').style.display = 'block';
-
-  const r = await fetch('/api/optimizer/run', {method:'POST',
-    headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
-  const d = await r.json();
-  currentOptJob = d.job_id;
-
-  clearInterval(optPollInterval);
-  optPollInterval = setInterval(async () => {
-    const s = await (await fetch(`/api/optimizer/status/${currentOptJob}`)).json();
-    const prog = s.total > 0 ? (s.progress/s.total*100).toFixed(0) : 0;
-    document.getElementById('opt-progress-bar').style.width = prog+'%';
-    document.getElementById('opt-progress-text').textContent = `${s.progress||0} / ${s.total||0} combinations`;
-
-    if (s.status === 'done') {
-      clearInterval(optPollInterval);
-      showStatus('opt-status', '✓ Complete', 'success');
-      const res = await (await fetch(`/api/optimizer/result/${currentOptJob}`)).json();
-      renderOptResults(res);
-    } else if (s.status === 'error') {
-      clearInterval(optPollInterval);
-      showStatus('opt-status', s.message, 'error');
-    } else {
-      showStatus('opt-status', `<span class="spinner"></span> ${s.progress||0}/${s.total||0} combos (${prog}%)`, 'info');
-    }
-  }, 800);
+function updateComboPreview(){
+  const r=buildOptRanges(); const total=Object.values(r).reduce((a,v)=>a*v.length,1);
+  el('op-combo-preview').textContent=Object.keys(r).length>0?`${total.toLocaleString()} combinations to test`:'Select params above';
 }
 
-function renderOptResults(data) {
-  optResults = data;
-  document.getElementById('opt-empty').style.display = 'none';
-  document.getElementById('opt-results').style.display = 'flex';
-  document.getElementById('opt-total-text').textContent =
-    `${data.total} combos | ${data.results?.length||0} valid`;
+async function runOpt(){
+  const ranges=buildOptRanges();
+  if(!Object.keys(ranges).length){showMsg('op-msg','Enable at least one parameter','err');return;}
+  const body={config:buildConfig(),ranges,dd_limit:parseFloat(v('op-dd')),wf_split:v('op-wf')||null,use_cache:el('op-cache').checked};
+  showMsg('op-msg','<span class="spin"></span> Starting...','info');
+  el('op-prog-wrap').style.display='block'; el('op-prog-bar').style.width='0%'; el('op-prog-txt').textContent='0 / 0';
+  const r=await fetch('/api/optimizer/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await r.json();
+  curOptJob=d.jid;
+  if(d.cached){
+    const res=await(await fetch(`/api/optimizer/result/${curOptJob}`)).json();
+    renderOptResults(res); showMsg('op-msg','✓ Loaded from cache','ok'); return;
+  }
+  clearInterval(optPoll);
+  optPoll=setInterval(async()=>{
+    const s=await(await fetch(`/api/optimizer/status/${curOptJob}`)).json();
+    if(!s||s.status==='idle') return;  // don't flicker if job not found yet
+    const prog=s.total>0?(s.progress/s.total*100).toFixed(0):0;
+    el('op-prog-bar').style.width=prog+'%';
+    el('op-prog-txt').textContent=`${s.progress||0} / ${s.total||0} combos (${prog}%)${s.cached_count>0?' · '+s.cached_count+' cached':''}`;
+    if(s.status==='done'){
+      clearInterval(optPoll);
+      const res=await(await fetch(`/api/optimizer/result/${curOptJob}`)).json();
+      renderOptResults(res); showMsg('op-msg','✓ Complete','ok');
+      el('op-prog-bar').style.width='100%';
+    }else if(s.status==='error'){
+      clearInterval(optPoll); showMsg('op-msg',s.message,'err');
+    }else{
+      showMsg('op-msg',`<span class="spin"></span> Running... ${s.progress||0}/${s.total||0}`,'info');
+    }
+  },1000);
+}
 
-  const op = data.opt_period, hp = data.hold_period;
-  document.getElementById('opt-period-bar').innerHTML = `
-    <div class="stat-cell"><div class="s-label">In-Sample From</div>
-      <div class="s-value" style="font-size:0.85rem">${op?.from?.slice(0,10)||'—'}</div></div>
-    <div class="stat-cell"><div class="s-label">In-Sample To</div>
-      <div class="s-value" style="font-size:0.85rem">${op?.to?.slice(0,10)||'—'}</div>
-      <div class="s-sub">${op?.bars||0} bars</div></div>
-    <div class="stat-cell"><div class="s-label">Holdout From</div>
-      <div class="s-value" style="font-size:0.85rem">${hp?.from?.slice(0,10)||'—'}</div></div>
-    <div class="stat-cell"><div class="s-label">Holdout To</div>
-      <div class="s-value" style="font-size:0.85rem">${hp?.to?.slice(0,10)||'—'}</div>
-      <div class="s-sub">${hp?.bars||0} bars</div></div>`;
-
-  const keys = data.keys || [];
-
-  // IS table
-  const isHead = document.getElementById('opt-is-head');
-  isHead.innerHTML = [...keys,'Trades','AvgBars','Win%','Return','DD','PF','MaxLev','LevRet','LevDD','Worst','Score']
-    .map(k=>`<th>${k}</th>`).join('');
-
-  const ddLimit = parseFloat(v('opt-dd-limit'));
-  const isBody = document.getElementById('opt-is-body');
-  isBody.innerHTML = (data.results||[]).map(r => {
-    const lev = r.max_lev||1;
-    const lr = (r.return*lev).toFixed(1);
-    const ld = Math.max(r.max_dd*lev,-100).toFixed(1);
-    const pfc = r.pf>=2?'text-green':r.pf>=1.5?'text-yellow':'text-red';
-    return `<tr>${keys.map(k=>`<td>${r[k]}</td>`).join('')}
+function renderOptResults(data){
+  optResults=data;
+  el('op-empty').style.display='none'; el('op-results').style.display='block';
+  el('op-total-txt').textContent=`${data.total} combos · ${data.results?.length||0} valid`;
+  const op=data.opt_period, hp=data.hold_period;
+  el('op-period').innerHTML=`
+    <div class="sc"><div class="sl">In-Sample From</div><div class="sv t1" style="font-size:1rem">${op?.from?.slice(0,10)||'—'}</div></div>
+    <div class="sc"><div class="sl">In-Sample To</div><div class="sv t1" style="font-size:1rem">${op?.to?.slice(0,10)||'—'}</div><div class="ss">${op?.bars?.toLocaleString()||0} bars</div></div>
+    <div class="sc"><div class="sl">Holdout From</div><div class="sv t1" style="font-size:1rem">${hp?.from?.slice(0,10)||'—'}</div></div>
+    <div class="sc"><div class="sl">Holdout To</div><div class="sv t1" style="font-size:1rem">${hp?.to?.slice(0,10)||'—'}</div><div class="ss">${hp?.bars?.toLocaleString()||0} bars</div></div>`;
+  const keys=data.keys||[];
+  const cols=[...keys,'Trades','AvgBars','WR%','Return%','DD%','PF','MaxLev','LevRet','LevDD','Worst%','Score'];
+  el('op-is-head').innerHTML=cols.map(c=>`<th>${c}</th>`).join('');
+  el('op-is-body').innerHTML=(data.results||[]).map(r=>{
+    const lv=r.max_lev||1;
+    return`<tr>${keys.map(k=>`<td>${r[k]}</td>`).join('')}
       <td>${r.trades}</td><td>${r.avg_dur||0}</td>
       <td>${r.win_rate}%</td>
-      <td class="${r.return>=0?'text-green':'text-red'}">${r.return>=0?'+':''}${r.return}%</td>
-      <td class="text-red">${r.max_dd}%</td>
-      <td class="${pfc}">${r.pf}</td>
-      <td class="text-cyan">${lev}x</td>
-      <td class="${parseFloat(lr)>=0?'text-green':'text-red'}">${parseFloat(lr)>=0?'+':''}${lr}%</td>
-      <td class="text-red">${ld}%</td>
-      <td class="text-red">${r.worst_trade||'—'}%</td>
-      <td class="text-yellow">${r.score}</td>
+      <td class="${r.return>=0?'tg':'tr'}">${r.return>=0?'+':''}${r.return}%</td>
+      <td class="tr">${r.max_dd}%</td>
+      <td class="${r.pf>=2?'tg':r.pf>=1.5?'ty':'tr'}">${r.pf}</td>
+      <td class="tc">${lv}x</td>
+      <td class="${r.lev_ret>=0?'tg':'tr'}">${r.lev_ret>=0?'+':''}${r.lev_ret}%</td>
+      <td class="tr">${r.lev_dd}%</td>
+      <td class="tr">${r.worst||'—'}%</td>
+      <td class="ty">${r.score}</td>
     </tr>`;
   }).join('');
-
-  // OOS table
-  const oosHead = document.getElementById('opt-oos-head');
-  oosHead.innerHTML = [...keys,'IS Ret','IS DD','IS WR','IS PF','OOS Ret','OOS DD','OOS WR','OOS N','Holds?']
-    .map(k=>`<th>${k}</th>`).join('');
-  const oosBody = document.getElementById('opt-oos-body');
-  oosBody.innerHTML = (data.oos_results||[]).map(r => {
-    return `<tr>${keys.map(k=>`<td>${r[k]}</td>`).join('')}
-      <td class="${r.return>=0?'text-green':'text-red'}">${r.return>=0?'+':''}${r.return||0}%</td>
-      <td class="text-red">${r.max_dd||0}%</td>
-      <td>${r.win_rate||0}%</td>
-      <td>${r.pf||0}</td>
-      <td class="${r.oos_ret>=0?'text-green':'text-red'}">${r.oos_ret>=0?'+':''}${r.oos_ret||0}%</td>
-      <td class="text-red">${r.oos_dd||0}%</td>
-      <td>${r.oos_wr||0}%</td>
-      <td>${r.oos_n||0}</td>
-      <td class="${r.holds?'text-green':'text-red'}">${r.holds?'✓':'✗'}</td>
-    </tr>`;
-  }).join('');
-}
-
-function applyBestParams() {
-  if (!optResults || !optResults.results || !optResults.results.length) return;
-  const best = optResults.results[0];
-  const keys = optResults.keys || [];
-  const paramMap = {
-    fast_length:'p-fast', slow_length:'p-slow', atr_length:'p-atr-len',
-    atr_multiplier:'p-atr-mult', tp_perc:'p-tp', trail_perc:'p-trail'
-  };
-  keys.forEach(k => {
-    if (paramMap[k]) document.getElementById(paramMap[k]).value = best[k];
-  });
-  document.getElementById('apply-status').textContent = `Applied: ${keys.map(k=>k+'='+best[k]).join(' ')}`;
-  switchTab('backtest');
-}
-
-// ══════════════════════════════════════════════
-//  LIVE BOT
-// ══════════════════════════════════════════════
-async function loadBotConfig() {
-  const r = await fetch('/api/bot/config');
-  const cfg = await r.json();
-  document.getElementById('bc-symbol').value     = cfg.symbol||'';
-  document.getElementById('bc-fast').value       = cfg.fast_length||9;
-  document.getElementById('bc-slow').value       = cfg.slow_length||21;
-  document.getElementById('bc-atr-len').value    = cfg.atr_length||9;
-  document.getElementById('bc-atr-mult').value   = cfg.atr_multiplier||10;
-  document.getElementById('bc-tp').value         = cfg.tp_perc||2;
-  document.getElementById('bc-trail').value      = cfg.trail_perc||1;
-  document.getElementById('bc-use-atr-tsl').checked = cfg.use_atr_tsl !== false;
-  document.getElementById('bc-tsl-mode').value   = cfg.tsl_mode||'barclose';
-  document.getElementById('bc-tick').value       = cfg.tick_size||0.01;
-  document.getElementById('bc-webhook-url').value= cfg.webhook_url||'';
-  document.getElementById('bc-signal-type').value= cfg.signal_type||'';
-  document.getElementById('bc-pionex-symbol').value = cfg.pionex_symbol||'XMR_USDT';
-  document.getElementById('bc-contracts').value  = cfg.contracts||'0.1';
-  const tfs = document.getElementById('bc-timeframe');
-  for (let i=0;i<tfs.options.length;i++) if(tfs.options[i].value===cfg.timeframe) tfs.selectedIndex=i;
-}
-
-async function saveBotConfig() {
-  const cfg = {
-    symbol:       v('bc-symbol'),
-    timeframe:    v('bc-timeframe'),
-    fast_length:  parseInt(v('bc-fast')),
-    slow_length:  parseInt(v('bc-slow')),
-    atr_length:   parseInt(v('bc-atr-len')),
-    atr_multiplier: parseFloat(v('bc-atr-mult')),
-    tp_perc:      parseFloat(v('bc-tp')),
-    trail_perc:   parseFloat(v('bc-trail')),
-    use_atr_tsl:  document.getElementById('bc-use-atr-tsl').checked,
-    use_trailing: true,
-    tsl_mode:     v('bc-tsl-mode'),
-    tick_size:    parseFloat(v('bc-tick')),
-    webhook_url:  v('bc-webhook-url'),
-    signal_type:  v('bc-signal-type'),
-    pionex_symbol: v('bc-pionex-symbol'),
-    contracts:    v('bc-contracts'),
-  };
-  const r = await fetch('/api/bot/config', {method:'POST',
-    headers:{'Content-Type':'application/json'}, body:JSON.stringify(cfg)});
-  const d = await r.json();
-  showStatus('bot-config-msg', d.ok ? '✓ Config saved' : 'Error saving', d.ok ? 'success' : 'error');
-}
-
-async function botStart() {
-  await fetch('/api/bot/start', {method:'POST'});
-  showStatus('live-bot-msg', '<span class="spinner"></span> Starting bot...', 'info');
-}
-async function botStop() {
-  await fetch('/api/bot/stop', {method:'POST'});
-  showStatus('live-bot-msg', 'Bot stopped', 'info');
-}
-
-function startBotPoll() {
-  loadBotConfig();
-  updateBotStatus();
-  botPollInterval = setInterval(updateBotStatus, 5000);
-}
-function stopBotPoll() {
-  clearInterval(botPollInterval);
-}
-
-async function updateBotStatus() {
-  try {
-    const [statusRes, sigsRes] = await Promise.all([
-      fetch('/api/bot/status'),
-      fetch('/api/bot/signals?limit=30')
-    ]);
-    const status = await statusRes.json();
-    const sigs   = await sigsRes.json();
-
-    // Pill
-    const pill = document.getElementById('bot-pill');
-    if (status.running && status.enabled) {
-      pill.className = 'running';
-      document.getElementById('bot-pill-text').textContent = 'BOT LIVE';
-    } else {
-      pill.className = '';
-      document.getElementById('bot-pill-text').textContent = 'BOT OFFLINE';
-    }
-
-    // Status box
-    const state = status.state || {};
-    const posEl = document.getElementById('live-position');
-    if (state.position === 'long') {
-      posEl.textContent = 'LONG'; posEl.className = 'signal-pill long';
-    } else if (state.position === 'short') {
-      posEl.textContent = 'SHORT'; posEl.className = 'signal-pill short';
-    } else {
-      posEl.textContent = 'FLAT'; posEl.className = 'signal-pill flat';
-    }
-    document.getElementById('live-run-status').textContent =
-      status.running && status.enabled ? 'Running' : status.enabled ? 'Enabled (idle)' : 'Stopped';
-    document.getElementById('live-entry-price').textContent =
-      state.entry_price ? state.entry_price.toFixed(4) : '—';
-    document.getElementById('live-trail-stop').textContent =
-      state.trail_stop ? state.trail_stop.toFixed(4) : '—';
-    document.getElementById('live-trail-act').textContent =
-      state.trail_activated ? 'Yes' : '—';
-
-    // Signal log
-    const tbody = document.getElementById('signals-body');
-    tbody.innerHTML = (sigs.signals||[]).map(s => `<tr>
-      <td class="nowrap">${s['Time (UTC)']||''}</td>
-      <td>${s.Symbol||''}</td>
-      <td>${s.Action||''}</td>
-      <td class="${s.Direction==='long'?'text-green':'text-red'}">${(s.Direction||'').toUpperCase()}</td>
-      <td>${s.Price||''}</td>
-      <td>${s.Note||''}</td>
+  if((data.oos_results||[]).length>0){
+    const ocols=[...keys,'IS Ret','IS DD','IS WR','IS PF','OOS Ret','OOS DD','OOS WR','OOS N','Holds?'];
+    el('op-oos-head').innerHTML=ocols.map(c=>`<th>${c}</th>`).join('');
+    el('op-oos-body').innerHTML=(data.oos_results||[]).map(r=>`<tr>
+      ${keys.map(k=>`<td>${r[k]}</td>`).join('')}
+      <td class="${r.return>=0?'tg':'tr'}">${r.return>=0?'+':''}${r.return||0}%</td>
+      <td class="tr">${r.max_dd||0}%</td><td>${r.win_rate||0}%</td><td>${r.pf||0}</td>
+      <td class="${r.oos_ret>=0?'tg':'tr'}">${r.oos_ret>=0?'+':''}${r.oos_ret||0}%</td>
+      <td class="tr">${r.oos_dd||0}%</td><td>${r.oos_wr||0}%</td><td>${r.oos_n||0}</td>
+      <td class="${r.holds?'tg':'tr'}">${r.holds?'✓':'✗'}</td>
     </tr>`).join('');
-  } catch(e){}
+  }else{
+    el('op-oos-head').innerHTML='<th>No holdout (100% in-sample mode)</th>';
+    el('op-oos-body').innerHTML='';
+  }
 }
 
-// ══════════════════════════════════════════════
-//  UTILITIES
-// ══════════════════════════════════════════════
-function v(id) { return document.getElementById(id)?.value || ''; }
-
-function showStatus(id, msg, type) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.innerHTML = `<div class="status-msg ${type}">${msg}</div>`;
+function applyBest(){
+  if(!optResults?.results?.length) return;
+  const best=optResults.results[0]; const keys=optResults.keys||[];
+  const map={fast_length:'p-fast',slow_length:'p-slow',atr_length:'p-atr-len',atr_multiplier:'p-atr-mult',tp_perc:'p-tp',trail_perc:'p-trail'};
+  keys.forEach(k=>{if(map[k]) el(map[k]).value=best[k];});
+  goTab('backtest');
+  showMsg('bt-msg',`Applied: ${keys.map(k=>k+'='+best[k]).join(' ')} — run backtest to see full results`,'ok');
 }
 
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
-updateComboPreview();
-// Start periodic bot status in topbar
-setInterval(async () => {
-  try {
-    const r = await fetch('/api/bot/status');
-    const d = await r.json();
-    const pill = document.getElementById('bot-pill');
-    if (d.running && d.enabled) {
-      pill.className = 'running';
-      document.getElementById('bot-pill-text').textContent = 'BOT LIVE';
-    } else {
-      pill.className = '';
-      document.getElementById('bot-pill-text').textContent = 'BOT OFFLINE';
+async function exportCombos(){
+  const ranges=buildOptRanges();
+  if(!Object.keys(ranges).length){showMsg('op-msg','Select params first','err');return;}
+  const r=await fetch('/api/optimizer/export-combos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({config:buildConfig(),ranges})});
+  const blob=await r.blob(); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='combinations.csv'; a.click();
+}
+
+async function uploadResults(input){
+  const file=input.files[0]; if(!file) return;
+  const fd=new FormData(); fd.append('file',file);
+  showMsg('op-msg','<span class="spin"></span> Uploading...','info');
+  const r=await fetch('/api/optimizer/upload-results',{method:'POST',body:fd});
+  const d=await r.json();
+  if(d.ok) showMsg('op-msg',`✓ Imported ${d.imported}/${d.total} results`,'ok');
+  else showMsg('op-msg',d.error||'Error','err');
+  input.value='';
+}
+
+// ── LIVE BOT ──
+async function loadBotCfg(){
+  const r=await fetch('/api/bot/config'); const cfg=await r.json();
+  el('bc-sym').value=cfg.symbol||''; el('bc-fast').value=cfg.fast_length||9; el('bc-slow').value=cfg.slow_length||21;
+  el('bc-atr-len').value=cfg.atr_length||9; el('bc-atr-mult').value=cfg.atr_multiplier||10;
+  el('bc-tp').value=cfg.tp_perc||2; el('bc-sl').value=cfg.sl_perc||1;
+  el('bc-trail').value=cfg.trail_perc||1; el('bc-tick').value=cfg.tick_size||0.01;
+  el('bc-trailing').checked=cfg.use_trailing!==false; el('bc-atr-tsl').checked=cfg.use_atr_tsl!==false;
+  el('bc-tiered').checked=cfg.use_tiered_tsl||false; tog('bc-tiered-g',cfg.use_tiered_tsl||false);
+  if(cfg.use_tiered_tsl){el('bc-t1p').value=cfg.tier1_profit||5;el('bc-t1t').value=cfg.tier1_tsl||3;el('bc-t2p').value=cfg.tier2_profit||10;el('bc-t2t').value=cfg.tier2_tsl||2;el('bc-t3t').value=cfg.tier3_tsl||1;}
+  el('bc-vol').checked=cfg.use_vol_filter||false; tog('bc-vol-g',cfg.use_vol_filter||false);
+  if(cfg.use_vol_filter) el('bc-vol-mult').value=cfg.vol_multiplier||1.5;
+  el('bc-adx').checked=cfg.use_adx_filter||false; tog('bc-adx-g',cfg.use_adx_filter||false);
+  if(cfg.use_adx_filter){el('bc-adx-len').value=cfg.adx_length||14;el('bc-adx-thresh').value=cfg.adx_threshold||25;}
+  el('bc-webhook').value=cfg.webhook_url||''; el('bc-sigtype').value=cfg.signal_type||'';
+  el('bc-psym').value=cfg.pionex_symbol||'XMR_USDT'; el('bc-contracts').value=cfg.contracts||'0.1';
+  const tfs=el('bc-tf'); for(let i=0;i<tfs.options.length;i++) if(tfs.options[i].value===cfg.timeframe) tfs.selectedIndex=i;
+  const tsls=el('bc-tsl'); for(let i=0;i<tsls.options.length;i++) if(tsls.options[i].value===cfg.tsl_mode) tsls.selectedIndex=i;
+}
+
+async function saveBotCfg(){
+  const cfg={
+    symbol:v('bc-sym'),timeframe:v('bc-tf'),
+    fast_length:parseInt(v('bc-fast')),slow_length:parseInt(v('bc-slow')),
+    atr_length:parseInt(v('bc-atr-len')),atr_multiplier:parseFloat(v('bc-atr-mult')),
+    tp_perc:parseFloat(v('bc-tp')),sl_perc:parseFloat(v('bc-sl')),
+    trail_perc:parseFloat(v('bc-trail')),tick_size:parseFloat(v('bc-tick')),
+    use_trailing:el('bc-trailing').checked,use_atr_tsl:el('bc-atr-tsl').checked,
+    tsl_mode:v('bc-tsl'),
+    use_tiered_tsl:el('bc-tiered').checked,
+    tier1_profit:parseFloat(v('bc-t1p')||5),tier1_tsl:parseFloat(v('bc-t1t')||3),
+    tier2_profit:parseFloat(v('bc-t2p')||10),tier2_tsl:parseFloat(v('bc-t2t')||2),tier3_tsl:parseFloat(v('bc-t3t')||1),
+    use_vol_filter:el('bc-vol').checked,vol_multiplier:parseFloat(v('bc-vol-mult')||1.5),
+    use_adx_filter:el('bc-adx').checked,adx_length:parseInt(v('bc-adx-len')||14),adx_threshold:parseInt(v('bc-adx-thresh')||25),
+    webhook_url:v('bc-webhook'),signal_type:v('bc-sigtype'),pionex_symbol:v('bc-psym'),contracts:v('bc-contracts'),
+  };
+  const r=await fetch('/api/bot/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});
+  const d=await r.json();
+  showMsg('bc-msg',d.ok?'✓ Config saved':'Error','ok');
+}
+
+async function botStart(){await fetch('/api/bot/start',{method:'POST'});showMsg('live-bot-msg','<span class="spin"></span> Starting...','info');}
+async function botStop(){await fetch('/api/bot/stop',{method:'POST'});showMsg('live-bot-msg','Bot stopped','info');}
+
+function startBotPoll(){loadBotCfg();updateBot();botPoll=setInterval(updateBot,8000);}
+function stopBotPoll(){clearInterval(botPoll);}
+
+async function updateBot(){
+  try{
+    const [sr,sr2]=await Promise.all([fetch('/api/bot/status'),fetch('/api/bot/signals?limit=30')]);
+    const st=await sr.json(); const sigs=await sr2.json();
+    const pill=el('bot-pill');
+    // Only show as live if thread is running AND enabled — no flicker
+    if(st.running&&st.enabled){
+      pill.className='live'; el('bot-pill-txt').textContent='BOT LIVE';
+    }else{
+      pill.className=''; el('bot-pill-txt').textContent='BOT OFFLINE';
     }
-  } catch(e){}
-}, 8000);
-
-// ══════════════════════════════════════════════
-//  SETTINGS / AUTH
-// ══════════════════════════════════════════════
-async function changePw() {
-  const current = document.getElementById('set-pw-current').value;
-  const newpw   = document.getElementById('set-pw-new').value;
-  const confirm = document.getElementById('set-pw-confirm').value;
-  if (newpw !== confirm) { showStatus('set-pw-msg','Passwords do not match','error'); return; }
-  if (newpw.length < 8)  { showStatus('set-pw-msg','Minimum 8 characters','error'); return; }
-  const r = await fetch('/api/auth/change-password', {method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({current, new: newpw})});
-  const d = await r.json();
-  if (d.ok) {
-    showStatus('set-pw-msg','✓ Password updated successfully','success');
-    document.getElementById('set-pw-current').value = '';
-    document.getElementById('set-pw-new').value = '';
-    document.getElementById('set-pw-confirm').value = '';
-  } else {
-    showStatus('set-pw-msg', d.error || 'Error', 'error');
-  }
+    const pos=st.state?.position;
+    const posEl=el('live-pos');
+    if(pos==='long'){posEl.textContent='LONG';posEl.className='pill long';}
+    else if(pos==='short'){posEl.textContent='SHORT';posEl.className='pill short';}
+    else{posEl.textContent='FLAT';posEl.className='pill flat';}
+    el('live-status').textContent=st.running&&st.enabled?'Running':st.enabled?'Enabled (idle)':'Stopped';
+    el('live-ep').textContent=st.state?.entry_price?fmtN(st.state.entry_price,4):'—';
+    el('live-tsl').textContent=st.state?.trail_stop?fmtN(st.state.trail_stop,4):'—';
+    el('live-sigs').innerHTML=(sigs.signals||[]).map(s=>`<tr>
+      <td class="nw">${s['Time (UTC)']||''}</td><td>${s.Symbol||''}</td><td>${s.Action||''}</td>
+      <td class="${s.Direction==='long'?'tg':'tr'}">${(s.Direction||'').toUpperCase()}</td>
+      <td>${s.Price||''}</td><td>${s.Note||''}</td>
+    </tr>`).join('');
+  }catch(e){}
 }
 
-async function changeUsername() {
-  const username = document.getElementById('set-uname-new').value;
-  const password = document.getElementById('set-uname-pw').value;
-  const r = await fetch('/api/auth/change-username', {method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({username, password})});
-  const d = await r.json();
-  if (d.ok) {
-    showStatus('set-uname-msg','✓ Username updated','success');
-    document.getElementById('set-uname-new').value = '';
-    document.getElementById('set-uname-pw').value = '';
-  } else {
-    showStatus('set-uname-msg', d.error || 'Error', 'error');
-  }
+// ── LIVE CANDLE CHART ──
+async function loadLiveCandles(){
+  el('live-chart-msg').textContent='Loading...';
+  try{
+    const r=await fetch('/api/bot/candles?limit=120'); const d=await r.json();
+    if(d.error){el('live-chart-msg').textContent=d.error;return;}
+    el('live-chart-msg').textContent=`${d.symbol} ${d.timeframe} · ${d.candles.length} candles`;
+    el('live-chart-title').textContent=`LIVE CHART — ${d.symbol} ${d.timeframe}`;
+    renderCandleChart(d);
+  }catch(e){el('live-chart-msg').textContent='Could not load candles';}
 }
 
+function renderCandleChart(data){
+  if(candleChart){candleChart.destroy();candleChart=null;}
+  const candles=data.candles; const n=candles.length;
+  const labels=candles.map(c=>new Date(c.t).toISOString().slice(11,16));
+  const opens=candles.map(c=>c.o), highs=candles.map(c=>c.h), lows=candles.map(c=>c.l), closes=candles.map(c=>c.c);
+  // Represent candles as floating bar (high-low) with color
+  const barData=candles.map(c=>({x:new Date(c.t).toISOString().slice(11,16),y:[Math.min(c.o,c.c),Math.max(c.o,c.c)]}));
+  const wickData=candles.map(c=>({x:new Date(c.t).toISOString().slice(11,16),y:[c.l,c.h]}));
+  const barColors=candles.map(c=>c.c>=c.o?'rgba(14,203,129,0.85)':'rgba(246,70,93,0.85)');
+  const wickColors=candles.map(c=>c.c>=c.o?'rgba(14,203,129,0.5)':'rgba(246,70,93,0.5)');
+  const state=data.state||{}; const pos=state.position;
+
+  const datasets=[
+    {type:'bar',label:'Wick',data:wickData,backgroundColor:wickColors,barThickness:1,order:3},
+    {type:'bar',label:'Candle',data:barData,backgroundColor:barColors,barThickness:6,order:2},
+    {type:'line',label:'Fast EMA',data:data.fast_ema,borderColor:'#f0b90b',borderWidth:1.5,pointRadius:0,tension:0.3,order:1},
+    {type:'line',label:'Slow EMA',data:data.slow_ema,borderColor:'#00d4ff',borderWidth:1.5,pointRadius:0,tension:0.3,order:1},
+  ];
+  // Entry line
+  if(state.entry_price){
+    datasets.push({type:'line',label:`Entry ${pos?.toUpperCase()||''}`,data:Array(n).fill(state.entry_price),borderColor:pos==='long'?'rgba(14,203,129,0.6)':'rgba(246,70,93,0.6)',borderWidth:1,borderDash:[4,4],pointRadius:0,order:0});
+  }
+  if(state.trail_stop){
+    datasets.push({type:'line',label:'Trail Stop',data:Array(n).fill(state.trail_stop),borderColor:'rgba(240,185,11,0.7)',borderWidth:1,borderDash:[3,3],pointRadius:0,order:0});
+  }
+
+  candleChart=new Chart(el('candle-chart').getContext('2d'),{
+    type:'bar',
+    data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#8899b8',font:{family:'IBM Plex Mono',size:10},boxWidth:10,padding:12}},
+               tooltip:{backgroundColor:'#0e1117',borderColor:'#1a2030',borderWidth:1,
+                        titleColor:'#8899b8',bodyColor:'#dce3ee',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}}},
+      scales:{
+        x:{ticks:{color:'#4d5e7a',maxTicksLimit:10,font:{family:'IBM Plex Mono',size:9}},grid:{color:'#0d1219'},border:{color:'#1a2030'}},
+        y:{ticks:{color:'#4d5e7a',font:{family:'IBM Plex Mono',size:9}},grid:{color:'#0d1219'},border:{color:'#1a2030'}}
+      }
+    }
+  });
+}
+
+// ── SETTINGS ──
+async function changePw(){
+  const cur=el('set-pw-cur').value,nw=el('set-pw-new').value,cf=el('set-pw-conf').value;
+  if(nw!==cf){showMsg('set-pw-msg','Passwords do not match','err');return;}
+  if(nw.length<8){showMsg('set-pw-msg','Min 8 characters','err');return;}
+  const r=await fetch('/api/auth/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current:cur,new:nw})});
+  const d=await r.json();
+  if(d.ok){showMsg('set-pw-msg','✓ Password updated','ok');el('set-pw-cur').value='';el('set-pw-new').value='';el('set-pw-conf').value='';}
+  else showMsg('set-pw-msg',d.error||'Error','err');
+}
+async function changeUname(){
+  const u=el('set-uname').value,p=el('set-uname-pw').value;
+  const r=await fetch('/api/auth/change-username',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+  const d=await r.json();
+  if(d.ok){showMsg('set-uname-msg','✓ Username updated','ok');el('set-uname').value='';el('set-uname-pw').value='';}
+  else showMsg('set-uname-msg',d.error||'Error','err');
+}
+
+// ── INIT ──
+updateComboPreview();
+loadPresets();
+// Global bot pill status poll
+setInterval(async()=>{
+  if(curTab==='live') return; // live tab handles its own polling
+  try{
+    const r=await fetch('/api/bot/status'); const d=await r.json();
+    const pill=el('bot-pill');
+    if(d.running&&d.enabled){pill.className='live';el('bot-pill-txt').textContent='BOT LIVE';}
+    else{pill.className='';el('bot-pill-txt').textContent='BOT OFFLINE';}
+  }catch(e){}
+},10000);
 </script>
 </body>
 </html>
