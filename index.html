@@ -31,27 +31,27 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex
 /* ── LAYOUT ── */
 #main{display:flex;height:calc(100vh - 48px)}
 /* ── SIDEBAR ── */
-#sidebar{width:330px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto;overflow-x:hidden}
+#sidebar{width:290px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto;overflow-x:hidden}
 #sidebar::-webkit-scrollbar{width:3px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
 #content{flex:1;overflow-y:auto;overflow-x:hidden;min-width:0}
 #content::-webkit-scrollbar{width:5px}
 #content::-webkit-scrollbar-thumb{background:var(--b2)}
 /* ── SIDEBAR PANELS ── */
-.spanel{padding:22px 22px 18px}
+.spanel{padding:14px 16px 12px}
 .spanel+.spanel{border-top:1px solid var(--b1)}
-.ptitle{font-size:0.7rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);margin-bottom:16px;font-weight:500}
-.lbl{display:block;font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:6px;margin-top:16px}
+.ptitle{font-size:0.65rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);margin-bottom:10px;font-weight:500}
+.lbl{display:block;font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:4px;margin-top:10px}
 .lbl:first-of-type{margin-top:0}
 input[type=text],input[type=number],input[type=date],select{
   width:100%;background:var(--surf2);border:1px solid var(--b2);color:var(--t1);
-  font-family:'IBM Plex Mono',monospace;font-size:0.9rem;padding:10px 12px;
+  font-family:'IBM Plex Mono',monospace;font-size:0.86rem;padding:7px 10px;
   border-radius:2px;outline:none;transition:border .15s}
 input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:focus{border-color:var(--c)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.chk{display:flex;align-items:center;gap:10px;margin-top:12px;cursor:pointer;user-select:none}
+.chk{display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;user-select:none}
 .chk input[type=checkbox]{width:14px;height:14px;accent-color:var(--y);cursor:pointer;flex-shrink:0}
-.chk span{font-size:0.82rem;color:var(--t2)}
+.chk span{font-size:0.78rem;color:var(--t2)}
 /* ── BUTTONS ── */
 .btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;padding:9px 18px;border-radius:2px;cursor:pointer;transition:.12s;white-space:nowrap}
 .btn:hover{background:var(--b2);color:var(--t1)}
@@ -71,10 +71,10 @@ input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:fo
 .sgrid.c4{grid-template-columns:repeat(4,1fr)}
 .sgrid.c5{grid-template-columns:repeat(5,1fr)}
 .sgrid.c3{grid-template-columns:repeat(3,1fr)}
-.sc{background:var(--surf);padding:22px 26px}
-.sc .sl{font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:9px}
-.sc .sv{font-size:1.7rem;font-weight:500;color:var(--t1);line-height:1}
-.sc .ss{font-size:0.75rem;color:var(--t2);margin-top:6px}
+.sc{background:var(--surf);padding:14px 20px}
+.sc .sl{font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.sc .sv{font-size:1.55rem;font-weight:500;color:var(--t1);line-height:1}
+.sc .ss{font-size:0.72rem;color:var(--t2);margin-top:3px}
 .sv.g{color:var(--g)}.sv.r{color:var(--r)}.sv.c{color:var(--c)}.sv.y{color:var(--y)}
 /* ── CHART ── */
 .chart-wrap{background:var(--surf);border-bottom:1px solid var(--b1)}
@@ -84,15 +84,15 @@ input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:fo
 .chart-body{padding:14px 20px}
 /* ── TABLE ── */
 .tbl{width:100%;border-collapse:collapse;font-size:0.85rem}
-.tbl th{background:var(--surf2);color:var(--t3);font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;padding:12px 14px;text-align:right;border-bottom:1px solid var(--b1);font-weight:400;white-space:nowrap}
+.tbl th{background:var(--surf2);color:var(--t3);font-size:0.67rem;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;text-align:right;border-bottom:1px solid var(--b1);font-weight:400;white-space:nowrap}
 .tbl th:first-child{text-align:left}
-.tbl td{padding:11px 14px;border-bottom:1px solid #0a0e15;text-align:right;color:var(--t2)}
+.tbl td{padding:7px 12px;border-bottom:1px solid #0a0e15;text-align:right;color:var(--t2)}
 .tbl td:first-child{text-align:left;color:var(--t1)}
 .tbl tr:hover td{background:rgba(255,255,255,.02)}
 .tbl .long{color:var(--g)}.tbl .short{color:var(--r)}
 .tbl-wrap{overflow-x:auto;overflow-y:auto}
 /* ── SECTION HEAD ── */
-.shead{padding:14px 22px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--surf)}
+.shead{padding:9px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--surf)}
 .shead .ht{font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
 /* ── STATUS ── */
 .msg{padding:12px 16px;font-size:0.82rem;border-radius:2px;margin-top:12px;line-height:1.6}
@@ -487,7 +487,7 @@ code{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--c);back
             <button class="btn sm" onclick="loadLiveCandles()">↻ Refresh</button>
           </div>
         </div>
-        <div id="lw-chart" style="height:320px;width:100%"></div>
+        <div id="lw-chart" style="height:380px;width:100%"></div>
       </div>
 
       <div class="div" style="margin-top:16px"></div>
@@ -933,14 +933,17 @@ async function runOpt(){
     if(!s||s.status==='idle') return;  // don't flicker if job not found yet
     const prog=s.total>0?(s.progress/s.total*100).toFixed(0):0;
     el('op-prog-bar').style.width=prog+'%';
-    el('op-prog-txt').textContent=`${s.progress||0} / ${s.total||0} combos (${prog}%)${s.cached_count>0?' · '+s.cached_count+' cached':''}`;
+    el('op-prog-txt').textContent=`${(s.progress||0).toLocaleString()} / ${(s.total||0).toLocaleString()} (${prog}%)${s.cached_count>0?' · '+s.cached_count+' cached':''}`;el('op-prog-bar').title=`${prog}% complete`;
     if(s.status==='done'){
       clearInterval(optPoll);
       const res=await(await fetch(`/api/optimizer/result/${curOptJob}`)).json();
       renderOptResults(res); showMsg('op-msg','✓ Complete','ok');
       el('op-prog-bar').style.width='100%';
     }else if(s.status==='error'){
-      clearInterval(optPoll); showMsg('op-msg',s.message,'err');
+      clearInterval(optPoll);
+      const errDetail=s.trace?`\n${s.trace.slice(0,300)}`:''; 
+      showMsg('op-msg',(s.message||'Unknown error')+errDetail,'err');
+      console.error('Optimizer error trace:',s.trace);
     }else{
       showMsg('op-msg',`<span class="spin"></span> Running... ${s.progress||0}/${s.total||0}`,'info');
     }

@@ -147,6 +147,76 @@ def get_trail_dist(direction, ref, ep, atr, p):
         t=p["tier1_tsl"] if pct<p["tier1_profit"] else p["tier2_tsl"] if pct<p["tier2_profit"] else p["tier3_tsl"]
         return t/100*ep
     return p["trail_perc"]/100*ep
+
+# ─────────────────────────────────────────────────────────────────
+# TICK CACHE  (parquet, graceful fallback if pyarrow not installed)
+# ─────────────────────────────────────────────────────────────────
+try:
+    import pyarrow as _pa
+    import pyarrow.parquet as _pq
+    _HAVE_PARQUET = True
+except ImportError:
+    _HAVE_PARQUET = False
+    log.warning("pyarrow not installed — tick mode disabled. Run: pip install pyarrow")
+
+def _tick_path(ex, sym):
+    s = sym.replace("/","_").replace(":","_")
+    return TICK_DIR / f"{ex}_{s}_ticks.parquet"
+
+def tick_cache_info(ex, sym):
+    if not _HAVE_PARQUET:
+        return {"exists": False, "error": "pyarrow not installed"}
+    p = _tick_path(ex, sym)
+    if not p.exists():
+        return {"exists": False}
+    try:
+        meta = _pq.read_metadata(str(p))
+        df_ts = _pq.read_table(str(p), columns=["timestamp"]).to_pandas()
+        size_mb = round(p.stat().st_size / 1048576, 1)
+        return {"exists": True, "rows": meta.num_rows, "size_mb": size_mb,
+                "first": str(df_ts["timestamp"].min())[:16],
+                "last":  str(df_ts["timestamp"].max())[:16]}
+    except Exception as e:
+        return {"exists": True, "error": str(e)}
+
+def save_ticks(df, ex, sym):
+    if not _HAVE_PARQUET:
+        raise RuntimeError("pyarrow not installed")
+    p = _tick_path(ex, sym)
+    if p.exists():
+        existing = _pq.read_table(str(p)).to_pandas()
+        df = pd.concat([existing, df], ignore_index=True)
+    df = df.drop_duplicates("timestamp").sort_values("timestamp").reset_index(drop=True)
+    table = _pa.Table.from_pandas(df, preserve_index=False)
+    _pq.write_table(table, str(p), compression="snappy")
+    return df
+
+def build_tick_lookup(ex, sym, bar_timestamps):
+    if not _HAVE_PARQUET:
+        return None
+    p = _tick_path(ex, sym)
+    if not p.exists():
+        return None
+    try:
+        table = _pq.read_table(str(p), columns=["timestamp","price"])
+        df = table.to_pandas()
+        df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
+        df = df.sort_values("timestamp")
+        ts_arr = df["timestamp"].values
+        px_arr = df["price"].values
+        lookup = {}
+        bar_ts = sorted(bar_timestamps)
+        for i, bar_start in enumerate(bar_ts):
+            bar_end = bar_ts[i+1] if i+1 < len(bar_ts) else bar_start + pd.Timedelta("30min")
+            mask = (ts_arr >= bar_start) & (ts_arr < bar_end)
+            prices = px_arr[mask]
+            if len(prices) > 0:
+                lookup[bar_start] = prices
+        return lookup if lookup else None
+    except Exception as e:
+        log.warning(f"Tick lookup build error: {e}")
+        return None
+
 def build_intra_lookup(df_base, df_intra):
     lookup={}; bt=df_base["timestamp"].values; it=df_intra["timestamp"].values
     ih=df_intra["high"].values; il=df_intra["low"].values; ic=df_intra["close"].values
@@ -721,7 +791,7 @@ def api_presets_delete(name):
 @app.route("/api/optimizer/run", methods=["POST"])
 @login_required
 def api_optimizer_run():
-    import multiprocessing as mp
+    import multiprocessing as mp  # cpu_count only
     body=request.json or {}
     jid=hashlib.sha256(json.dumps(body,sort_keys=True).encode()).hexdigest()[:16]
     existing=get_job(jid)
@@ -764,15 +834,22 @@ def api_optimizer_run():
                 intra_rec=df_intra_opt[cols].assign(timestamp=df_intra_opt["timestamp"].astype(str)).to_dict("records")
             d_from=str(opt_from)[:10]; d_to=str(opt_to)[:10]
             args_list=[(c,keys,params,base_rec,intra_rec,fee,capital,sym,tf,d_from,d_to) for c in combos]
-            n_cores=max(1,mp.cpu_count()-1); results=[]; done=0; cached_count=0
-            with mp.Pool(processes=n_cores) as pool:
-                for r in pool.imap_unordered(_opt_worker,args_list,chunksize=max(1,total//(n_cores*4))):
+            from concurrent.futures import ThreadPoolExecutor, as_completed
+            n_cores=max(1,min(mp.cpu_count()-1, 8)); results=[]; done=0; cached_count=0
+            update_every=max(1,total//50)
+            with ThreadPoolExecutor(max_workers=n_cores) as pool:
+                futs={pool.submit(_opt_worker,a):a for a in args_list}
+                for fut in as_completed(futs):
                     done+=1
+                    try:
+                        r=fut.result()
+                    except Exception:
+                        r=None
                     if r:
                         if r.get("was_cached"): cached_count+=1
                         results.append({k:v for k,v in r.items() if k!="was_cached"})
-                    if done%max(1,total//20)==0 or done==total:
-                        with _jobs_lock: _jobs[jid]={"status":"running","progress":done,"total":total,"cached_count":cached_count}
+                    if done%update_every==0 or done==total:
+                        set_job(jid,{"status":"running","progress":done,"total":total,"cached_count":cached_count})
             results.sort(key=lambda x:x.get("score",0),reverse=True)
             oos_results=[]
             if df_hold is not None and len(df_hold)>0:
@@ -801,7 +878,10 @@ def api_optimizer_run():
                       "finished_at":datetime.now(timezone.utc).isoformat()}
             set_job(jid,job_data)
         except Exception as e:
-            import traceback; set_job(jid,{"status":"error","message":str(e),"trace":traceback.format_exc()})
+            import traceback
+            tb=traceback.format_exc()
+            log.error(f"Optimizer error: {e}\n{tb}")
+            set_job(jid,{"status":"error","message":str(e),"trace":tb})
     threading.Thread(target=do,daemon=True).start(); return jsonify({"ok":True,"jid":jid,"cached":False})
 
 @app.route("/api/optimizer/status/<jid>")
@@ -978,12 +1058,14 @@ def api_upload_candles():
         if len(df_1m) == 0:
             return jsonify({"error": "No valid rows after parsing"}), 400
 
-        # ── Save raw ticks to parquet (if tick data) ──
-        if is_tick:
+        # ── Save raw ticks to parquet (if tick data and pyarrow available) ──
+        tick_saved = False
+        if is_tick and _HAVE_PARQUET:
             try:
                 tick_df = raw[["timestamp","price","size"]].copy() if "size" in raw.columns else raw[["timestamp","price"]].copy()
                 tick_df = tick_df.rename(columns={"size":"volume"})
                 save_ticks(tick_df, ex, sym)
+                tick_saved = True
                 log.info(f"Saved {len(tick_df)} ticks to parquet")
             except Exception as te:
                 log.warning(f"Tick parquet save failed: {te}")
