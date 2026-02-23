@@ -2,301 +2,427 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDgwYTBkIi8+PHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSJub25lIiBzdHJva2U9IiNmMGI5MGIiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjE0IiBmaWxsPSIjZjBiOTBiIj5FWDwvdGV4dD48L3N2Zz4=">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EMAX Trading Platform</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EMAX · Trading Terminal</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDYwODBiIi8+PHRleHQgeD0iMTYiIHk9IjIyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNmMGI5MGIiPkVYPC90ZXh0Pjwvc3ZnPg==">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <style>
-:root{
-  --bg:#080a0d;--surf:#0e1117;--surf2:#131820;--surf3:#181f2a;
-  --b1:#1a2030;--b2:#222d40;--b3:#2d3d56;
-  --y:#f0b90b;--c:#00d4ff;--g:#0ecb81;--r:#f6465d;
-  --mut:#3d4d66;--t1:#dce3ee;--t2:#8899b8;--t3:#4d5e7a;
+:root {
+  --bg:     #060810;
+  --s1:     #0a0d16;
+  --s2:     #0f1320;
+  --s3:     #141929;
+  --b1:     #1c2340;
+  --b2:     #243060;
+  --b3:     #2d3a70;
+  --y:      #f0b90b;
+  --ya:     rgba(240,185,11,.12);
+  --c:      #3b82f6;
+  --ca:     rgba(59,130,246,.12);
+  --g:      #22c55e;
+  --ga:     rgba(34,197,94,.12);
+  --r:      #ef4444;
+  --ra:     rgba(239,68,68,.12);
+  --pu:     #a855f7;
+  --t1:     #e2e8f8;
+  --t2:     #94a3c8;
+  --t3:     #4a5a80;
+  --mut:    #2a3450;
+  --mono:   'JetBrains Mono', monospace;
+  --sans:   'Space Grotesk', sans-serif;
+  --rad:    4px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;font-size:17px;line-height:1.6}
-/* ── TOPBAR ── */
-#topbar{height:40px;background:var(--surf);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;position:sticky;top:0;z-index:100}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:4px;color:var(--y);margin-right:24px;flex-shrink:0}
-.logo span{color:var(--c)}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:0 16px;height:40px;font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;transition:color .15s;white-space:nowrap}
-.tab-btn:hover{color:var(--t2)}.tab-btn.active{color:var(--t1);border-bottom-color:var(--y)}
-#topbar .sp{flex:1}
-#bot-pill{display:flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:1px;color:var(--t3);padding:4px 12px;border:1px solid var(--b1);border-radius:2px}
-#bot-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--mut)}
-#bot-pill.live{color:var(--g);border-color:rgba(14,203,129,.3);background:rgba(14,203,129,.06)}
-#bot-pill.live .dot{background:var(--g);box-shadow:0 0 8px var(--g)}
-/* ── LAYOUT ── */
-#main{display:flex;height:calc(100vh - 40px)}
-/* ── SIDEBAR ── */
-#sidebar{width:290px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto;overflow-x:hidden}
-#sidebar::-webkit-scrollbar{width:3px}
-#sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
-#content{flex:1;overflow-y:auto;overflow-x:hidden;min-width:0}
-#content::-webkit-scrollbar{width:5px}
-#content::-webkit-scrollbar-thumb{background:var(--b2)}
-/* ── SIDEBAR PANELS ── */
-.spanel{padding:10px 14px 10px}
-.spanel+.spanel{border-top:1px solid var(--b1)}
-.ptitle{font-size:0.65rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);margin-bottom:10px;font-weight:500}
-.lbl{display:block;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;color:var(--mut);margin-bottom:3px;margin-top:8px}
-.lbl:first-of-type{margin-top:0}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.5;overflow:hidden}
+
+/* ═══ TOPBAR ═══ */
+#topbar{
+  height:44px;display:flex;align-items:center;
+  background:var(--s1);border-bottom:1px solid var(--b1);
+  padding:0 0 0 16px;gap:0;flex-shrink:0;position:relative;z-index:200;
+}
+.logo{
+  font-family:var(--mono);font-size:1rem;font-weight:600;
+  color:var(--y);letter-spacing:3px;margin-right:20px;flex-shrink:0;
+  padding:6px 12px;border:1px solid rgba(240,185,11,.2);border-radius:var(--rad);
+}
+.nav-tabs{display:flex;height:44px;align-items:stretch;flex:1}
+.nav-tab{
+  display:flex;align-items:center;gap:6px;
+  padding:0 18px;font-size:0.72rem;letter-spacing:1.2px;text-transform:uppercase;
+  font-family:var(--mono);color:var(--t3);cursor:pointer;border:none;background:none;
+  border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;text-decoration:none;
+  font-weight:500;
+}
+.nav-tab:hover{color:var(--t2);background:rgba(255,255,255,.02)}
+.nav-tab.active{color:var(--t1);border-bottom-color:var(--y)}
+.nav-tab .dot{width:5px;height:5px;border-radius:50%;background:var(--g);box-shadow:0 0 6px var(--g);display:none}
+.nav-tab.live-active .dot{display:block}
+#topbar-right{display:flex;align-items:center;gap:10px;padding:0 16px;margin-left:auto}
+#bot-indicator{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:0.68rem;letter-spacing:1px;
+  padding:5px 12px;border-radius:var(--rad);border:1px solid var(--b1);
+  color:var(--t3);background:var(--s2);cursor:default;
+}
+#bot-indicator .dot{width:6px;height:6px;border-radius:50%;background:var(--t3)}
+#bot-indicator.live{color:var(--g);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06)}
+#bot-indicator.live .dot{background:var(--g);box-shadow:0 0 8px var(--g);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ═══ LAYOUT ═══ */
+#shell{display:flex;height:calc(100vh - 44px)}
+
+/* ═══ LEFT RAIL (sidebar) ═══ */
+#rail{
+  width:260px;flex-shrink:0;background:var(--s1);
+  border-right:1px solid var(--b1);overflow-y:auto;overflow-x:hidden;
+  display:flex;flex-direction:column;
+}
+#rail::-webkit-scrollbar{width:3px}
+#rail::-webkit-scrollbar-thumb{background:var(--b2)}
+.rail-section{padding:12px 14px;border-bottom:1px solid var(--b1)}
+.rail-section:last-child{border-bottom:none}
+.rsec-title{
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;
+  text-transform:uppercase;color:var(--t3);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.rsec-title::after{content:'';flex:1;height:1px;background:var(--b1)}
+
+/* ═══ FORM ELEMENTS ═══ */
+label.fl{
+  display:block;font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;
+  text-transform:uppercase;color:var(--t3);margin-bottom:3px;margin-top:8px;
+}
+label.fl:first-of-type{margin-top:0}
 input[type=text],input[type=number],input[type=date],select{
-  width:100%;background:var(--surf2);border:1px solid var(--b2);color:var(--t1);
-  font-family:'IBM Plex Mono',monospace;font-size:0.82rem;padding:5px 8px;
-  border-radius:2px;outline:none;transition:border .15s}
-input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:focus{border-color:var(--c)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.chk{display:flex;align-items:center;gap:6px;margin-top:6px;cursor:pointer;user-select:none}
+  width:100%;background:var(--s2);border:1px solid var(--b1);color:var(--t1);
+  font-family:var(--mono);font-size:0.82rem;padding:5px 8px;
+  border-radius:var(--rad);outline:none;transition:border .12s;
+}
+input:focus,select:focus{border-color:var(--c)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chk{display:flex;align-items:center;gap:7px;margin-top:7px;cursor:pointer;user-select:none}
 .chk input[type=checkbox]{width:13px;height:13px;accent-color:var(--y);cursor:pointer;flex-shrink:0}
-.chk span{font-size:0.74rem;color:var(--t2)}
-/* ── BUTTONS ── */
-.btn{background:var(--surf2);border:1px solid var(--b2);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;letter-spacing:1px;text-transform:uppercase;padding:9px 18px;border-radius:2px;cursor:pointer;transition:.12s;white-space:nowrap}
-.btn:hover{background:var(--b2);color:var(--t1)}
-.btn.y{background:var(--y);border-color:var(--y);color:#000;font-weight:600}
-.btn.y:hover{background:#d4a30a}
-.btn.c{background:var(--c);border-color:var(--c);color:#000;font-weight:600}
-.btn.c:hover{background:#00b8d9}
-.btn.danger{border-color:var(--r);color:var(--r)}
-.btn.danger:hover{background:var(--r);color:#fff}
-.btn.sm{padding:6px 13px;font-size:0.72rem}
-.btn.act{background:var(--surf3);color:var(--t1);border-color:var(--b3)}
+.chk span{font-family:var(--mono);font-size:0.72rem;color:var(--t2)}
+
+/* ═══ BUTTONS ═══ */
+.btn{
+  background:var(--s2);border:1px solid var(--b2);color:var(--t2);
+  font-family:var(--mono);font-size:0.72rem;letter-spacing:0.8px;text-transform:uppercase;
+  padding:7px 14px;border-radius:var(--rad);cursor:pointer;transition:.12s;white-space:nowrap;
+}
+.btn:hover{background:var(--s3);color:var(--t1);border-color:var(--b3)}
+.btn.y{background:var(--y);border-color:var(--y);color:#000;font-weight:700}
+.btn.y:hover{background:#d4a30a;border-color:#d4a30a}
+.btn.c{background:var(--c);border-color:var(--c);color:#fff;font-weight:600}
+.btn.c:hover{background:#2563eb}
+.btn.g{background:var(--g);border-color:var(--g);color:#000;font-weight:600}
+.btn.g:hover{background:#16a34a}
+.btn.r{background:var(--r);border-color:var(--r);color:#fff;font-weight:600}
+.btn.r:hover{background:#dc2626}
+.btn.ghost{background:transparent;border-color:var(--b2)}
+.btn.full{width:100%;padding:10px;font-size:0.76rem}
 .brow{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-/* ── TABS ── */
-.tabview{display:none}.tabview.active{display:block}
-/* ── STATS GRID ── */
-.sgrid{display:grid;gap:1px;background:var(--b1)}
-.sgrid.c4{grid-template-columns:repeat(4,1fr)}
-.sgrid.c5{grid-template-columns:repeat(5,1fr)}
-.sgrid.c3{grid-template-columns:repeat(3,1fr)}
-.sc{background:var(--surf);padding:14px 20px}
-.sc .sl{font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
-.sc .sv{font-size:1.7rem;font-weight:500;color:var(--t1);line-height:1}
-.sc .ss{font-size:0.77rem;color:var(--t2);margin-top:4px}
-.sv.g{color:var(--g)}.sv.r{color:var(--r)}.sv.c{color:var(--c)}.sv.y{color:var(--y)}
-/* ── CHART ── */
-.chart-wrap{background:var(--surf);border-bottom:1px solid var(--b1)}
-.chart-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--b1)}
-.chart-hdr .cht{font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
-.chart-togs{display:flex;gap:5px}
-.chart-body{padding:14px 20px}
-/* ── TABLE ── */
-.tbl{width:100%;border-collapse:collapse;font-size:0.9rem}
-.tbl th{background:var(--surf2);color:var(--t3);font-size:0.74rem;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;text-align:right;border-bottom:1px solid var(--b1);font-weight:400;white-space:nowrap}
+.btn.sm{padding:5px 10px;font-size:0.67rem}
+.btn.xs{padding:3px 8px;font-size:0.62rem}
+
+/* ═══ MAIN CONTENT ═══ */
+#content{flex:1;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.tab-panel{display:none;flex:1;overflow:hidden;flex-direction:column}
+.tab-panel.active{display:flex}
+.scrollable{overflow-y:auto;overflow-x:hidden}
+.scrollable::-webkit-scrollbar{width:4px}
+.scrollable::-webkit-scrollbar-thumb{background:var(--b2)}
+
+/* ═══ STAT CARDS ═══ */
+.stats-row{display:grid;gap:1px;background:var(--b1);flex-shrink:0}
+.stat-card{background:var(--s1);padding:12px 18px}
+.stat-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+.stat-value{font-size:1.5rem;font-weight:600;font-family:var(--sans);line-height:1.1;color:var(--t1)}
+.stat-sub{font-family:var(--mono);font-size:0.68rem;color:var(--t2);margin-top:3px}
+.sv-g{color:var(--g)}.sv-r{color:var(--r)}.sv-y{color:var(--y)}.sv-c{color:var(--c)}
+
+/* ═══ CHART ═══ */
+.chart-block{background:var(--s1);border-bottom:1px solid var(--b1);flex-shrink:0}
+.chart-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px;border-bottom:1px solid var(--b1);
+}
+.chart-bar .label{font-family:var(--mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
+.chart-togs{display:flex;gap:4px}
+.chart-body{padding:12px 16px}
+
+/* ═══ SECTION HEADER ═══ */
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px;background:var(--s2);border-bottom:1px solid var(--b1);flex-shrink:0;
+}
+.sec-head .title{font-family:var(--mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
+
+/* ═══ TABLES ═══ */
+.tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:0.8rem}
+.tbl th{
+  background:var(--s2);color:var(--t3);font-size:0.62rem;letter-spacing:1px;
+  text-transform:uppercase;padding:7px 12px;text-align:right;
+  border-bottom:1px solid var(--b1);font-weight:500;white-space:nowrap;position:sticky;top:0;z-index:10;
+}
 .tbl th:first-child{text-align:left}
-.tbl td{padding:7px 12px;border-bottom:1px solid #0a0e15;text-align:right;color:var(--t2)}
+.tbl td{padding:6px 12px;border-bottom:1px solid rgba(28,35,64,.5);text-align:right;color:var(--t2)}
 .tbl td:first-child{text-align:left;color:var(--t1)}
-.tbl tr:hover td{background:rgba(255,255,255,.02)}
-.tbl .long{color:var(--g)}.tbl .short{color:var(--r)}
-.tbl-wrap{overflow-x:auto;overflow-y:auto}
-/* ── SECTION HEAD ── */
-.shead{padding:9px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--surf)}
-.shead .ht{font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
-/* ── STATUS ── */
-.msg{padding:12px 16px;font-size:0.82rem;border-radius:2px;margin-top:12px;line-height:1.6}
-.msg.info{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);color:var(--c)}
-.msg.err{background:rgba(246,70,93,.08);border:1px solid rgba(246,70,93,.25);color:var(--r)}
-.msg.ok{background:rgba(14,203,129,.07);border:1px solid rgba(14,203,129,.2);color:var(--g)}
-/* ── PROGRESS ── */
-.pbar-wrap{background:var(--surf2);border:1px solid var(--b2);border-radius:2px;height:5px;overflow:hidden;margin-top:10px}
-.pbar-fill{height:100%;background:var(--y);transition:width .3s}
-/* ── SPINNER ── */
+.tbl tr:hover td{background:rgba(255,255,255,.015)}
+.tbl-wrap{overflow-y:auto;overflow-x:auto}
+
+/* ═══ COLORS ═══ */
+.tg{color:var(--g)}.tr{color:var(--r)}.ty{color:var(--y)}.tc{color:var(--c)}.tm{color:var(--t3)}
+.long{color:var(--g)}.short{color:var(--r)}
+.pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:2px;font-size:0.65rem;
+  letter-spacing:0.8px;text-transform:uppercase;font-weight:600;
+}
+.pill.long{background:var(--ga);color:var(--g);border:1px solid rgba(34,197,94,.25)}
+.pill.short{background:var(--ra);color:var(--r);border:1px solid rgba(239,68,68,.25)}
+.pill.flat{background:var(--s3);color:var(--t3);border:1px solid var(--b1)}
+.pill.y{background:var(--ya);color:var(--y);border:1px solid rgba(240,185,11,.25)}
+
+/* ═══ STATUS / MSG ═══ */
+.msg{padding:8px 12px;font-family:var(--mono);font-size:0.75rem;border-radius:var(--rad);margin-top:8px;line-height:1.5}
+.msg.info{background:var(--ca);border:1px solid rgba(59,130,246,.25);color:var(--c)}
+.msg.err{background:var(--ra);border:1px solid rgba(239,68,68,.3);color:var(--r)}
+.msg.ok{background:var(--ga);border:1px solid rgba(34,197,94,.25);color:var(--g)}
+.msg.warn{background:var(--ya);border:1px solid rgba(240,185,11,.25);color:var(--y)}
+
+/* ═══ PROGRESS ═══ */
+.pbar-track{height:3px;background:var(--s3);border-radius:2px;overflow:hidden;margin-top:6px}
+.pbar-fill{height:100%;background:var(--y);transition:width .3s;border-radius:2px}
+
+/* ═══ SPINNER ═══ */
 @keyframes spin{to{transform:rotate(360deg)}}
-.spin{width:13px;height:13px;border:2px solid var(--b2);border-top-color:var(--y);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px}
-/* ── EMPTY ── */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:12px;color:var(--mut)}
-.empty .big{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:3px}
-.empty .sub{font-size:0.75rem;letter-spacing:1px}
-/* ── SIGNAL PILL ── */
-.pill{display:inline-block;padding:3px 10px;border-radius:2px;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;font-weight:500;border:1px solid}
-.pill.long{background:rgba(14,203,129,.12);color:var(--g);border-color:rgba(14,203,129,.3)}
-.pill.short{background:rgba(246,70,93,.12);color:var(--r);border-color:rgba(246,70,93,.3)}
-.pill.flat{background:var(--surf2);color:var(--t3);border-color:var(--b2)}
-/* ── DIVIDER ── */
-.div{height:1px;background:var(--b1);margin:14px 0}
-/* ── RANGE INPUTS ── */
-.rg-row{display:flex;align-items:center;gap:6px;margin-bottom:10px}
-.rg-row .rn{font-size:0.72rem;color:var(--t2);width:110px;flex-shrink:0}
-.rg-row input{width:55px;text-align:center;flex-shrink:0}
-.rg-row .sep{color:var(--mut);font-size:0.7rem;flex-shrink:0}
-/* ── OPT TABLE ── */
-.opt-tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:420px}
-/* ── COLORS ── */
-.tg{color:var(--g)}.tr{color:var(--r)}.ty{color:var(--y)}.tc{color:var(--c)}.tm{color:var(--mut)}.t1{color:var(--t1)}.t2{color:var(--t2)}
-/* ── PRESETS ── */
-.preset-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surf2);border:1px solid var(--b2);border-radius:2px;margin-bottom:6px}
-.preset-item .pn{font-size:0.75rem;color:var(--t1)}
-.preset-item .ps{font-size:0.65rem;color:var(--t3);margin-top:2px}
-/* ── CANDLE CHART ── */
-#candle-chart-container{background:var(--surf);border:1px solid var(--b1);margin:0;position:relative;min-height:320px}
-/* ── MISC ── */
-.nw{white-space:nowrap}
-code{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--c);background:var(--surf2);padding:1px 5px;border-radius:2px}
+.spin{
+  width:11px;height:11px;border:2px solid rgba(255,255,255,.1);
+  border-top-color:var(--y);border-radius:50%;
+  animation:spin .6s linear infinite;display:inline-block;vertical-align:middle;margin-right:5px;
+}
+
+/* ═══ DIVIDER ═══ */
+.div{height:1px;background:var(--b1);margin:10px 0}
+
+/* ═══ EMPTY STATE ═══ */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;gap:10px;color:var(--t3);
+}
+.empty-state .big{font-size:2.5rem;font-weight:700;letter-spacing:3px;color:var(--b2)}
+.empty-state .sub{font-family:var(--mono);font-size:0.72rem;letter-spacing:1px}
+
+/* ═══ OPTIMIZER RANGE ROWS ═══ */
+.rg-row{display:flex;align-items:center;gap:5px;margin-bottom:8px}
+.rg-row label{display:flex;align-items:center;gap:6px;width:100px;flex-shrink:0;cursor:pointer}
+.rg-row label span{font-family:var(--mono);font-size:0.7rem;color:var(--t2)}
+.rg-row input[type=number]{width:50px;text-align:center;flex-shrink:0;padding:4px 5px}
+.rg-row .sep{color:var(--t3);font-size:0.7rem;flex-shrink:0}
+
+/* ═══ LIVE BOT LAYOUT ═══ */
+#live-panel{display:flex;flex:1;overflow:hidden;gap:0}
+#live-left{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--b1)}
+#live-right{width:300px;flex-shrink:0;overflow-y:auto;background:var(--s1)}
+
+/* ═══ POSITION CARD ═══ */
+.pos-card{
+  background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad);
+  padding:12px 16px;margin:12px;
+}
+.pos-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.pos-key{font-family:var(--mono);font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;color:var(--t3)}
+.pos-val{font-family:var(--mono);font-size:0.88rem;color:var(--t1);font-weight:500}
+
+/* ═══ PRESETS ═══ */
+.preset-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--rad);margin-bottom:5px;
+}
+.preset-name{font-size:0.8rem;font-weight:500;color:var(--t1)}
+.preset-stats{font-family:var(--mono);font-size:0.62rem;color:var(--t3);margin-top:1px}
 </style>
 </head>
 <body>
+
+<!-- ═══ TOPBAR ═══ -->
 <div id="topbar">
-  <div class="logo">EMA<span>X</span></div>
-  <button class="tab-btn active" onclick="goTab('backtest')">Backtest</button>
-  <button class="tab-btn" onclick="goTab('optimizer')">Optimizer</button>
-  <button class="tab-btn" onclick="goTab('live')">Live Bot</button>
-  <button class="tab-btn" onclick="goTab('settings')">Settings</button>
-  <a href="/upload" target="_blank" class="tab-btn" style="display:flex;align-items:center;text-decoration:none">Upload Data ↗</a>
-  <div class="sp"></div>
-  <div id="bot-pill"><div class="dot"></div><span id="bot-pill-txt">BOT OFFLINE</span></div>
+  <div class="logo">EMAX</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="nt-backtest" onclick="goTab('backtest')">Backtest</button>
+    <button class="nav-tab" id="nt-optimizer" onclick="goTab('optimizer')">Optimizer</button>
+    <button class="nav-tab" id="nt-live" onclick="goTab('live')">
+      <div class="dot"></div>Live Bot
+    </button>
+    <button class="nav-tab" id="nt-settings" onclick="goTab('settings')">Settings</button>
+    <a href="/upload" target="_blank" class="nav-tab">Upload ↗</a>
+  </div>
+  <div id="topbar-right">
+    <div id="bot-indicator"><div class="dot"></div><span id="bot-pill-txt">OFFLINE</span></div>
+  </div>
 </div>
 
-<div id="main">
-<!-- ═══════════ SIDEBAR ═══════════ -->
-<div id="sidebar">
+<div id="shell">
 
-  <!-- Data -->
-  <div class="spanel">
-    <div class="ptitle">Data Source</div>
-    <label class="lbl">Exchange</label>
+<!-- ═══ LEFT RAIL ═══ -->
+<div id="rail">
+
+  <!-- Data Source -->
+  <div class="rail-section">
+    <div class="rsec-title">Data Source</div>
+    <label class="fl">Exchange</label>
     <select id="s-ex"><option value="bybit">Bybit</option><option value="pionex">Pionex</option></select>
-    <label class="lbl">Symbol</label>
+    <label class="fl">Symbol</label>
     <input type="text" id="s-sym" value="XMR/USDT:USDT">
-    <label class="lbl">Timeframe</label>
+    <label class="fl">Timeframe</label>
     <select id="s-tf">
       <option value="1m">1m</option><option value="5m">5m</option><option value="15m">15m</option>
       <option value="30m" selected>30m</option><option value="1h">1h</option><option value="4h">4h</option><option value="1d">1d</option>
     </select>
-    <label class="lbl">Intrabar TF</label>
-    <select id="s-itf"><option value="1m" selected>1m</option><option value="5m">5m</option><option value="15m">15m</option></select>
-    <div class="chk"><input type="checkbox" id="s-intra" checked><span>Intrabar simulation (1m)</span></div>
-    <div class="chk"><input type="checkbox" id="s-tick"><span>Tick mode <span style="color:var(--c);font-size:0.65rem">— use raw ticks for exits (most accurate)</span></span></div>
-    <div id="tick-info" style="margin-top:4px;font-size:0.7rem;color:var(--t3);display:none"></div>
-    <div id="cache-info" style="margin-top:10px;font-size:0.72rem;color:var(--t3)">No cache loaded</div>
-    <div class="brow">
-      <button class="btn c sm" onclick="fetchData(false)">Update Cache</button>
-      <button class="btn sm" onclick="fetchData(true)">Full Rescan</button>
-      <button class="btn sm" onclick="checkIntegrity()">Check Integrity</button>
+    <div id="cache-info" style="margin-top:8px;font-family:var(--mono);font-size:0.68rem;color:var(--t3)">No cache</div>
+    <div class="brow" style="margin-top:8px">
+      <button class="btn sm c" onclick="fetchData(false)">↻ Update Cache</button>
+      <button class="btn sm ghost" onclick="fetchData(true)">Full Scan</button>
     </div>
     <div id="fetch-msg"></div>
-    <div id="integrity-result" style="display:none;margin-top:10px;font-size:0.72rem"></div>
+    <div id="integrity-result" style="display:none;margin-top:8px;font-family:var(--mono);font-size:0.68rem"></div>
+    <button class="btn sm ghost" style="margin-top:6px" onclick="checkIntegrity()">Check Integrity</button>
   </div>
 
-  <!-- Date Range -->
-  <div class="spanel">
-    <div class="ptitle">Backtest Date Range</div>
-    <label class="lbl">From</label>
-    <input type="date" id="s-from">
-    <label class="lbl">To</label>
-    <input type="date" id="s-to">
-    <div class="brow">
-      <button class="btn sm" onclick="clearDateRange()">Clear (all data)</button>
-    </div>
+  <!-- Simulation Mode -->
+  <div class="rail-section">
+    <div class="rsec-title">Simulation</div>
+    <label class="fl">Intrabar TF</label>
+    <select id="s-itf"><option value="1m" selected>1m</option><option value="5m">5m</option><option value="15m">15m</option></select>
+    <div class="chk"><input type="checkbox" id="s-intra" checked><span>1m intrabar exits</span></div>
+    <div class="chk"><input type="checkbox" id="s-tick"><span>Tick mode (most accurate)</span></div>
+    <div id="tick-info" style="margin-top:6px;font-family:var(--mono);font-size:0.65rem;color:var(--t3)"></div>
   </div>
 
   <!-- Strategy -->
-  <div class="spanel">
-    <div class="ptitle">Strategy</div>
-    <label class="lbl">Fast EMA / Slow EMA</label>
+  <div class="rail-section">
+    <div class="rsec-title">Strategy</div>
+    <label class="fl">Fast / Slow EMA</label>
     <div class="row2"><input type="number" id="p-fast" value="9" min="1"><input type="number" id="p-slow" value="21" min="1"></div>
-    <label class="lbl">TP % / SL %</label>
+    <label class="fl">TP % / SL %</label>
     <div class="row2"><input type="number" id="p-tp" value="2.0" step="0.1"><input type="number" id="p-sl" value="1.0" step="0.1"></div>
     <div class="chk"><input type="checkbox" id="p-trailing" checked><span>Trailing stop</span></div>
     <div class="chk"><input type="checkbox" id="p-atr-tsl" checked><span>ATR trailing</span></div>
-    <label class="lbl">ATR Length / Multiplier</label>
+    <label class="fl">ATR Length / Mult</label>
     <div class="row2"><input type="number" id="p-atr-len" value="9"><input type="number" id="p-atr-mult" value="10.0" step="0.5"></div>
-    <label class="lbl">Trail % (non-ATR fallback)</label>
+    <label class="fl">Trail % fallback</label>
     <input type="number" id="p-trail" value="1.0" step="0.1">
-    <label class="lbl">TSL Mode</label>
+    <label class="fl">TSL Mode</label>
     <select id="p-tsl"><option value="intrabar" selected>Intrabar</option><option value="barclose">Bar Close</option></select>
     <div class="div"></div>
-    <div class="chk"><input type="checkbox" id="p-all-exits"><span>All exits (opposite signal)</span></div>
+    <div class="chk"><input type="checkbox" id="p-all-exits"><span>All exits (signal)</span></div>
     <div class="chk"><input type="checkbox" id="p-tiered" onchange="tog('tiered-g',this.checked)"><span>Tiered TSL</span></div>
-    <div id="tiered-g" style="display:none">
-      <label class="lbl">Tier1 Profit% / TSL%</label>
+    <div id="tiered-g" style="display:none;margin-top:6px">
+      <label class="fl">T1 Profit% / TSL%</label>
       <div class="row2"><input type="number" id="p-t1p" value="5.0" step="0.5"><input type="number" id="p-t1t" value="3.0" step="0.5"></div>
-      <label class="lbl">Tier2 Profit% / TSL%</label>
+      <label class="fl">T2 Profit% / TSL%</label>
       <div class="row2"><input type="number" id="p-t2p" value="10.0" step="0.5"><input type="number" id="p-t2t" value="2.0" step="0.5"></div>
-      <label class="lbl">Tier3 TSL%</label>
+      <label class="fl">T3 TSL%</label>
       <input type="number" id="p-t3t" value="1.0" step="0.5">
     </div>
     <div class="div"></div>
     <div class="chk"><input type="checkbox" id="p-vol" onchange="tog('vol-g',this.checked)"><span>Volume filter</span></div>
     <div id="vol-g" style="display:none">
-      <label class="lbl">Vol multiplier</label><input type="number" id="p-vol-mult" value="1.5" step="0.1">
+      <label class="fl">Vol mult</label><input type="number" id="p-vol-mult" value="1.5" step="0.1">
     </div>
     <div class="chk"><input type="checkbox" id="p-adx" onchange="tog('adx-g',this.checked)"><span>ADX filter</span></div>
     <div id="adx-g" style="display:none">
-      <label class="lbl">ADX Length / Threshold</label>
+      <label class="fl">Length / Threshold</label>
       <div class="row2"><input type="number" id="p-adx-len" value="14"><input type="number" id="p-adx-thresh" value="25"></div>
     </div>
   </div>
 
   <!-- Capital -->
-  <div class="spanel">
-    <div class="ptitle">Capital & Costs</div>
-    <label class="lbl">Initial Capital ($)</label>
+  <div class="rail-section">
+    <div class="rsec-title">Capital & Costs</div>
+    <label class="fl">Capital ($)</label>
     <input type="number" id="p-cap" value="1000" step="100">
-    <label class="lbl">Fee % (per side)</label>
-    <input type="number" id="p-fee" value="0.055" step="0.001">
-    <label class="lbl">Slippage %</label>
-    <input type="number" id="p-slip" value="0.0143" step="0.001">
+    <label class="fl">Fee % / Slippage %</label>
+    <div class="row2">
+      <input type="number" id="p-fee" value="0.055" step="0.001">
+      <input type="number" id="p-slip" value="0.0143" step="0.001">
+    </div>
     <div class="chk"><input type="checkbox" id="p-comp" checked><span>Compounding</span></div>
   </div>
 
+  <!-- Date Range (backtest) -->
+  <div class="rail-section">
+    <div class="rsec-title">Date Range</div>
+    <div class="row2">
+      <div><label class="fl">From</label><input type="date" id="s-from"></div>
+      <div><label class="fl">To</label><input type="date" id="s-to"></div>
+    </div>
+    <button class="btn xs ghost" style="margin-top:6px" onclick="clearDateRange()">Clear</button>
+  </div>
+
   <!-- Presets -->
-  <div class="spanel">
-    <div class="ptitle">Presets</div>
-    <div style="display:flex;gap:7px;margin-bottom:10px">
-      <input type="text" id="preset-name" placeholder="preset name" style="flex:1">
+  <div class="rail-section">
+    <div class="rsec-title">Presets</div>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <input type="text" id="preset-name" placeholder="name..." style="flex:1">
       <button class="btn sm y" onclick="savePreset()">Save</button>
     </div>
     <div id="presets-list"></div>
   </div>
 
   <!-- Run -->
-  <div class="spanel">
-    <button class="btn y" style="width:100%;padding:11px;font-size:0.8rem" onclick="runBacktest()">▶ Run Backtest</button>
+  <div class="rail-section" style="padding-bottom:16px">
+    <button class="btn y full" onclick="runBacktest()">▶ Run Backtest</button>
     <div id="bt-msg"></div>
   </div>
 
-</div>
-<!-- ═══════════ CONTENT ═══════════ -->
+</div><!-- /rail -->
+
+<!-- ═══ CONTENT ═══ -->
 <div id="content">
 
-<!-- ─── BACKTEST ─── -->
-<div id="tab-backtest" class="tabview active">
-  <div id="bt-empty" class="empty">
-    <div class="big">NO RESULTS</div>
-    <div class="sub">Configure settings and run a backtest</div>
+<!-- ─── BACKTEST TAB ─── -->
+<div id="tab-backtest" class="tab-panel active scrollable">
+  <div id="bt-empty" class="empty-state" style="display:flex">
+    <div class="big">BACKTEST</div>
+    <div class="sub">Configure strategy and run</div>
   </div>
   <div id="bt-results" style="display:none">
-    <div id="bt-stats" class="sgrid c4"></div>
-    <!-- chart -->
-    <div class="chart-wrap">
-      <div class="chart-hdr">
-        <span class="cht" id="chart-title">EQUITY CURVE</span>
+    <div id="bt-stats" class="stats-row" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="chart-block">
+      <div class="chart-bar">
+        <span id="chart-title" class="label">EQUITY CURVE</span>
         <div class="chart-togs">
           <button class="btn sm act" id="tog-eq" onclick="togChart('eq')">Equity</button>
-          <button class="btn sm act" id="tog-bh" onclick="togChart('bh')">Buy &amp; Hold</button>
-          <button class="btn sm" id="tog-dd" onclick="togChart('dd')">Drawdown</button>
+          <button class="btn sm act" id="tog-bh" onclick="togChart('bh')">B&amp;H</button>
+          <button class="btn sm" id="tog-dd" onclick="togChart('dd')">DD</button>
         </div>
       </div>
-      <div class="chart-body"><canvas id="eq-chart" height="280"></canvas></div>
+      <div class="chart-body"><canvas id="eq-chart" height="220"></canvas></div>
       <div id="dd-wrap" style="display:none;border-top:1px solid var(--b1)">
-        <div class="chart-body"><canvas id="dd-chart" height="80"></canvas></div>
+        <div class="chart-body"><canvas id="dd-chart" height="70"></canvas></div>
       </div>
     </div>
-    <div id="bt-stats2" class="sgrid c5" style="border-top:1px solid var(--b1)"></div>
-    <div class="shead">
-      <span class="ht">TRADES</span>
+    <div id="bt-stats2" class="stats-row" style="grid-template-columns:repeat(5,1fr)"></div>
+    <div class="sec-head">
+      <span class="title">Trade History</span>
       <div style="display:flex;gap:8px;align-items:center">
-        <span id="bt-trade-cnt" class="tm" style="font-size:0.7rem"></span>
-        <button class="btn sm" id="bt-export-btn" onclick="exportCSV()" style="display:none">Export CSV</button>
+        <span id="bt-trade-cnt" class="tm" style="font-family:var(--mono);font-size:0.68rem"></span>
+        <button class="btn xs" id="bt-export-btn" onclick="exportCSV()" style="display:none">Export CSV</button>
       </div>
     </div>
-    <div class="tbl-wrap" style="max-height:500px">
+    <div class="tbl-wrap">
       <table class="tbl">
         <thead><tr>
-          <th style="text-align:left">Entry</th><th style="text-align:left">Exit</th>
-          <th>Dir</th><th>Entry $</th><th>Exit $</th><th>P&L %</th><th>P&L $</th><th>Reason</th>
+          <th>Entry Time</th><th>Exit Time</th>
+          <th>Dir</th><th>Entry</th><th>Exit</th><th>P&L %</th><th>P&L $</th><th>Exit Reason</th>
         </tr></thead>
         <tbody id="bt-tbody"></tbody>
       </table>
@@ -304,378 +430,322 @@ code{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--c);back
   </div>
 </div>
 
-<!-- ─── OPTIMIZER ─── -->
-<div id="tab-optimizer" class="tabview">
-  <div style="display:flex;height:100%">
-    <!-- opt sidebar -->
-    <div style="width:320px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--surf);overflow-y:auto">
-      <div class="spanel">
-        <div class="ptitle">Parameter Ranges <span class="tm" style="font-size:0.62rem">min : step : max</span></div>
+<!-- ─── OPTIMIZER TAB ─── -->
+<div id="tab-optimizer" class="tab-panel" style="flex-direction:row">
 
-        <!-- Each param row -->
-        <div id="opt-params">
-          <!-- fast ema -->
-          <div class="rg-row">
-            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
-              <input type="checkbox" id="op-fast" style="accent-color:var(--y)">
-              <span class="rn" style="width:auto;font-size:0.72rem;color:var(--t2)">Fast EMA</span>
-            </label>
-            <input type="number" id="op-fast-a" value="5" min="1">
-            <span class="sep">:</span>
-            <input type="number" id="op-fast-s" value="2" min="1" style="width:45px">
-            <span class="sep">:</span>
-            <input type="number" id="op-fast-b" value="20" min="1">
-          </div>
-          <div class="rg-row">
-            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
-              <input type="checkbox" id="op-slow" style="accent-color:var(--y)">
-              <span style="font-size:0.72rem;color:var(--t2)">Slow EMA</span>
-            </label>
-            <input type="number" id="op-slow-a" value="15" min="1">
-            <span class="sep">:</span>
-            <input type="number" id="op-slow-s" value="3" min="1" style="width:45px">
-            <span class="sep">:</span>
-            <input type="number" id="op-slow-b" value="40" min="1">
-          </div>
-          <div class="rg-row">
-            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
-              <input type="checkbox" id="op-atrlen" style="accent-color:var(--y)">
-              <span style="font-size:0.72rem;color:var(--t2)">ATR Length</span>
-            </label>
-            <input type="number" id="op-atrlen-a" value="5" min="1">
-            <span class="sep">:</span>
-            <input type="number" id="op-atrlen-s" value="2" min="1" style="width:45px">
-            <span class="sep">:</span>
-            <input type="number" id="op-atrlen-b" value="20" min="1">
-          </div>
-          <div class="rg-row">
-            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
-              <input type="checkbox" id="op-atrmult" style="accent-color:var(--y)">
-              <span style="font-size:0.72rem;color:var(--t2)">ATR Mult</span>
-            </label>
-            <input type="number" id="op-atrmult-a" value="5" step="0.5">
-            <span class="sep">:</span>
-            <input type="number" id="op-atrmult-s" value="1" step="0.5" style="width:45px">
-            <span class="sep">:</span>
-            <input type="number" id="op-atrmult-b" value="15" step="0.5">
-          </div>
-          <div class="rg-row">
-            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
-              <input type="checkbox" id="op-tp" style="accent-color:var(--y)">
-              <span style="font-size:0.72rem;color:var(--t2)">TP %</span>
-            </label>
-            <input type="number" id="op-tp-a" value="1" step="0.5">
-            <span class="sep">:</span>
-            <input type="number" id="op-tp-s" value="0.5" step="0.5" style="width:45px">
-            <span class="sep">:</span>
-            <input type="number" id="op-tp-b" value="5" step="0.5">
-          </div>
-          <div class="rg-row">
-            <label style="display:flex;align-items:center;gap:7px;width:110px;flex-shrink:0;cursor:pointer">
-              <input type="checkbox" id="op-trail" style="accent-color:var(--y)">
-              <span style="font-size:0.72rem;color:var(--t2)">Trail %</span>
-            </label>
-            <input type="number" id="op-trail-a" value="0.5" step="0.25">
-            <span class="sep">:</span>
-            <input type="number" id="op-trail-s" value="0.25" step="0.25" style="width:45px">
-            <span class="sep">:</span>
-            <input type="number" id="op-trail-b" value="3" step="0.25">
-          </div>
+  <!-- Opt controls -->
+  <div style="width:300px;flex-shrink:0;border-right:1px solid var(--b1);background:var(--s1);overflow-y:auto">
+    <div class="rail-section">
+      <div class="rsec-title">Parameter Ranges <span style="font-size:0.58rem;letter-spacing:0.5px;text-transform:none;color:var(--t3)"> min : step : max</span></div>
+      <div id="opt-params">
+        <div class="rg-row">
+          <label><input type="checkbox" id="op-fast" style="accent-color:var(--y)"><span>Fast EMA</span></label>
+          <input type="number" id="op-fast-a" value="5" min="1">
+          <span class="sep">:</span><input type="number" id="op-fast-s" value="2" min="1" style="width:40px">
+          <span class="sep">:</span><input type="number" id="op-fast-b" value="20" min="1">
         </div>
-
-        <div class="div"></div>
-        <label class="lbl">Walk-forward split</label>
-        <select id="op-wf">
-          <option value="">100% in-sample (no holdout)</option>
-          <option value="0.6">60% in-sample / 40% OOS</option>
-          <option value="0.7" selected>70% in-sample / 30% OOS</option>
-          <option value="0.8">80% in-sample / 20% OOS</option>
-        </select>
-        <label class="lbl">Max DD filter (%)</label>
-        <input type="number" id="op-dd" value="-60">
-        <div class="chk"><input type="checkbox" id="op-cache" checked><span>Skip already-cached combos</span></div>
-        <div id="op-combo-preview" style="margin-top:10px;font-size:0.72rem;color:var(--t3)">Select params above</div>
-        <div class="brow">
-          <button class="btn y" style="flex:1;padding:10px" onclick="runOpt()">▶ Run Optimizer</button>
+        <div class="rg-row">
+          <label><input type="checkbox" id="op-slow" style="accent-color:var(--y)"><span>Slow EMA</span></label>
+          <input type="number" id="op-slow-a" value="15" min="1">
+          <span class="sep">:</span><input type="number" id="op-slow-s" value="3" min="1" style="width:40px">
+          <span class="sep">:</span><input type="number" id="op-slow-b" value="40" min="1">
         </div>
-        <div class="brow">
-          <button class="btn sm" onclick="exportCombos()">Export Combos CSV</button>
-          <label class="btn sm" style="cursor:pointer">Upload Results <input type="file" accept=".csv" style="display:none" onchange="uploadResults(this)"></label>
+        <div class="rg-row">
+          <label><input type="checkbox" id="op-atrlen" style="accent-color:var(--y)"><span>ATR Len</span></label>
+          <input type="number" id="op-atrlen-a" value="5" min="1">
+          <span class="sep">:</span><input type="number" id="op-atrlen-s" value="2" min="1" style="width:40px">
+          <span class="sep">:</span><input type="number" id="op-atrlen-b" value="20" min="1">
         </div>
-        <div id="op-msg"></div>
-        <div id="op-prog-wrap" style="display:none;margin-top:10px">
-          <div style="font-size:0.68rem;color:var(--t3);margin-bottom:5px" id="op-prog-txt">0 / 0</div>
-          <div class="pbar-wrap"><div class="pbar-fill" id="op-prog-bar" style="width:0%"></div></div>
+        <div class="rg-row">
+          <label><input type="checkbox" id="op-atrmult" style="accent-color:var(--y)"><span>ATR Mult</span></label>
+          <input type="number" id="op-atrmult-a" value="5" step="0.5">
+          <span class="sep">:</span><input type="number" id="op-atrmult-s" value="1" step="0.5" style="width:40px">
+          <span class="sep">:</span><input type="number" id="op-atrmult-b" value="15" step="0.5">
+        </div>
+        <div class="rg-row">
+          <label><input type="checkbox" id="op-tp" style="accent-color:var(--y)"><span>TP %</span></label>
+          <input type="number" id="op-tp-a" value="1" step="0.5">
+          <span class="sep">:</span><input type="number" id="op-tp-s" value="0.5" step="0.5" style="width:40px">
+          <span class="sep">:</span><input type="number" id="op-tp-b" value="5" step="0.5">
+        </div>
+        <div class="rg-row">
+          <label><input type="checkbox" id="op-trail" style="accent-color:var(--y)"><span>Trail %</span></label>
+          <input type="number" id="op-trail-a" value="0.5" step="0.25">
+          <span class="sep">:</span><input type="number" id="op-trail-s" value="0.25" step="0.25" style="width:40px">
+          <span class="sep">:</span><input type="number" id="op-trail-b" value="3" step="0.25">
         </div>
       </div>
-    </div>
-
-    <!-- opt results -->
-    <div style="flex:1;overflow-y:auto;min-width:0">
-      <div id="op-empty" class="empty">
-        <div class="big">OPTIMIZER</div>
-        <div class="sub">Enable params and run</div>
+      <div class="div"></div>
+      <label class="fl">Walk-forward split</label>
+      <select id="op-wf">
+        <option value="">100% in-sample</option>
+        <option value="0.6">60% IS / 40% OOS</option>
+        <option value="0.7" selected>70% IS / 30% OOS</option>
+        <option value="0.8">80% IS / 20% OOS</option>
+      </select>
+      <label class="fl">Max DD filter %</label>
+      <input type="number" id="op-dd" value="-60">
+      <div class="chk"><input type="checkbox" id="op-cache" checked><span>Skip cached combos</span></div>
+      <div id="op-combo-preview" style="margin-top:8px;font-family:var(--mono);font-size:0.68rem;color:var(--t3)">Select params above</div>
+      <div class="div"></div>
+      <button class="btn y full" onclick="runOpt()">▶ Run Optimizer</button>
+      <div class="brow" style="margin-top:6px">
+        <button class="btn sm ghost" onclick="exportCombos()">Export CSV</button>
+        <label class="btn sm ghost" style="cursor:pointer">Upload Results<input type="file" accept=".csv" style="display:none" onchange="uploadResults(this)"></label>
       </div>
-      <div id="op-results" style="display:none">
-        <div id="op-period" class="sgrid c4"></div>
-        <div class="shead">
-          <span class="ht">IN-SAMPLE — top 50 by score</span>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span id="op-total-txt" class="tm" style="font-size:0.7rem"></span>
-            <button class="btn sm c" onclick="applyBest()">Apply Best to Backtest</button>
-          </div>
-        </div>
-        <div class="opt-tbl-wrap">
-          <table class="tbl" id="op-is-tbl">
-            <thead><tr id="op-is-head"></tr></thead>
-            <tbody id="op-is-body"></tbody>
-          </table>
-        </div>
-        <div class="shead" style="margin-top:0">
-          <span class="ht">OUT-OF-SAMPLE holdout</span>
-          <span class="tm" style="font-size:0.7rem">never seen by optimizer</span>
-        </div>
-        <div class="opt-tbl-wrap">
-          <table class="tbl" id="op-oos-tbl">
-            <thead><tr id="op-oos-head"></tr></thead>
-            <tbody id="op-oos-body"></tbody>
-          </table>
-        </div>
+      <div id="op-msg"></div>
+      <div id="op-prog-wrap" style="display:none;margin-top:10px">
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--t3);margin-bottom:4px" id="op-prog-txt">0 / 0</div>
+        <div class="pbar-track"><div class="pbar-fill" id="op-prog-bar" style="width:0%"></div></div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ─── LIVE BOT ─── -->
-<div id="tab-live" class="tabview">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1)">
+  <!-- Opt results -->
+  <div style="flex:1;overflow-y:auto;min-width:0" class="scrollable">
+    <div id="op-empty" class="empty-state" style="display:flex">
+      <div class="big">OPTIMIZER</div>
+      <div class="sub">Enable parameters above and run</div>
+    </div>
+    <div id="op-results" style="display:none">
+      <div id="op-period" class="stats-row" style="grid-template-columns:repeat(4,1fr)"></div>
+      <div class="sec-head">
+        <span class="title">In-Sample — Top 50 by Score</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="op-total-txt" style="font-family:var(--mono);font-size:0.65rem;color:var(--t3)"></span>
+          <button class="btn sm c" onclick="applyBest()">Apply Best →</button>
+        </div>
+      </div>
+      <div class="tbl-wrap" style="max-height:40vh">
+        <table class="tbl"><thead><tr id="op-is-head"></tr></thead><tbody id="op-is-body"></tbody></table>
+      </div>
+      <div class="sec-head" style="margin-top:0">
+        <span class="title">Out-of-Sample Holdout</span>
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--t3)">never seen by optimizer</span>
+      </div>
+      <div class="tbl-wrap" style="max-height:40vh">
+        <table class="tbl"><thead><tr id="op-oos-head"></tr></thead><tbody id="op-oos-body"></tbody></table>
+      </div>
+    </div>
+  </div>
 
-    <!-- Left: status + chart + signals -->
-    <div style="background:var(--surf);padding:24px">
-      <div class="ptitle">Position Status</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px">
+</div><!-- /optimizer -->
+
+<!-- ─── LIVE BOT TAB ─── -->
+<div id="tab-live" class="tab-panel">
+  <div id="live-panel">
+
+    <!-- Left: chart + signals -->
+    <div id="live-left">
+      <!-- Position status bar -->
+      <div style="display:flex;align-items:center;gap:0;background:var(--s2);border-bottom:1px solid var(--b1);flex-shrink:0;padding:8px 16px;gap:24px">
         <div>
-          <div style="font-size:0.62rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Position</div>
+          <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">Position</div>
           <div id="live-pos" class="pill flat">FLAT</div>
         </div>
         <div>
-          <div style="font-size:0.62rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Status</div>
-          <div id="live-status" style="font-size:0.82rem;color:var(--t3)">Offline</div>
+          <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">Entry</div>
+          <div id="live-ep" style="font-family:var(--mono);font-size:0.88rem;color:var(--t1)">—</div>
         </div>
         <div>
-          <div style="font-size:0.62rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Entry Price</div>
-          <div id="live-ep" style="font-size:0.9rem;color:var(--t1)">—</div>
+          <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">Trail Stop</div>
+          <div id="live-tsl" style="font-family:var(--mono);font-size:0.88rem;color:var(--y)">—</div>
         </div>
         <div>
-          <div style="font-size:0.62rem;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Trail Stop</div>
-          <div id="live-tsl" style="font-size:0.9rem;color:var(--t1)">—</div>
+          <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">P&L</div>
+          <div id="live-pnl" style="font-family:var(--mono);font-size:0.88rem;color:var(--t2)">—</div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">Status</div>
+          <div id="live-status" style="font-family:var(--mono);font-size:0.78rem;color:var(--t3)">Offline</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+          <button class="btn sm g" onclick="botStart()">▶ Start</button>
+          <button class="btn sm r" onclick="botStop()">■ Stop</button>
+          <button id="btn-manual-close" class="btn sm y" onclick="manualClose()" style="display:none">✕ Close Position</button>
+          <button class="btn sm ghost" onclick="loadLiveCandles()">↻ Chart</button>
         </div>
       </div>
-      <div class="brow" style="margin-bottom:16px">
-        <button class="btn c" onclick="botStart()">▶ Start Bot</button>
-        <button class="btn danger" onclick="botStop()">■ Stop Bot</button>
-        <button class="btn sm" onclick="loadLiveCandles()">Refresh Chart</button>
-      </div>
-      <div id="live-bot-msg"></div>
+      <div id="live-bot-msg" style="margin:0 12px;margin-top:4px"></div>
 
-      <!-- Candle chart — lightweight-charts -->
-      <div id="candle-chart-container">
-        <div class="shead" style="background:transparent;border-bottom:1px solid var(--b1)">
-          <span class="ht" id="live-chart-title">LIVE CHART</span>
-          <div style="display:flex;align-items:center;gap:10px">
-            <span id="live-chart-msg" class="tm" style="font-size:0.75rem"></span>
-            <button class="btn sm" onclick="loadLiveCandles()">↻ Refresh</button>
-          </div>
-        </div>
-        <div id="lw-chart" style="height:380px;width:100%"></div>
-      </div>
+      <!-- Live chart -->
+      <div id="lw-chart" style="flex:1;min-height:0"></div>
 
-      <div class="div" style="margin-top:16px"></div>
-      <div class="ptitle">Signal Log</div>
-      <div class="tbl-wrap" style="max-height:300px">
+      <!-- Signal log -->
+      <div class="sec-head">
+        <span class="title">Signal Log</span>
+        <span id="live-log-count" style="font-family:var(--mono);font-size:0.65rem;color:var(--t3)"></span>
+      </div>
+      <div class="tbl-wrap" style="max-height:200px;flex-shrink:0">
         <table class="tbl">
           <thead><tr>
-            <th style="text-align:left">Time (UTC)</th><th>Symbol</th><th>Action</th><th>Dir</th><th>Price</th><th style="text-align:left">Note</th>
+            <th>Time (UTC)</th><th>Symbol</th><th>Action</th><th>Dir</th><th>Price</th><th>Note</th>
           </tr></thead>
           <tbody id="live-sigs"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Right: full config (same as backtest sidebar) -->
-    <div style="background:var(--surf);padding:24px;overflow-y:auto">
-      <div class="ptitle">Bot Configuration <span class="tm" style="font-size:0.62rem">— changes take effect on next bar close</span></div>
-
-      <label class="lbl">Symbol</label><input type="text" id="bc-sym" value="XMR/USDT:USDT">
-      <label class="lbl">Timeframe</label>
-      <select id="bc-tf">
-        <option value="5m">5m</option><option value="15m">15m</option>
-        <option value="30m" selected>30m</option><option value="1h">1h</option>
-      </select>
-      <label class="lbl">Fast EMA / Slow EMA</label>
-      <div class="row2"><input type="number" id="bc-fast" value="9"><input type="number" id="bc-slow" value="21"></div>
-      <label class="lbl">TP % / SL %</label>
-      <div class="row2"><input type="number" id="bc-tp" value="2.0" step="0.1"><input type="number" id="bc-sl" value="1.0" step="0.1"></div>
-      <div class="chk"><input type="checkbox" id="bc-trailing" checked><span>Trailing stop</span></div>
-      <div class="chk"><input type="checkbox" id="bc-atr-tsl" checked><span>ATR trailing</span></div>
-      <label class="lbl">ATR Length / Multiplier</label>
-      <div class="row2"><input type="number" id="bc-atr-len" value="9"><input type="number" id="bc-atr-mult" value="10.0" step="0.5"></div>
-      <label class="lbl">Trail % (non-ATR)</label>
-      <input type="number" id="bc-trail" value="1.0" step="0.1">
-      <label class="lbl">TSL Mode</label>
-      <select id="bc-tsl"><option value="barclose" selected>Bar Close</option><option value="intrabar">Intrabar</option></select>
-      <label class="lbl">Tick Size</label>
-      <input type="number" id="bc-tick" value="0.01" step="0.01">
-      <div class="chk"><input type="checkbox" id="bc-tiered" onchange="tog('bc-tiered-g',this.checked)"><span>Tiered TSL</span></div>
-      <div id="bc-tiered-g" style="display:none">
-        <label class="lbl">Tier1 Profit% / TSL%</label>
-        <div class="row2"><input type="number" id="bc-t1p" value="5.0" step="0.5"><input type="number" id="bc-t1t" value="3.0" step="0.5"></div>
-        <label class="lbl">Tier2 Profit% / TSL%</label>
-        <div class="row2"><input type="number" id="bc-t2p" value="10.0" step="0.5"><input type="number" id="bc-t2t" value="2.0" step="0.5"></div>
-        <label class="lbl">Tier3 TSL%</label>
-        <input type="number" id="bc-t3t" value="1.0" step="0.5">
+    <!-- Right: bot config -->
+    <div id="live-right" class="scrollable">
+      <div class="rail-section">
+        <div class="rsec-title">Bot Config</div>
+        <label class="fl">Symbol</label><input type="text" id="bc-sym" value="XMR/USDT:USDT">
+        <label class="fl">Timeframe</label>
+        <select id="bc-tf">
+          <option value="5m">5m</option><option value="15m">15m</option>
+          <option value="30m" selected>30m</option><option value="1h">1h</option>
+        </select>
+        <label class="fl">Fast / Slow EMA</label>
+        <div class="row2"><input type="number" id="bc-fast" value="9"><input type="number" id="bc-slow" value="21"></div>
+        <label class="fl">TP % / Trail %</label>
+        <div class="row2"><input type="number" id="bc-tp" value="2.0" step="0.1"><input type="number" id="bc-trail" value="1.0" step="0.1"></div>
+        <label class="fl">ATR Length / Mult</label>
+        <div class="row2"><input type="number" id="bc-atr-len" value="9"><input type="number" id="bc-atr-mult" value="10.0" step="0.5"></div>
+        <div class="chk"><input type="checkbox" id="bc-atr-tsl" checked><span>ATR trailing</span></div>
+        <div class="chk"><input type="checkbox" id="bc-tiered" onchange="tog('bc-tiered-g',this.checked)"><span>Tiered TSL</span></div>
+        <div id="bc-tiered-g" style="display:none">
+          <label class="fl">T1 Profit%/TSL%</label>
+          <div class="row2"><input type="number" id="bc-t1p" value="5.0" step="0.5"><input type="number" id="bc-t1t" value="3.0" step="0.5"></div>
+          <label class="fl">T2 Profit%/TSL%</label>
+          <div class="row2"><input type="number" id="bc-t2p" value="10.0" step="0.5"><input type="number" id="bc-t2t" value="2.0" step="0.5"></div>
+          <label class="fl">T3 TSL%</label><input type="number" id="bc-t3t" value="1.0" step="0.5">
+        </div>
+        <div class="chk"><input type="checkbox" id="bc-vol" onchange="tog('bc-vol-g',this.checked)"><span>Volume filter</span></div>
+        <div id="bc-vol-g" style="display:none">
+          <label class="fl">Vol mult</label><input type="number" id="bc-vol-mult" value="1.5" step="0.1">
+        </div>
+        <div class="chk"><input type="checkbox" id="bc-adx" onchange="tog('bc-adx-g',this.checked)"><span>ADX filter</span></div>
+        <div id="bc-adx-g" style="display:none">
+          <label class="fl">Length / Threshold</label>
+          <div class="row2"><input type="number" id="bc-adx-len" value="14"><input type="number" id="bc-adx-thresh" value="25"></div>
+        </div>
+        <div class="div"></div>
+        <div class="rsec-title">Webhook (Pionex)</div>
+        <label class="fl">Webhook URL</label>
+        <input type="text" id="bc-webhook" placeholder="https://www.pionex.com/signal/...">
+        <label class="fl">Signal Type UUID</label>
+        <input type="text" id="bc-sigtype" placeholder="xxxxxxxx-xxxx-...">
+        <label class="fl">Pionex Symbol</label>
+        <input type="text" id="bc-psym" value="XMR_USDT">
+        <label class="fl">Contracts</label>
+        <input type="text" id="bc-contracts" value="0.1">
+        <div class="brow" style="margin-top:12px">
+          <button class="btn y full" onclick="saveBotCfg()">Save Config</button>
+        </div>
+        <div id="bc-msg"></div>
       </div>
-      <div class="chk"><input type="checkbox" id="bc-vol" onchange="tog('bc-vol-g',this.checked)"><span>Volume filter</span></div>
-      <div id="bc-vol-g" style="display:none">
-        <label class="lbl">Vol multiplier</label><input type="number" id="bc-vol-mult" value="1.5" step="0.1">
-      </div>
-      <div class="chk"><input type="checkbox" id="bc-adx" onchange="tog('bc-adx-g',this.checked)"><span>ADX filter</span></div>
-      <div id="bc-adx-g" style="display:none">
-        <label class="lbl">ADX Length / Threshold</label>
-        <div class="row2"><input type="number" id="bc-adx-len" value="14"><input type="number" id="bc-adx-thresh" value="25"></div>
-      </div>
-
-      <div class="div"></div>
-      <div class="ptitle">Webhook (Pionex)</div>
-      <label class="lbl">Webhook URL</label>
-      <input type="text" id="bc-webhook" placeholder="https://www.pionex.com/signal/...">
-      <label class="lbl">Signal Type (UUID)</label>
-      <input type="text" id="bc-sigtype" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-      <label class="lbl">Pionex Symbol</label>
-      <input type="text" id="bc-psym" value="XMR_USDT">
-      <label class="lbl">Contracts</label>
-      <input type="text" id="bc-contracts" value="0.1">
-
-      <div class="brow" style="margin-top:18px">
-        <button class="btn y" style="flex:1;padding:10px" onclick="saveBotCfg()">Save Config</button>
-      </div>
-      <div id="bc-msg"></div>
     </div>
-  </div>
-</div>
 
-<!-- ─── SETTINGS ─── -->
-<div id="tab-settings" class="tabview">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b1);max-width:900px">
-    <div style="background:var(--surf);padding:28px">
-      <div class="ptitle">Change Password</div>
-      <label class="lbl">Current Password</label>
+  </div>
+</div><!-- /live -->
+
+<!-- ─── SETTINGS TAB ─── -->
+<div id="tab-settings" class="tab-panel scrollable">
+  <div style="max-width:700px;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div class="rsec-title" style="margin-bottom:14px">Change Password</div>
+      <label class="fl">Current Password</label>
       <input type="password" id="set-pw-cur" autocomplete="current-password">
-      <label class="lbl">New Password</label>
+      <label class="fl">New Password</label>
       <input type="password" id="set-pw-new" autocomplete="new-password">
-      <label class="lbl">Confirm New Password</label>
+      <label class="fl">Confirm</label>
       <input type="password" id="set-pw-conf" autocomplete="new-password">
-      <div class="brow"><button class="btn y" style="flex:1;padding:10px" onclick="changePw()">Update Password</button></div>
+      <div class="brow"><button class="btn y full" style="margin-top:10px" onclick="changePw()">Update Password</button></div>
       <div id="set-pw-msg"></div>
-      <div class="div" style="margin-top:20px"></div>
-      <div class="ptitle">Change Username</div>
-      <label class="lbl">New Username</label>
+      <div class="div" style="margin-top:16px"></div>
+      <div class="rsec-title" style="margin-bottom:14px">Change Username</div>
+      <label class="fl">New Username</label>
       <input type="text" id="set-uname" autocomplete="username">
-      <label class="lbl">Current Password</label>
+      <label class="fl">Current Password</label>
       <input type="password" id="set-uname-pw" autocomplete="current-password">
-      <div class="brow"><button class="btn c" style="flex:1;padding:10px" onclick="changeUname()">Update Username</button></div>
+      <div class="brow"><button class="btn c full" style="margin-top:10px" onclick="changeUname()">Update Username</button></div>
       <div id="set-uname-msg"></div>
     </div>
-    <div style="background:var(--surf);padding:28px">
-      <div class="ptitle">Security Info</div>
-      <div style="color:var(--t2);font-size:0.8rem;line-height:2">
-        <p>Sessions stay active for 30 days.</p>
-        <p>Passwords stored as SHA-256 hashes in <code>auth.json</code>.</p>
-        <p style="color:var(--y);margin-top:8px">⚠ Change the default password (changeme123) immediately.</p>
-      </div>
-      <div class="div" style="margin-top:20px"></div>
-      <div class="ptitle">Session</div>
-      <a href="/logout" class="btn danger" style="display:inline-block;text-decoration:none;margin-top:8px;padding:9px 20px">Log Out</a>
+    <div>
+      <div class="rsec-title" style="margin-bottom:14px">Session</div>
+      <p style="font-family:var(--mono);font-size:0.72rem;color:var(--t2);line-height:1.8;margin-bottom:12px">
+        Sessions active 30 days.<br>
+        Passwords hashed SHA-256.<br>
+        <span style="color:var(--y)">⚠ Change default password immediately.</span>
+      </p>
+      <a href="/logout" class="btn r" style="display:inline-block;text-decoration:none">Log Out</a>
     </div>
   </div>
 </div>
 
 </div><!-- /content -->
-</div><!-- /main -->
+</div><!-- /shell -->
 
 <script>
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════
 let curTab='backtest', curResult=null, curCK=null, curOptJob=null, optResults=null;
 let chartState={eq:true,bh:true,dd:false};
-let eqChart=null, ddChart=null, candleChart=null;
+let eqChart=null, ddChart=null, _lwChart=null;
 let btPoll=null, optPoll=null, botPoll=null, fetchPoll=null;
 
-// ── TAB ──
+function el(id){return document.getElementById(id)}
+function v(id){return el(id)?.value??''}
+function tog(id,show){el(id).style.display=show?'':'none'}
+function showMsg(id,html,type){el(id).innerHTML=`<div class="msg ${type}">${html}</div>`}
+function fmtN(n,d=2){return n==null?'—':Number(n).toFixed(d)}
+function colorCls(n){return n>=0?'tg':'tr'}
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
 function goTab(t){
   curTab=t;
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    b.classList.toggle('active',['backtest','optimizer','live','settings','upload'][i]===t);
+  document.querySelectorAll('.nav-tab').forEach(b=>{
+    const id=b.id?.replace('nt-','');
+    b.classList.toggle('active', id===t);
+    if(id==='live') b.classList.toggle('live-active', id===t);
   });
-  document.querySelectorAll('.tabview').forEach(v=>v.classList.remove('active'));
-  const panel=document.getElementById('tab-'+t);
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  const panel=el('tab-'+t);
   if(panel) panel.classList.add('active');
-  if(t==='live'){startBotPoll(); loadLiveCandles();}
+  if(t==='live'){startBotPoll();loadLiveCandles();}
   else stopBotPoll();
   if(t==='backtest'){
     loadPresets();
-    // Re-render backtest results if we have them
-    if(curResult){
-      el('bt-empty').style.display='none';
-      el('bt-results').style.display='block';
-      renderCharts(curResult);
-    }
+    if(curResult){el('bt-empty').style.display='none';el('bt-results').style.display='block';renderCharts(curResult);}
   }
-  if(t==='optimizer'){
-    // Re-render optimizer results if we have them
-    if(optResults){
-      el('op-empty').style.display='none';
-      el('op-results').style.display='block';
-      renderOptResults(optResults);
-    }
+  if(t==='optimizer' && optResults){
+    el('op-empty').style.display='none';el('op-results').style.display='block';
+    renderOptResults(optResults);
   }
 }
 
-// ── HELPERS ──
-function v(id){return document.getElementById(id)?.value??'';}
-function el(id){return document.getElementById(id);}
-function tog(id,show){el(id).style.display=show?'':'none';}
-function showMsg(id,html,type){el(id).innerHTML=`<div class="msg ${type}">${html}</div>`;}
-function fmtN(n,dec=2){return n==null?'—':Number(n).toFixed(dec);}
-function colorVal(n){return n>=0?'tg':'tr';}
-
-// ── CACHE STATUS ──
+// ══════════════════════════════════════
+// CACHE STATUS
+// ══════════════════════════════════════
 async function checkCacheStatus(){
   try{
     const r=await fetch(`/api/cache/status?exchange=${v('s-ex')}&symbol=${encodeURIComponent(v('s-sym'))}&timeframe=${v('s-tf')}`);
     const d=await r.json();
     const intra=d.intra_1m||{};
     const intraStr=intra.exists
-      ?`<span style="color:var(--g)">✓ 1m: ${intra.count.toLocaleString()} candles</span>`
-      :`<span style="color:var(--r)">✗ No 1m cache — intrabar simulation will be disabled</span>`;
+      ?`<span class="tg">✓ 1m: ${intra.count.toLocaleString()}</span>`
+      :`<span class="tr">✗ No 1m cache</span>`;
     el('cache-info').innerHTML=d.exists
-      ?`<div><span class="tc">${d.count.toLocaleString()} candles (${v('s-tf')})</span> &nbsp;·&nbsp; <span class="t2">${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</span></div><div style="margin-top:4px;font-size:0.72rem">${intraStr}</div>`
+      ?`<div class="tc" style="font-weight:500">${d.count.toLocaleString()} candles</div>`+
+        `<div style="margin-top:2px">${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</div>`+
+        `<div style="margin-top:4px">${intraStr}</div>`
       :'<span class="tm">No cache</span>';
-    // Check tick cache (graceful — pyarrow may not be installed yet)
+    // Tick status
     try{
       const tr=await fetch(`/api/tick/status?exchange=${v('s-ex')}&symbol=${encodeURIComponent(v('s-sym'))}`);
       if(tr.ok){
         const td=await tr.json();
         const ti=el('tick-info');
-        if(td.exists && !td.error){
-          ti.style.display='block';
-          ti.innerHTML=`<span style="color:var(--g)">✓ Tick cache: ${td.rows?.toLocaleString()} ticks · ${td.size_mb}MB · ${td.first?.slice(0,10)} → ${td.last?.slice(0,10)}</span>`;
+        if(td.exists&&!td.error){
+          ti.innerHTML=`<span class="tg">✓ Ticks: ${(td.rows||0).toLocaleString()} · ${td.size_mb}MB</span>`;
           el('s-tick').disabled=false;
         }else{
-          ti.style.display='block';
-          ti.innerHTML=td.error?`<span style="color:var(--mut)">${td.error}</span>`:'<span style="color:var(--mut)">No tick cache — upload .csv.gz files</span>';
-          el('s-tick').checked=false; el('s-tick').disabled=true;
+          ti.innerHTML=`<span class="tm">${td.error||'No tick cache'}</span>`;
+          el('s-tick').checked=false;el('s-tick').disabled=true;
         }
       }
     }catch(e){}
@@ -691,42 +761,43 @@ async function checkIntegrity(){
   const d=await r.json();
   if(d.error){el('integrity-result').innerHTML=`<span class="tr">${d.error}</span>`;return;}
   const gapHtml=d.gaps?.length>0
-    ?d.gaps.map(g=>`<div class="tr">Gap: ${g.from} → ${g.to} (${g.hours}h, ~${g.missing_bars} bars)</div>`).join('')
-    :'<span class="tg">✓ No gaps found</span>';
-  el('integrity-result').innerHTML=`<div class="tg">${d.total?.toLocaleString()} candles &nbsp;·&nbsp; ${d.first?.slice(0,10)} → ${d.last?.slice(0,10)}</div>
-    <div style="margin-top:6px">${gapHtml}</div>
-    ${d.duplicates>0?`<div class="tr">${d.duplicates} duplicate timestamps</div>`:''}`;
+    ?d.gaps.map(g=>`<div class="tr">Gap ${g.from}→${g.to} (${g.hours}h)</div>`).join('')
+    :'<span class="tg">✓ No gaps</span>';
+  el('integrity-result').innerHTML=`<div class="tg">${d.total?.toLocaleString()} candles ${d.first?.slice(0,10)}→${d.last?.slice(0,10)}</div><div style="margin-top:4px">${gapHtml}</div>${d.duplicates>0?`<div class="tr">${d.duplicates} dupes</div>`:''}`;
 }
 
 function clearDateRange(){el('s-from').value='';el('s-to').value='';}
 
-// ── FETCH ──
+// ══════════════════════════════════════
+// FETCH DATA — fetch BOTH 30m AND 1m
+// ══════════════════════════════════════
 async function fetchData(full){
   showMsg('fetch-msg','<span class="spin"></span> Fetching...','info');
+  const ex=v('s-ex'), sym=v('s-sym'), tf=v('s-tf');
+  // Always fetch both the selected TF and 1m for intrabar
   await fetch('/api/data/fetch',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({exchange:v('s-ex'),symbol:v('s-sym'),timeframe:v('s-tf'),force_full:full})});
+    body:JSON.stringify({exchange:ex,symbol:sym,timeframe:tf,force_full:full,also_fetch_1m:true})});
   clearInterval(fetchPoll);
-  const ex=v('s-ex'),sym=v('s-sym'),tf=v('s-tf');
   fetchPoll=setInterval(async()=>{
     const r=await fetch(`/api/data/fetch/status?exchange=${ex}&symbol=${encodeURIComponent(sym)}&timeframe=${tf}`);
     const d=await r.json();
     if(d.status==='done'){
       clearInterval(fetchPoll);
-      showMsg('fetch-msg',`✓ ${d.new} new candles | ${d.total?.toLocaleString()} total`,'ok');
+      showMsg('fetch-msg',`✓ ${d.new} new · ${d.total?.toLocaleString()} total`,'ok');
       checkCacheStatus();
-    }else if(d.status==='error'){
-      clearInterval(fetchPoll); showMsg('fetch-msg',d.message,'err');
-    }else{
-      showMsg('fetch-msg',`<span class="spin"></span> ${d.message||'Working...'}`,'info');
-    }
+    }else if(d.status==='error'){clearInterval(fetchPoll);showMsg('fetch-msg',d.message,'err');}
+    else showMsg('fetch-msg',`<span class="spin"></span> ${d.message||'Working...'}`,'info');
   },1200);
 }
 
-// ── BUILD CONFIG ──
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
 function buildConfig(){
   return{
     exchange:v('s-ex'),symbol:v('s-sym'),timeframe:v('s-tf'),
     intrabar_tf:v('s-itf'),use_intrabar:el('s-intra').checked,
+    use_tick_mode:el('s-tick').checked,
     capital:parseFloat(v('p-cap')),fee_pct:parseFloat(v('p-fee')),
     slippage_pct:parseFloat(v('p-slip')),compounding:el('p-comp').checked,
     tsl_mode:v('p-tsl'),
@@ -747,7 +818,9 @@ function buildConfig(){
   };
 }
 
-// ── BACKTEST ──
+// ══════════════════════════════════════
+// BACKTEST
+// ══════════════════════════════════════
 async function runBacktest(overrideCfg){
   const cfg=overrideCfg||buildConfig();
   showMsg('bt-msg','<span class="spin"></span> Running...','info');
@@ -756,7 +829,7 @@ async function runBacktest(overrideCfg){
   if(d.error){showMsg('bt-msg',d.error,'err');return;}
   if(d.cached){
     const res=await(await fetch(`/api/backtest/result/${d.jid.replace('bt_','')}`)).json();
-    renderBT(res);showMsg('bt-msg','✓ Loaded from cache','ok');return;
+    renderBT(res);showMsg('bt-msg','✓ Cached','ok');return;
   }
   clearInterval(btPoll);
   btPoll=setInterval(async()=>{
@@ -765,33 +838,30 @@ async function runBacktest(overrideCfg){
       clearInterval(btPoll);
       const res=await(await fetch(`/api/backtest/result/${s.combo_key}`)).json();
       renderBT(res);
-      if(s.intra_warning){
-        showMsg('bt-msg',`⚠ ${s.intra_warning}`,'err');
-      }else{
-        showMsg('bt-msg',`✓ Done${s.cached?' (cached)':''}`,'ok');
-      }
+      if(s.intra_warning) showMsg('bt-msg',`⚠ ${s.intra_warning}`,'warn');
+      else showMsg('bt-msg','✓ Done','ok');
     }else if(s.status==='error'){clearInterval(btPoll);showMsg('bt-msg',s.message,'err');}
   },600);
 }
 
 function renderBT(data){
-  curResult=data; curCK=data.combo_key;
-  el('bt-empty').style.display='none'; el('bt-results').style.display='block';
-  const s=data.summary; const rc=s.total_return>=0?'g':'r';
+  curResult=data;curCK=data.combo_key;
+  el('bt-empty').style.display='none';el('bt-results').style.display='block';
+  const s=data.summary;const rc=s.total_return>=0?'sv-g':'sv-r';
   el('bt-stats').innerHTML=`
-    <div class="sc"><div class="sl">Total Return</div><div class="sv ${rc}">${s.total_return>=0?'+':''}${fmtN(s.total_return)}%</div><div class="ss">$${fmtN(s.initial_capital,0)} → $${fmtN(s.final_capital,0)}</div></div>
-    <div class="sc"><div class="sl">Win Rate</div><div class="sv c">${fmtN(s.win_rate)}%</div><div class="ss">${s.wins}W / ${s.losses}L / ${s.total_trades} trades</div></div>
-    <div class="sc"><div class="sl">Max Drawdown</div><div class="sv r">${fmtN(s.max_dd)}%</div><div class="ss">mark-to-market</div></div>
-    <div class="sc"><div class="sl">Profit Factor</div><div class="sv ${s.profit_factor>=2?'g':s.profit_factor>=1.5?'y':'r'}">${fmtN(s.profit_factor,3)}</div><div class="ss">gross W / gross L</div></div>`;
+    <div class="stat-card"><div class="stat-label">Total Return</div><div class="stat-value ${rc}">${s.total_return>=0?'+':''}${fmtN(s.total_return)}%</div><div class="stat-sub">$${fmtN(s.initial_capital,0)} → $${fmtN(s.final_capital,0)}</div></div>
+    <div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value sv-c">${fmtN(s.win_rate)}%</div><div class="stat-sub">${s.wins}W / ${s.losses}L / ${s.total_trades} trades</div></div>
+    <div class="stat-card"><div class="stat-label">Max Drawdown</div><div class="stat-value sv-r">${fmtN(s.max_dd)}%</div><div class="stat-sub">mark-to-market</div></div>
+    <div class="stat-card"><div class="stat-label">Profit Factor</div><div class="stat-value ${s.profit_factor>=2?'sv-g':s.profit_factor>=1.5?'sv-y':'sv-r'}">${fmtN(s.profit_factor,3)}</div><div class="stat-sub">gross W / gross L</div></div>`;
   el('bt-stats2').innerHTML=`
-    <div class="sc"><div class="sl">Avg Win</div><div class="sv g">+${fmtN(s.avg_win,3)}%</div></div>
-    <div class="sc"><div class="sl">Avg Loss</div><div class="sv r">${fmtN(s.avg_loss,3)}%</div></div>
-    <div class="sc"><div class="sl">Total Fees</div><div class="sv t2">$${fmtN(s.total_fees,2)}</div></div>
-    <div class="sc"><div class="sl">Exits</div><div class="sv t2" style="font-size:0.9rem">TP:${s.exit_tp} TSL:${s.exit_tsl} SL:${s.exit_sl} Sig:${s.exit_signal}</div></div>
-    <div class="sc"><div class="sl">Data Range</div><div class="sv t2" style="font-size:0.85rem">${s.data_from?.slice(0,10)}</div><div class="ss">→ ${s.data_to?.slice(0,10)}</div></div>`;
+    <div class="stat-card"><div class="stat-label">Avg Win</div><div class="stat-value sv-g" style="font-size:1.1rem">+${fmtN(s.avg_win,3)}%</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Loss</div><div class="stat-value sv-r" style="font-size:1.1rem">${fmtN(s.avg_loss,3)}%</div></div>
+    <div class="stat-card"><div class="stat-label">Total Fees</div><div class="stat-value" style="font-size:1.1rem">$${fmtN(s.total_fees,2)}</div></div>
+    <div class="stat-card"><div class="stat-label">Exits</div><div class="stat-value" style="font-size:0.82rem;padding-top:4px">TP:${s.exit_tp} TSL:${s.exit_tsl} SL:${s.exit_sl} Sig:${s.exit_signal}</div></div>
+    <div class="stat-card"><div class="stat-label">Period</div><div class="stat-value" style="font-size:0.82rem;padding-top:4px">${s.data_from?.slice(0,10)}<br><span style="color:var(--t3)">→ ${s.data_to?.slice(0,10)}</span></div></div>`;
   const cfg=buildConfig();
-  const modeStr=cfg.use_tick_mode?'tick mode':cfg.use_intrabar?'1m intrabar':'bar close';
-el('chart-title').textContent=`${cfg.symbol} ${cfg.timeframe} · EMA ${cfg.params.fast_length}/${cfg.params.slow_length} · ${modeStr}${data.saved_at?' · cached '+data.saved_at?.slice(0,10):''}`;
+  const mode=cfg.use_tick_mode?'TICK':cfg.use_intrabar?'1M INTRABAR':'BAR CLOSE';
+  el('chart-title').textContent=`${cfg.symbol} ${cfg.timeframe} · EMA ${cfg.params.fast_length}/${cfg.params.slow_length} · ${mode}`;
   renderCharts(data);
   renderTradesTbl(data.trades);
   el('bt-trade-cnt').textContent=`${data.all_trades_count} total (showing last ${data.trades.length})`;
@@ -804,150 +874,128 @@ function renderCharts(data){
   const base={
     responsive:true,maintainAspectRatio:false,animation:false,
     interaction:{mode:'index',intersect:false},
-    plugins:{legend:{labels:{color:'#8899b8',font:{family:'IBM Plex Mono',size:11},boxWidth:14,padding:16}},
-             tooltip:{backgroundColor:'#0e1117',borderColor:'#1a2030',borderWidth:1,titleColor:'#8899b8',bodyColor:'#dce3ee',
-                      titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}}},
+    plugins:{
+      legend:{labels:{color:'#4a5a80',font:{family:'JetBrains Mono',size:10},boxWidth:12,padding:14}},
+      tooltip:{backgroundColor:'#0a0d16',borderColor:'#1c2340',borderWidth:1,titleColor:'#94a3c8',bodyColor:'#e2e8f8',titleFont:{family:'JetBrains Mono',size:10},bodyFont:{family:'JetBrains Mono',size:10}}
+    },
     scales:{
-      x:{ticks:{color:'#4d5e7a',maxTicksLimit:9,font:{family:'IBM Plex Mono',size:10}},grid:{color:'#0d1219'},border:{color:'#1a2030'}},
-      y:{ticks:{color:'#4d5e7a',font:{family:'IBM Plex Mono',size:10}},grid:{color:'#0d1219'},border:{color:'#1a2030'}}
+      x:{ticks:{color:'#2a3450',maxTicksLimit:9,font:{family:'JetBrains Mono',size:9}},grid:{color:'#0a0d16'},border:{color:'#1c2340'}},
+      y:{ticks:{color:'#2a3450',font:{family:'JetBrains Mono',size:9}},grid:{color:'#0a0d16'},border:{color:'#1c2340'}}
     }
   };
   const datasets=[];
-  if(chartState.eq) datasets.push({label:'Equity ($)',data:data.equity_curve.values,borderColor:'#0ecb81',backgroundColor:'rgba(14,203,129,0.06)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.2});
-  if(chartState.bh) datasets.push({label:'Buy & Hold',data:data.bh_curve.values,borderColor:'#3d4d66',backgroundColor:'transparent',borderWidth:1,pointRadius:0,borderDash:[5,5],tension:0.1});
+  if(chartState.eq) datasets.push({label:'Equity',data:data.equity_curve.values,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,0.06)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.2});
+  if(chartState.bh) datasets.push({label:'Buy & Hold',data:data.bh_curve.values,borderColor:'#2a3450',backgroundColor:'transparent',borderWidth:1,pointRadius:0,borderDash:[5,5],tension:0.1});
   const labels=chartState.eq?data.equity_curve.dates:data.bh_curve.dates;
-  // Tight Y bounds — start near the lowest value, end near highest
-const allVals=[...(chartState.eq?data.equity_curve.values:[]),...(chartState.bh?data.bh_curve.values:[])].filter(v=>v!=null);
-const yMin=allVals.length?Math.min(...allVals):0;
-const yMax=allVals.length?Math.max(...allVals):1000;
-const yPad=(yMax-yMin)*0.08||50;
-const tightOpts={...base,scales:{...base.scales,y:{...base.scales.y,min:Math.floor((yMin-yPad)/50)*50,max:Math.ceil((yMax+yPad)/50)*50}}};
-eqChart=new Chart(el('eq-chart').getContext('2d'),{type:'line',data:{labels,datasets},options:tightOpts});
+  const allVals=[...(chartState.eq?data.equity_curve.values:[]),...(chartState.bh?data.bh_curve.values:[])].filter(v=>v!=null);
+  const yMin=allVals.length?Math.min(...allVals):0;
+  const yMax=allVals.length?Math.max(...allVals):1000;
+  const yPad=(yMax-yMin)*0.08||50;
+  const opts={...base,scales:{...base.scales,y:{...base.scales.y,min:Math.floor((yMin-yPad)/50)*50,max:Math.ceil((yMax+yPad)/50)*50}}};
+  eqChart=new Chart(el('eq-chart').getContext('2d'),{type:'line',data:{labels,datasets},options:opts});
   if(chartState.dd){
     el('dd-wrap').style.display='';
     ddChart=new Chart(el('dd-chart').getContext('2d'),{type:'line',data:{
       labels:data.drawdown_series.dates,
-      datasets:[{label:'Drawdown %',data:data.drawdown_series.values,borderColor:'#f6465d',backgroundColor:'rgba(246,70,93,0.09)',borderWidth:1,pointRadius:0,fill:true,tension:0.2}]
+      datasets:[{label:'Drawdown',data:data.drawdown_series.values,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.08)',borderWidth:1,pointRadius:0,fill:true,tension:0.2}]
     },options:{...base,plugins:{...base.plugins,legend:{display:false}}}});
   }else{el('dd-wrap').style.display='none';}
 }
 
-function togChart(which){
-  chartState[which]=!chartState[which];
-  el('tog-'+which).classList.toggle('act',chartState[which]);
-  if(curResult) renderCharts(curResult);
-}
+function togChart(w){chartState[w]=!chartState[w];el('tog-'+w).classList.toggle('act',chartState[w]);if(curResult)renderCharts(curResult);}
 
 function renderTradesTbl(trades){
   el('bt-tbody').innerHTML=[...trades].reverse().map(t=>{
     const p=t.pnl_pct>=0;
     return`<tr>
-      <td class="nw">${t.entry_time?.slice(0,16)||''}</td>
-      <td class="nw">${t.exit_time?.slice(0,16)||''}</td>
+      <td style="white-space:nowrap">${t.entry_time?.slice(0,16)||''}</td>
+      <td style="white-space:nowrap">${t.exit_time?.slice(0,16)||''}</td>
       <td class="${t.direction}">${t.direction.toUpperCase()}</td>
       <td>${fmtN(t.entry_price,4)}</td><td>${fmtN(t.exit_price,4)}</td>
       <td class="${p?'tg':'tr'}">${p?'+':''}${fmtN(t.pnl_pct,3)}%</td>
       <td class="${p?'tg':'tr'}">${p?'+':''}${fmtN(t.pnl_usdt,2)}</td>
-      <td>${t.exit_reason}</td>
+      <td class="tm">${t.exit_reason}</td>
     </tr>`;
   }).join('');
 }
+function exportCSV(){if(curCK)window.open(`/api/backtest/export-csv/${curCK}`,'_blank');}
 
-function exportCSV(){
-  if(curCK) window.open(`/api/backtest/export-csv/${curCK}`,'_blank');
-}
-
-// ── PRESETS ──
+// ══════════════════════════════════════
+// PRESETS
+// ══════════════════════════════════════
 async function loadPresets(){
-  const r=await fetch('/api/presets'); const p=await r.json();
-  const keys=Object.keys(p);
+  const r=await fetch('/api/presets');const p=await r.json();const keys=Object.keys(p);
   el('presets-list').innerHTML=keys.length===0
-    ?'<div class="tm" style="font-size:0.72rem">No saved presets</div>'
+    ?'<div class="tm" style="font-family:var(--mono);font-size:0.65rem">No saved presets</div>'
     :keys.map(n=>{
-      const pr=p[n];
-      const stats=pr.stats||{};
-      return`<div class="preset-item">
+      const pr=p[n];const st=pr.stats||{};
+      return`<div class="preset-row">
         <div>
-          <div class="pn">${n}</div>
-          <div class="ps">${stats.total_return!=null?`${stats.total_return>=0?'+':''}${fmtN(stats.total_return)}% &nbsp;·&nbsp; DD:${fmtN(stats.max_dd)}% &nbsp;·&nbsp; WR:${fmtN(stats.win_rate)}%`:pr.saved_at?.slice(0,10)||''}</div>
+          <div class="preset-name">${n}</div>
+          <div class="preset-stats">${st.total_return!=null?`${st.total_return>=0?'+':''}${fmtN(st.total_return)}% · DD:${fmtN(st.max_dd)}% · WR:${fmtN(st.win_rate)}%`:pr.saved_at?.slice(0,10)||''}</div>
         </div>
-        <div style="display:flex;gap:5px">
-          <button class="btn sm" onclick="loadPreset('${n}')">Load</button>
-          <button class="btn sm danger" onclick="deletePreset('${n}')">×</button>
+        <div style="display:flex;gap:4px">
+          <button class="btn xs" onclick="loadPreset('${n}')">Load</button>
+          <button class="btn xs r" onclick="deletePreset('${n}')">×</button>
         </div>
       </div>`;
     }).join('');
 }
-
 async function savePreset(){
-  const name=v('preset-name').trim();
-  if(!name){showMsg('bt-msg','Enter a preset name','err');return;}
+  const name=v('preset-name').trim();if(!name){showMsg('bt-msg','Enter a name','err');return;}
   const cfg=buildConfig();
   const stats=curResult?.summary?{total_return:curResult.summary.total_return,max_dd:curResult.summary.max_dd,win_rate:curResult.summary.win_rate}:{};
   await fetch('/api/presets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,config:cfg,stats})});
-  el('preset-name').value=''; loadPresets(); showMsg('bt-msg','✓ Preset saved','ok');
+  el('preset-name').value='';loadPresets();showMsg('bt-msg','✓ Saved','ok');
 }
-
 async function loadPreset(n){
-  const r=await fetch('/api/presets'); const p=(await r.json())[n];
-  if(!p) return;
+  const r=await fetch('/api/presets');const p=(await r.json())[n];if(!p)return;
   const cfg=p.config;
-  // Apply to sidebar
-  if(cfg.exchange) el('s-ex').value=cfg.exchange;
-  if(cfg.symbol) el('s-sym').value=cfg.symbol;
+  if(cfg.exchange)el('s-ex').value=cfg.exchange;
+  if(cfg.symbol)el('s-sym').value=cfg.symbol;
   if(cfg.timeframe){const s=el('s-tf');for(let i=0;i<s.options.length;i++)if(s.options[i].value===cfg.timeframe)s.selectedIndex=i;}
-  if(cfg.capital) el('p-cap').value=cfg.capital;
-  if(cfg.fee_pct) el('p-fee').value=cfg.fee_pct;
-  if(cfg.params){
-    const pm=cfg.params;
-    if(pm.fast_length) el('p-fast').value=pm.fast_length;
-    if(pm.slow_length) el('p-slow').value=pm.slow_length;
-    if(pm.tp_perc) el('p-tp').value=pm.tp_perc;
-    if(pm.sl_perc) el('p-sl').value=pm.sl_perc;
-    if(pm.atr_length) el('p-atr-len').value=pm.atr_length;
-    if(pm.atr_multiplier) el('p-atr-mult').value=pm.atr_multiplier;
-    if(pm.trail_perc) el('p-trail').value=pm.trail_perc;
+  if(cfg.capital)el('p-cap').value=cfg.capital;
+  if(cfg.fee_pct)el('p-fee').value=cfg.fee_pct;
+  if(cfg.params){const pm=cfg.params;
+    if(pm.fast_length)el('p-fast').value=pm.fast_length;
+    if(pm.slow_length)el('p-slow').value=pm.slow_length;
+    if(pm.tp_perc)el('p-tp').value=pm.tp_perc;
+    if(pm.atr_length)el('p-atr-len').value=pm.atr_length;
+    if(pm.atr_multiplier)el('p-atr-mult').value=pm.atr_multiplier;
+    if(pm.trail_perc)el('p-trail').value=pm.trail_perc;
     el('p-trailing').checked=pm.use_trailing!==false;
     el('p-atr-tsl').checked=pm.use_atr_tsl!==false;
     el('p-comp').checked=cfg.compounding!==false;
   }
-  showMsg('bt-msg',`✓ Preset "${n}" loaded`,'ok');
-  checkCacheStatus();
+  showMsg('bt-msg',`✓ Loaded "${n}"`, 'ok');checkCacheStatus();
 }
+async function deletePreset(n){await fetch(`/api/presets/${encodeURIComponent(n)}`,{method:'DELETE'});loadPresets();}
 
-async function deletePreset(n){
-  await fetch(`/api/presets/${encodeURIComponent(n)}`,{method:'DELETE'});
-  loadPresets();
-}
-
-// ── OPTIMIZER ──
+// ══════════════════════════════════════
+// OPTIMIZER
+// ══════════════════════════════════════
 function buildOptRanges(){
-  const defs=[
-    ['fast_length','op-fast',true],['slow_length','op-slow',true],
+  const defs=[['fast_length','op-fast',true],['slow_length','op-slow',true],
     ['atr_length','op-atrlen',true],['atr_multiplier','op-atrmult',false],
-    ['tp_perc','op-tp',false],['trail_perc','op-trail',false]
-  ];
+    ['tp_perc','op-tp',false],['trail_perc','op-trail',false]];
   const ranges={};
-  for(const [key,pfx,isInt] of defs){
-    if(!el(pfx)?.checked) continue;
-    const a=parseFloat(el(pfx+'-a').value), s=parseFloat(el(pfx+'-s').value), b=parseFloat(el(pfx+'-b').value);
-    if(isNaN(a)||isNaN(s)||isNaN(b)||s<=0) continue;
-    const vals=[];
-    for(let x=a;x<=b+s*0.001;x+=s) vals.push(isInt?Math.round(x):Math.round(x*10000)/10000);
+  for(const[key,pfx,isInt]of defs){
+    if(!el(pfx)?.checked)continue;
+    const a=parseFloat(el(pfx+'-a').value),s=parseFloat(el(pfx+'-s').value),b=parseFloat(el(pfx+'-b').value);
+    if(isNaN(a)||isNaN(s)||isNaN(b)||s<=0)continue;
+    const vals=[];for(let x=a;x<=b+s*0.001;x+=s)vals.push(isInt?Math.round(x):Math.round(x*10000)/10000);
     ranges[key]=[...new Set(vals)];
   }
   return ranges;
 }
-
-// Combo preview
 ['op-fast','op-fast-a','op-fast-s','op-fast-b','op-slow','op-slow-a','op-slow-s','op-slow-b',
  'op-atrlen','op-atrlen-a','op-atrlen-s','op-atrlen-b','op-atrmult','op-atrmult-a','op-atrmult-s','op-atrmult-b',
  'op-tp','op-tp-a','op-tp-s','op-tp-b','op-trail','op-trail-a','op-trail-s','op-trail-b']
 .forEach(id=>{const e=el(id);if(e)e.addEventListener('change',updateComboPreview);});
 
 function updateComboPreview(){
-  const r=buildOptRanges(); const total=Object.values(r).reduce((a,v)=>a*v.length,1);
-  el('op-combo-preview').textContent=Object.keys(r).length>0?`${total.toLocaleString()} combinations to test`:'Select params above';
+  const r=buildOptRanges();const total=Object.values(r).reduce((a,v)=>a*v.length,1);
+  el('op-combo-preview').textContent=Object.keys(r).length>0?`${total.toLocaleString()} combinations`:'Select params above';
 }
 
 async function runOpt(){
@@ -955,195 +1003,181 @@ async function runOpt(){
   if(!Object.keys(ranges).length){showMsg('op-msg','Enable at least one parameter','err');return;}
   const body={config:buildConfig(),ranges,dd_limit:parseFloat(v('op-dd')),wf_split:v('op-wf')||null,use_cache:el('op-cache').checked};
   showMsg('op-msg','<span class="spin"></span> Starting...','info');
-  el('op-prog-wrap').style.display='block'; el('op-prog-bar').style.width='0%'; el('op-prog-txt').textContent='0 / 0';
+  el('op-prog-wrap').style.display='block';el('op-prog-bar').style.width='0%';el('op-prog-txt').textContent='0 / 0';
   const r=await fetch('/api/optimizer/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  const d=await r.json();
-  curOptJob=d.jid;
+  const d=await r.json();curOptJob=d.jid;
   if(d.cached){
     const res=await(await fetch(`/api/optimizer/result/${curOptJob}`)).json();
-    renderOptResults(res); showMsg('op-msg','✓ Loaded from cache','ok'); return;
+    renderOptResults(res);showMsg('op-msg','✓ Cached','ok');return;
   }
   clearInterval(optPoll);
   optPoll=setInterval(async()=>{
     const s=await(await fetch(`/api/optimizer/status/${curOptJob}`)).json();
-    if(!s||s.status==='idle') return;  // don't flicker if job not found yet
+    if(!s||s.status==='idle')return;
     const prog=s.total>0?(s.progress/s.total*100).toFixed(0):0;
     el('op-prog-bar').style.width=prog+'%';
-    el('op-prog-txt').textContent=`${(s.progress||0).toLocaleString()} / ${(s.total||0).toLocaleString()} (${prog}%)${s.cached_count>0?' · '+s.cached_count+' cached':''}`;el('op-prog-bar').title=`${prog}% complete`;
+    el('op-prog-txt').textContent=`${(s.progress||0).toLocaleString()} / ${(s.total||0).toLocaleString()} (${prog}%)${s.cached_count>0?' · '+s.cached_count+' cached':''}`;
     if(s.status==='done'){
       clearInterval(optPoll);
       const res=await(await fetch(`/api/optimizer/result/${curOptJob}`)).json();
-      renderOptResults(res); showMsg('op-msg','✓ Complete','ok');
-      el('op-prog-bar').style.width='100%';
+      renderOptResults(res);showMsg('op-msg','✓ Complete','ok');el('op-prog-bar').style.width='100%';
     }else if(s.status==='error'){
-      clearInterval(optPoll);
-      const errDetail=s.trace?`\n${s.trace.slice(0,300)}`:''; 
-      showMsg('op-msg',(s.message||'Unknown error')+errDetail,'err');
-      console.error('Optimizer error trace:',s.trace);
+      clearInterval(optPoll);showMsg('op-msg',s.message||'Error','err');console.error(s.trace);
     }else{
-      showMsg('op-msg',`<span class="spin"></span> Running... ${s.progress||0}/${s.total||0}`,'info');
+      showMsg('op-msg',`<span class="spin"></span> ${s.progress||0}/${s.total||0}`,'info');
     }
   },1000);
 }
 
-function scoreColor(s){return s>=15?'tg':s>=8?'ty':s>=3?'t2':'tr';}
-function pfColor(pf){return pf>=2?'tg':pf>=1.5?'ty':pf>=1?'t2':'tr';}
-function retColor(r){return r>=20?'tg':r>=5?'ty':r>=0?'t2':'tr';}
-function ddColor(d){const v=Math.abs(d);return v<=10?'tg':v<=25?'ty':v<=40?'t2':'tr';}
-function wrColor(w){return w>=65?'tg':w>=55?'ty':w>=50?'t2':'tr';}
+function scoreColor(s){return s>=15?'tg':s>=8?'ty':s>=3?'':'tr';}
+function pfColor(pf){return pf>=2?'tg':pf>=1.5?'ty':pf>=1?'':'tr';}
+function retColor(r){return r>=20?'tg':r>=5?'ty':r>=0?'':'tr';}
+function ddColor(d){const v=Math.abs(d);return v<=10?'tg':v<=25?'ty':v<=40?'':'tr';}
+function wrColor(w){return w>=65?'tg':w>=55?'ty':w>=50?'':'tr';}
 
 function renderOptResults(data){
   optResults=data;
-  el('op-empty').style.display='none'; el('op-results').style.display='block';
+  el('op-empty').style.display='none';el('op-results').style.display='block';
   el('op-total-txt').textContent=`${data.total} combos · ${data.results?.length||0} valid`;
-  const op=data.opt_period, hp=data.hold_period;
+  const op=data.opt_period,hp=data.hold_period;
   el('op-period').innerHTML=`
-    <div class="sc"><div class="sl">In-Sample From</div><div class="sv t1" style="font-size:1rem">${op?.from?.slice(0,10)||'—'}</div></div>
-    <div class="sc"><div class="sl">In-Sample To</div><div class="sv t1" style="font-size:1rem">${op?.to?.slice(0,10)||'—'}</div><div class="ss">${op?.bars?.toLocaleString()||0} bars</div></div>
-    <div class="sc"><div class="sl">Holdout From</div><div class="sv t1" style="font-size:1rem">${hp?.from?.slice(0,10)||'—'}</div></div>
-    <div class="sc"><div class="sl">Holdout To</div><div class="sv t1" style="font-size:1rem">${hp?.to?.slice(0,10)||'—'}</div><div class="ss">${hp?.bars?.toLocaleString()||0} bars</div></div>`;
+    <div class="stat-card"><div class="stat-label">IS From</div><div class="stat-value" style="font-size:1rem">${op?.from?.slice(0,10)||'—'}</div></div>
+    <div class="stat-card"><div class="stat-label">IS To</div><div class="stat-value" style="font-size:1rem">${op?.to?.slice(0,10)||'—'}</div><div class="stat-sub">${op?.bars?.toLocaleString()||0} bars</div></div>
+    <div class="stat-card"><div class="stat-label">OOS From</div><div class="stat-value" style="font-size:1rem">${hp?.from?.slice(0,10)||'—'}</div></div>
+    <div class="stat-card"><div class="stat-label">OOS To</div><div class="stat-value" style="font-size:1rem">${hp?.to?.slice(0,10)||'—'}</div><div class="stat-sub">${hp?.bars?.toLocaleString()||0} bars</div></div>`;
   const keys=data.keys||[];
-  const cols=[...keys,'Trades','AvgBars','WR%','Return%','DD%','PF','MaxLev','LevRet','LevDD','Worst%','Score'];
+  const cols=[...keys,'Trades','AvgBars','WR%','Return%','DD%','PF','Score'];
   el('op-is-head').innerHTML=cols.map(c=>`<th>${c}</th>`).join('');
   el('op-is-body').innerHTML=(data.results||[]).map((r,i)=>{
-    const lv=r.max_lev||1;
-    const bg=i%2===0?'':'background:rgba(255,255,255,0.04)';
-    return`<tr style="${bg}">
-      ${keys.map(k=>`<td class="ty">${r[k]}</td>`).join('')}
-      <td>${r.trades}</td>
-      <td class="t3">${r.avg_dur||0}</td>
+    const bg=i%2===0?'':'background:rgba(255,255,255,.02)';
+    return`<tr style="${bg}" onclick="applyCombo(${JSON.stringify(r).replace(/"/g,'&quot;')},${JSON.stringify(keys).replace(/"/g,'&quot;')})" style="cursor:pointer;${bg}">
+      ${keys.map(k=>`<td class="ty" style="font-weight:600">${r[k]}</td>`).join('')}
+      <td>${r.trades}</td><td class="tm">${r.avg_dur||0}</td>
       <td class="${wrColor(r.win_rate)}">${r.win_rate}%</td>
       <td class="${retColor(r.return)}">${r.return>=0?'+':''}${r.return}%</td>
       <td class="${ddColor(r.max_dd)}">${r.max_dd}%</td>
       <td class="${pfColor(r.pf)}">${r.pf}</td>
-      <td class="t3">${lv}x</td>
-      <td class="${r.lev_ret>=0?'tg':'tr'}">${r.lev_ret>=0?'+':''}${r.lev_ret}%</td>
-      <td class="${ddColor(r.lev_dd)}">${r.lev_dd}%</td>
-      <td class="${r.worst<=-5?'tr':'t3'}">${r.worst||'—'}%</td>
-      <td class="${scoreColor(r.score)}" style="font-weight:700;font-size:1rem">${r.score}</td>
+      <td class="${scoreColor(r.score)}" style="font-weight:700;font-size:0.9rem">${r.score}</td>
     </tr>`;
   }).join('');
   if((data.oos_results||[]).length>0){
-    const ocols=[...keys,'IS Ret','IS DD','IS WR','IS PF','OOS Ret','OOS DD','OOS WR','OOS N','Holds?'];
+    const ocols=[...keys,'IS Ret','IS DD','IS WR','OOS Ret','OOS DD','OOS WR','OOS N','Holds?'];
     el('op-oos-head').innerHTML=ocols.map(c=>`<th>${c}</th>`).join('');
     el('op-oos-body').innerHTML=(data.oos_results||[]).map((r,i)=>{
-      const bg=i%2===0?'':'background:rgba(255,255,255,0.04)';
+      const bg=i%2===0?'':'background:rgba(255,255,255,.02)';
       return`<tr style="${bg}">
-        ${keys.map(k=>`<td class="ty">${r[k]}</td>`).join('')}
+        ${keys.map(k=>`<td class="ty" style="font-weight:600">${r[k]}</td>`).join('')}
         <td class="${retColor(r.return)}">${r.return>=0?'+':''}${r.return||0}%</td>
         <td class="${ddColor(r.max_dd)}">${r.max_dd||0}%</td>
         <td class="${wrColor(r.win_rate)}">${r.win_rate||0}%</td>
-        <td class="${pfColor(r.pf)}">${r.pf||0}</td>
         <td class="${retColor(r.oos_ret)}" style="font-weight:600">${r.oos_ret>=0?'+':''}${r.oos_ret||0}%</td>
         <td class="${ddColor(r.oos_dd)}">${r.oos_dd||0}%</td>
         <td class="${wrColor(r.oos_wr)}">${r.oos_wr||0}%</td>
-        <td class="t2">${r.oos_n||0}</td>
-        <td class="${r.holds?'tg':'tr'}" style="font-size:1.1rem;line-height:1">${r.holds?'✓':'✗'}</td>
+        <td>${r.oos_n||0}</td>
+        <td class="${r.holds?'tg':'tr'}" style="font-size:1rem">${r.holds?'✓':'✗'}</td>
       </tr>`;
     }).join('');
   }else{
-    el('op-oos-head').innerHTML='<th>No holdout (100% in-sample mode)</th>';
+    el('op-oos-head').innerHTML='<th colspan="20">No holdout — 100% in-sample</th>';
     el('op-oos-body').innerHTML='';
   }
 }
 
-function applyBest(){
-  if(!optResults?.results?.length) return;
-  const best=optResults.results[0]; const keys=optResults.keys||[];
+function applyCombo(r,keys){
   const map={fast_length:'p-fast',slow_length:'p-slow',atr_length:'p-atr-len',atr_multiplier:'p-atr-mult',tp_perc:'p-tp',trail_perc:'p-trail'};
-  keys.forEach(k=>{if(map[k]) el(map[k]).value=best[k];});
-  // Switch tab but keep optResults so they survive the round-trip
+  keys.forEach(k=>{if(map[k])el(map[k]).value=r[k];});
   goTab('backtest');
-  showMsg('bt-msg',`Applied: ${keys.map(k=>k+'='+best[k]).join(' ')} — run backtest to see full results`,'ok');
+  showMsg('bt-msg',`Applied: ${keys.map(k=>k+'='+r[k]).join(' ')} — run backtest`,'ok');
 }
-
+function applyBest(){
+  if(!optResults?.results?.length)return;
+  applyCombo(optResults.results[0],optResults.keys||[]);
+}
 async function exportCombos(){
-  const ranges=buildOptRanges();
-  if(!Object.keys(ranges).length){showMsg('op-msg','Select params first','err');return;}
+  const ranges=buildOptRanges();if(!Object.keys(ranges).length){showMsg('op-msg','Select params first','err');return;}
   const r=await fetch('/api/optimizer/export-combos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({config:buildConfig(),ranges})});
-  const blob=await r.blob(); const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='combinations.csv'; a.click();
+  const blob=await r.blob();const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='combinations.csv';a.click();
 }
-
 async function uploadResults(input){
-  const file=input.files[0]; if(!file) return;
-  const fd=new FormData(); fd.append('file',file);
+  const file=input.files[0];if(!file)return;
+  const fd=new FormData();fd.append('file',file);
   showMsg('op-msg','<span class="spin"></span> Uploading...','info');
   const r=await fetch('/api/optimizer/upload-results',{method:'POST',body:fd});
   const d=await r.json();
-  if(d.ok) showMsg('op-msg',`✓ Imported ${d.imported}/${d.total} results`,'ok');
+  if(d.ok)showMsg('op-msg',`✓ Imported ${d.imported}/${d.total}`,'ok');
   else showMsg('op-msg',d.error||'Error','err');
   input.value='';
 }
 
-// ── LIVE BOT ──
-async function loadBotCfg(){
-  const r=await fetch('/api/bot/config'); const cfg=await r.json();
-  el('bc-sym').value=cfg.symbol||''; el('bc-fast').value=cfg.fast_length||9; el('bc-slow').value=cfg.slow_length||21;
-  el('bc-atr-len').value=cfg.atr_length||9; el('bc-atr-mult').value=cfg.atr_multiplier||10;
-  el('bc-tp').value=cfg.tp_perc||2; el('bc-sl').value=cfg.sl_perc||1;
-  el('bc-trail').value=cfg.trail_perc||1; el('bc-tick').value=cfg.tick_size||0.01;
-  el('bc-trailing').checked=cfg.use_trailing!==false; el('bc-atr-tsl').checked=cfg.use_atr_tsl!==false;
-  el('bc-tiered').checked=cfg.use_tiered_tsl||false; tog('bc-tiered-g',cfg.use_tiered_tsl||false);
-  if(cfg.use_tiered_tsl){el('bc-t1p').value=cfg.tier1_profit||5;el('bc-t1t').value=cfg.tier1_tsl||3;el('bc-t2p').value=cfg.tier2_profit||10;el('bc-t2t').value=cfg.tier2_tsl||2;el('bc-t3t').value=cfg.tier3_tsl||1;}
-  el('bc-vol').checked=cfg.use_vol_filter||false; tog('bc-vol-g',cfg.use_vol_filter||false);
-  if(cfg.use_vol_filter) el('bc-vol-mult').value=cfg.vol_multiplier||1.5;
-  el('bc-adx').checked=cfg.use_adx_filter||false; tog('bc-adx-g',cfg.use_adx_filter||false);
-  if(cfg.use_adx_filter){el('bc-adx-len').value=cfg.adx_length||14;el('bc-adx-thresh').value=cfg.adx_threshold||25;}
-  el('bc-webhook').value=cfg.webhook_url||''; el('bc-sigtype').value=cfg.signal_type||'';
-  el('bc-psym').value=cfg.pionex_symbol||'XMR_USDT'; el('bc-contracts').value=cfg.contracts||'0.1';
-  const tfs=el('bc-tf'); for(let i=0;i<tfs.options.length;i++) if(tfs.options[i].value===cfg.timeframe) tfs.selectedIndex=i;
-  const tsls=el('bc-tsl'); for(let i=0;i<tsls.options.length;i++) if(tsls.options[i].value===cfg.tsl_mode) tsls.selectedIndex=i;
+// ══════════════════════════════════════
+// LIVE BOT
+// ══════════════════════════════════════
+let _lwChart2=null;
+function renderCandleChart(data){
+  const container=el('lw-chart');
+  if(!container)return;
+  if(_lwChart2){_lwChart2.remove();_lwChart2=null;}
+  _lwChart2=LightweightCharts.createChart(container,{
+    width:container.clientWidth,height:container.clientHeight||400,
+    layout:{background:{color:'#060810'},textColor:'#4a5a80',fontSize:10,fontFamily:'JetBrains Mono'},
+    grid:{vertLines:{color:'#0a0d16'},horzLines:{color:'#0a0d16'}},
+    crosshair:{mode:LightweightCharts.CrosshairMode.Normal,
+      vertLine:{color:'#1c2340',labelBackgroundColor:'#0f1320'},
+      horzLine:{color:'#1c2340',labelBackgroundColor:'#0f1320'}},
+    rightPriceScale:{borderColor:'#1c2340',textColor:'#4a5a80'},
+    timeScale:{borderColor:'#1c2340',timeVisible:true,secondsVisible:false,rightOffset:8},
+    handleScroll:true,handleScale:true,
+  });
+  const cs=_lwChart2.addCandlestickSeries({
+    upColor:'#22c55e',downColor:'#ef4444',
+    borderUpColor:'#22c55e',borderDownColor:'#ef4444',
+    wickUpColor:'rgba(34,197,94,.7)',wickDownColor:'rgba(239,68,68,.7)',
+  });
+  const cd=data.candles.map(c=>({time:Math.floor(c.t/1000),open:c.o,high:c.h,low:c.l,close:c.c}))
+    .filter(c=>c.open&&c.high&&c.low&&c.close).sort((a,b)=>a.time-b.time);
+  cs.setData(cd);
+  const fs=_lwChart2.addLineSeries({color:'#f0b90b',lineWidth:2,priceLineVisible:false,lastValueVisible:true,title:'Fast'});
+  fs.setData(data.candles.map((c,i)=>({time:Math.floor(c.t/1000),value:data.fast_ema[i]})).filter(d=>d.value!=null).sort((a,b)=>a.time-b.time));
+  const sl=_lwChart2.addLineSeries({color:'#3b82f6',lineWidth:2,priceLineVisible:false,lastValueVisible:true,title:'Slow'});
+  sl.setData(data.candles.map((c,i)=>({time:Math.floor(c.t/1000),value:data.slow_ema[i]})).filter(d=>d.value!=null).sort((a,b)=>a.time-b.time));
+  const state=data.state||{};
+  if(state.entry_price&&cd.length){
+    const col=state.position==='long'?'#22c55e':'#ef4444';
+    const es=_lwChart2.addLineSeries({color:col,lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:true,title:`Entry ${(state.position||'').toUpperCase()}`});
+    es.setData(cd.map(c=>({time:c.time,value:state.entry_price})));
+  }
+  if(state.trail_stop&&cd.length){
+    const ts=_lwChart2.addLineSeries({color:'#f0b90b',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dotted,priceLineVisible:false,lastValueVisible:true,title:'TSL'});
+    ts.setData(cd.map(c=>({time:c.time,value:state.trail_stop})));
+  }
+  _lwChart2.timeScale().fitContent();
+  if(window._lwRO2)window._lwRO2.disconnect();
+  window._lwRO2=new ResizeObserver(()=>{
+    if(_lwChart2)_lwChart2.applyOptions({width:container.clientWidth,height:container.clientHeight});
+  });
+  window._lwRO2.observe(container);
 }
 
-async function saveBotCfg(){
-  const cfg={
-    symbol:v('bc-sym'),timeframe:v('bc-tf'),
-    fast_length:parseInt(v('bc-fast')),slow_length:parseInt(v('bc-slow')),
-    atr_length:parseInt(v('bc-atr-len')),atr_multiplier:parseFloat(v('bc-atr-mult')),
-    tp_perc:parseFloat(v('bc-tp')),sl_perc:parseFloat(v('bc-sl')),
-    trail_perc:parseFloat(v('bc-trail')),tick_size:parseFloat(v('bc-tick')),
-    use_trailing:el('bc-trailing').checked,use_atr_tsl:el('bc-atr-tsl').checked,
-    tsl_mode:v('bc-tsl'),
-    use_tiered_tsl:el('bc-tiered').checked,
-    tier1_profit:parseFloat(v('bc-t1p')||5),tier1_tsl:parseFloat(v('bc-t1t')||3),
-    tier2_profit:parseFloat(v('bc-t2p')||10),tier2_tsl:parseFloat(v('bc-t2t')||2),tier3_tsl:parseFloat(v('bc-t3t')||1),
-    use_vol_filter:el('bc-vol').checked,vol_multiplier:parseFloat(v('bc-vol-mult')||1.5),
-    use_adx_filter:el('bc-adx').checked,adx_length:parseInt(v('bc-adx-len')||14),adx_threshold:parseInt(v('bc-adx-thresh')||25),
-    webhook_url:v('bc-webhook'),signal_type:v('bc-sigtype'),pionex_symbol:v('bc-psym'),contracts:v('bc-contracts'),
-  };
-  const r=await fetch('/api/bot/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});
-  const d=await r.json();
-  showMsg('bc-msg',d.ok?'✓ Config saved':'Error','ok');
+async function loadLiveCandles(){
+  try{
+    const r=await fetch('/api/bot/candles?limit=120');const d=await r.json();
+    if(d.error)return;
+    renderCandleChart(d);
+  }catch(e){}
 }
-
-async function botStart(){
-  const r=await fetch('/api/bot/start',{method:'POST'});
-  const d=await r.json();
-  showMsg('live-bot-msg','✓ Bot started','ok');
-  setTimeout(updateBot,1000);
-}
-async function botStop(){
-  const r=await fetch('/api/bot/stop',{method:'POST'});
-  showMsg('live-bot-msg','Bot stopped','info');
-  el('bot-pill').className=''; el('bot-pill-txt').textContent='BOT OFFLINE';
-  el('live-status').textContent='Stopped';
-  setTimeout(updateBot,1000);
-}
-
-function startBotPoll(){loadBotCfg();updateBot();botPoll=setInterval(updateBot,8000);}
-function stopBotPoll(){clearInterval(botPoll);}
 
 async function updateBot(){
   try{
-    const [sr,sr2]=await Promise.all([fetch('/api/bot/status'),fetch('/api/bot/signals?limit=30')]);
-    const st=await sr.json(); const sigs=await sr2.json();
-    const pill=el('bot-pill');
-    // Only show as live if thread is running AND enabled — no flicker
+    const [sr,sr2]=await Promise.all([fetch('/api/bot/status'),fetch('/api/bot/signals?limit=50')]);
+    const st=await sr.json();const sigs=await sr2.json();
+    const ind=el('bot-indicator');
     if(st.running&&st.enabled){
-      pill.className='live'; el('bot-pill-txt').textContent='BOT LIVE';
+      ind.className='live';el('bot-pill-txt').textContent='LIVE';
+      document.querySelector('#nt-live .dot').style.display='block';
     }else{
-      pill.className=''; el('bot-pill-txt').textContent='BOT OFFLINE';
+      ind.className='';el('bot-pill-txt').textContent='OFFLINE';
+      document.querySelector('#nt-live .dot').style.display='none';
     }
     const pos=st.state?.position;
     const posEl=el('live-pos');
@@ -1153,125 +1187,117 @@ async function updateBot(){
     el('live-status').textContent=st.running&&st.enabled?'Running':'Stopped';
     el('live-ep').textContent=st.state?.entry_price?fmtN(st.state.entry_price,4):'—';
     el('live-tsl').textContent=st.state?.trail_stop?fmtN(st.state.trail_stop,4):'—';
+    // Live P&L
+    if(st.state?.entry_price&&pos){
+      // Approximate using last close from recent candle — state may have last_close
+      const lc=st.state.last_close||0;
+      if(lc){
+        const pnl=pos==='long'?(lc-st.state.entry_price)/st.state.entry_price*100:(st.state.entry_price-lc)/st.state.entry_price*100;
+        el('live-pnl').textContent=`${pnl>=0?'+':''}${fmtN(pnl,2)}%`;
+        el('live-pnl').className=pnl>=0?'tg':'tr';
+        el('live-pnl').style.fontFamily='var(--mono)';
+      }
+    }else{el('live-pnl').textContent='—';el('live-pnl').className=''}
+    // Manual close button visibility
+    el('btn-manual-close').style.display=pos?'inline-flex':'none';
     el('live-sigs').innerHTML=(sigs.signals||[]).map(s=>`<tr>
-      <td class="nw">${s['Time (UTC)']||''}</td><td>${s.Symbol||''}</td><td>${s.Action||''}</td>
-      <td class="${s.Direction==='long'?'tg':'tr'}">${(s.Direction||'').toUpperCase()}</td>
-      <td>${s.Price||''}</td><td>${s.Note||''}</td>
+      <td style="white-space:nowrap">${s['Time (UTC)']||''}</td><td>${s.Symbol||''}</td>
+      <td>${s.Action||''}</td>
+      <td class="${s.Direction==='long'?'long':'short'}">${(s.Direction||'').toUpperCase()}</td>
+      <td>${s.Price||''}</td><td style="color:var(--t3)">${s.Note||''}</td>
     </tr>`).join('');
+    el('live-log-count').textContent=`${(sigs.signals||[]).length} recent`;
   }catch(e){}
 }
 
-// ── LIVE CANDLE CHART ──
-async function loadLiveCandles(){
-  el('live-chart-msg').textContent='Loading...';
-  try{
-    const r=await fetch('/api/bot/candles?limit=120'); const d=await r.json();
-    if(d.error){el('live-chart-msg').textContent=d.error;return;}
-    el('live-chart-msg').textContent=`${d.symbol} ${d.timeframe} · ${d.candles.length} candles`;
-    el('live-chart-title').textContent=`LIVE CHART — ${d.symbol} ${d.timeframe}`;
-    renderCandleChart(d);
-  }catch(e){el('live-chart-msg').textContent='Could not load candles';}
+function startBotPoll(){clearInterval(botPoll);updateBot();botPoll=setInterval(updateBot,3000);}
+function stopBotPoll(){clearInterval(botPoll);}
+
+async function botStart(){
+  await fetch('/api/bot/start',{method:'POST'});
+  showMsg('live-bot-msg','✓ Bot started — waiting for next bar close','ok');
+  setTimeout(updateBot,800);
+}
+async function botStop(){
+  await fetch('/api/bot/stop',{method:'POST'});
+  showMsg('live-bot-msg','Bot stopped','info');
+  el('bot-indicator').className='';el('bot-pill-txt').textContent='OFFLINE';
+  el('live-status').textContent='Stopped';
+  setTimeout(updateBot,800);
 }
 
-let _lwChart=null;
-
-function renderCandleChart(data){
-  const container=el('lw-chart');
-  if(!container) return;
-  // Destroy previous chart
-  if(_lwChart){_lwChart.remove();_lwChart=null;}
-
-  _lwChart=LightweightCharts.createChart(container,{
-    width:container.clientWidth,
-    height:340,
-    layout:{background:{color:'#0e1117'},textColor:'#8899b8',fontSize:11,fontFamily:'IBM Plex Mono'},
-    grid:{vertLines:{color:'#0d1219'},horzLines:{color:'#0d1219'}},
-    crosshair:{mode:LightweightCharts.CrosshairMode.Normal,
-      vertLine:{color:'#3d4d66',width:1,style:LightweightCharts.LineStyle.Dashed,labelBackgroundColor:'#131820'},
-      horzLine:{color:'#3d4d66',width:1,style:LightweightCharts.LineStyle.Dashed,labelBackgroundColor:'#131820'}},
-    rightPriceScale:{borderColor:'#1a2030',textColor:'#4d5e7a'},
-    timeScale:{borderColor:'#1a2030',timeVisible:true,secondsVisible:false,
-      rightOffset:5,barSpacing:8,fixLeftEdge:false,lockVisibleTimeRangeOnResize:true},
-    handleScroll:{mouseWheel:true,pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false},
-    handleScale:{mouseWheel:true,pinch:true,axisPressedMouseMove:true},
-  });
-
-  // Candlestick series
-  const cSeries=_lwChart.addCandlestickSeries({
-    upColor:'#0ecb81',downColor:'#f6465d',
-    borderUpColor:'#0ecb81',borderDownColor:'#f6465d',
-    wickUpColor:'rgba(14,203,129,0.7)',wickDownColor:'rgba(246,70,93,0.7)',
-  });
-  const candleData=data.candles
-    .map(c=>({time:Math.floor(c.t/1000),open:c.o,high:c.h,low:c.l,close:c.c}))
-    .filter(c=>c.open&&c.high&&c.low&&c.close)
-    .sort((a,b)=>a.time-b.time);
-  cSeries.setData(candleData);
-
-  // Fast EMA line
-  const fastSeries=_lwChart.addLineSeries({color:'#f0b90b',lineWidth:2,priceLineVisible:false,lastValueVisible:true,title:'Fast EMA'});
-  fastSeries.setData(data.candles.map((c,i)=>({time:Math.floor(c.t/1000),value:data.fast_ema[i]})).filter(d=>d.value!=null).sort((a,b)=>a.time-b.time));
-
-  // Slow EMA line
-  const slowSeries=_lwChart.addLineSeries({color:'#00d4ff',lineWidth:2,priceLineVisible:false,lastValueVisible:true,title:'Slow EMA'});
-  slowSeries.setData(data.candles.map((c,i)=>({time:Math.floor(c.t/1000),value:data.slow_ema[i]})).filter(d=>d.value!=null).sort((a,b)=>a.time-b.time));
-
-  // Entry price line
-  const state=data.state||{};
-  if(state.entry_price && candleData.length){
-    const col=state.position==='long'?'#0ecb81':'#f6465d';
-    const entrySeries=_lwChart.addLineSeries({color:col,lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:true,title:`Entry ${(state.position||'').toUpperCase()}`});
-    entrySeries.setData(candleData.map(c=>({time:c.time,value:state.entry_price})));
-  }
-
-  // Trail stop line
-  if(state.trail_stop && candleData.length){
-    const tslSeries=_lwChart.addLineSeries({color:'#f0b90b',lineWidth:1,lineStyle:LightweightCharts.LineStyle.Dotted,priceLineVisible:false,lastValueVisible:true,title:'TSL'});
-    tslSeries.setData(candleData.map(c=>({time:c.time,value:state.trail_stop})));
-  }
-
-  // Fit to screen then scroll to latest
-  _lwChart.timeScale().fitContent();
-
-  // Auto-resize when container changes
-  if(window._lwResizeObs) window._lwResizeObs.disconnect();
-  window._lwResizeObs=new ResizeObserver(entries=>{
-    if(_lwChart && entries[0]) _lwChart.applyOptions({width:entries[0].contentRect.width});
-  });
-  window._lwResizeObs.observe(container);
+async function manualClose(){
+  if(!confirm('Manually close the current position? This will log a market close at the current price.'))return;
+  const r=await fetch('/api/bot/manual-close',{method:'POST'});
+  const d=await r.json();
+  if(d.ok)showMsg('live-bot-msg',`✓ Position closed @ ${fmtN(d.price,4)} · P&L ${d.pnl>=0?'+':''}${fmtN(d.pnl,2)}%`,'ok');
+  else showMsg('live-bot-msg',d.error||'Error','err');
+  setTimeout(updateBot,500);
+  setTimeout(loadLiveCandles,1000);
 }
 
-// ── SETTINGS ──
+// ══════════════════════════════════════
+// BOT CONFIG
+// ══════════════════════════════════════
+async function loadBotCfg(){
+  const r=await fetch('/api/bot/config');const c=await r.json();
+  const sym=el('bc-sym');if(sym&&c.symbol)sym.value=c.symbol;
+  const tf=el('bc-tf');if(tf&&c.timeframe){for(let i=0;i<tf.options.length;i++)if(tf.options[i].value===c.timeframe)tf.selectedIndex=i;}
+  ['fast_length:bc-fast','slow_length:bc-slow','tp_perc:bc-tp','trail_perc:bc-trail',
+   'atr_length:bc-atr-len','atr_multiplier:bc-atr-mult','webhook_url:bc-webhook',
+   'signal_type:bc-sigtype','pionex_symbol:bc-psym','contracts:bc-contracts'].forEach(p=>{
+    const[k,id]=p.split(':');if(c[k]!=null&&el(id))el(id).value=c[k];
+  });
+  if(el('bc-atr-tsl'))el('bc-atr-tsl').checked=c.use_atr_tsl!==false;
+}
+async function saveBotCfg(){
+  const cfg={
+    symbol:v('bc-sym'),timeframe:v('bc-tf'),
+    fast_length:parseInt(v('bc-fast')),slow_length:parseInt(v('bc-slow')),
+    tp_perc:parseFloat(v('bc-tp')),trail_perc:parseFloat(v('bc-trail')),
+    atr_length:parseInt(v('bc-atr-len')),atr_multiplier:parseFloat(v('bc-atr-mult')),
+    use_atr_tsl:el('bc-atr-tsl').checked,
+    use_tiered_tsl:el('bc-tiered').checked,
+    tier1_profit:parseFloat(v('bc-t1p')||5),tier1_tsl:parseFloat(v('bc-t1t')||3),
+    tier2_profit:parseFloat(v('bc-t2p')||10),tier2_tsl:parseFloat(v('bc-t2t')||2),tier3_tsl:parseFloat(v('bc-t3t')||1),
+    use_vol_filter:el('bc-vol').checked,vol_multiplier:parseFloat(v('bc-vol-mult')||1.5),
+    use_adx_filter:el('bc-adx').checked,adx_length:parseInt(v('bc-adx-len')||14),adx_threshold:parseInt(v('bc-adx-thresh')||25),
+    webhook_url:v('bc-webhook'),signal_type:v('bc-sigtype'),
+    pionex_symbol:v('bc-psym'),contracts:v('bc-contracts'),
+  };
+  const r=await fetch('/api/bot/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});
+  const d=await r.json();
+  if(d.ok)showMsg('bc-msg','✓ Saved — takes effect next bar','ok');
+  else showMsg('bc-msg','Error','err');
+}
+
+// ══════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════
 async function changePw(){
-  const cur=el('set-pw-cur').value,nw=el('set-pw-new').value,cf=el('set-pw-conf').value;
+  const cur=v('set-pw-cur'),nw=v('set-pw-new'),cf=v('set-pw-conf');
   if(nw!==cf){showMsg('set-pw-msg','Passwords do not match','err');return;}
   if(nw.length<8){showMsg('set-pw-msg','Min 8 characters','err');return;}
   const r=await fetch('/api/auth/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current:cur,new:nw})});
   const d=await r.json();
-  if(d.ok){showMsg('set-pw-msg','✓ Password updated','ok');el('set-pw-cur').value='';el('set-pw-new').value='';el('set-pw-conf').value='';}
+  if(d.ok){showMsg('set-pw-msg','✓ Updated','ok');el('set-pw-cur').value='';el('set-pw-new').value='';el('set-pw-conf').value='';}
   else showMsg('set-pw-msg',d.error||'Error','err');
 }
 async function changeUname(){
-  const u=el('set-uname').value,p=el('set-uname-pw').value;
+  const u=v('set-uname'),p=v('set-uname-pw');
   const r=await fetch('/api/auth/change-username',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
   const d=await r.json();
-  if(d.ok){showMsg('set-uname-msg','✓ Username updated','ok');el('set-uname').value='';el('set-uname-pw').value='';}
+  if(d.ok)showMsg('set-uname-msg','✓ Updated','ok');
   else showMsg('set-uname-msg',d.error||'Error','err');
 }
 
-// ── INIT ──
-updateComboPreview();
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
 loadPresets();
-// Global bot pill status poll
-setInterval(async()=>{
-  if(curTab==='live') return; // live tab handles its own polling
-  try{
-    const r=await fetch('/api/bot/status'); const d=await r.json();
-    const pill=el('bot-pill');
-    if(d.running&&d.enabled){pill.className='live';el('bot-pill-txt').textContent='BOT LIVE';}
-    else{pill.className='';el('bot-pill-txt').textContent='BOT OFFLINE';}
-  }catch(e){}
-},10000);
+loadBotCfg();
+// Ensure live dot is hidden initially
+document.querySelector('#nt-live .dot').style.display='none';
 </script>
 </body>
 </html>

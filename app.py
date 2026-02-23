@@ -582,7 +582,7 @@ def _bot_loop(stop_ev):
                             log.info(f"  ENTRY SHORT @ {entry_open:.4f}")
                             _bot_send_webhook("sell",entry_open,"open short",cfg)
                             state.update({"position":"short","entry_price":entry_open,"entry_time":now.isoformat(),"trail_stop":None,"trail_activated":False})
-                    state["trail_stop"]=tsl; state["trail_activated"]=ta; state["last_atr"]=atr_val
+                    state["trail_stop"]=tsl; state["trail_activated"]=ta; state["last_atr"]=atr_val; state["last_close"]=last_close
                     save_bot_state(state)
                 except Exception as e: log.error(f"Bot bar error: {e}")
             time.sleep(15)
@@ -650,7 +650,7 @@ def api_cache_status():
 @app.route("/api/data/fetch", methods=["POST"])
 @login_required
 def api_data_fetch():
-    b=request.json or {}; ex=b.get("exchange","bybit"); sym=b.get("symbol","XMR/USDT:USDT"); tf=b.get("timeframe","30m"); force=b.get("force_full",False)
+    b=request.json or {}; ex=b.get("exchange","bybit"); sym=b.get("symbol","XMR/USDT:USDT"); tf=b.get("timeframe","30m"); force=b.get("force_full",False); also_1m=b.get("also_fetch_1m",True)
     key=f"{ex}_{sym}_{tf}"
     def do():
         _fetch_jobs[key]={"status":"running","message":"Connecting..."}
@@ -663,8 +663,14 @@ def api_data_fetch():
                     save_cache(merged,ex,sym,tf)
                 else: save_cache(csv_df,ex,sym,tf)
                 _fetch_jobs[key]["message"]="CSV merged, fetching API updates..."
-            _fetch_jobs[key]["message"]="Fetching from API..."
+            _fetch_jobs[key]["message"]=f"Fetching {tf} from API..."
             df,new_c,total=fetch_and_update_cache(ex,sym,tf,force_full=force)
+            # Always also fetch 1m for intrabar simulation (last 7 days max)
+            if also_1m and tf != "1m":
+                try:
+                    _fetch_jobs[key]["message"]="Fetching 1m intrabar data..."
+                    fetch_and_update_cache(ex,sym,"1m",force_full=False)
+                except Exception as e1: log.warning(f"1m fetch failed: {e1}")
             _fetch_jobs[key]={"status":"done","new":new_c,"total":total,"first":df["timestamp"].iloc[0].isoformat(),"last":df["timestamp"].iloc[-1].isoformat()}
         except Exception as e: _fetch_jobs[key]={"status":"error","message":str(e)}
     threading.Thread(target=do,daemon=True).start(); return jsonify({"ok":True})
@@ -1012,6 +1018,39 @@ def api_bot_start():
 def api_bot_stop():
     cfg=load_bot_config(); cfg["enabled"]=False; save_bot_config(cfg); stop_bot(); return jsonify({"ok":True,"enabled":False})
 
+
+
+@app.route("/api/bot/manual-close", methods=["POST"])
+@login_required
+def api_bot_manual_close():
+    """Manually close the current position at market price."""
+    state = load_bot_state()
+    pos = state.get("position")
+    ep  = state.get("entry_price")
+    if not pos or not ep:
+        return jsonify({"error": "No open position"}), 400
+    try:
+        import ccxt as _cx
+        cfg = load_bot_config()
+        ex  = _cx.bybit({"enableRateLimit": True})
+        ticker = ex.fetch_ticker(cfg.get("symbol","XMR/USDT:USDT"))
+        price  = float(ticker["last"])
+    except Exception as e:
+        # fallback: use last known close from state
+        price = state.get("last_close") or ep
+    pnl = (price - ep) / ep * 100 if pos == "long" else (ep - price) / ep * 100
+    log.info(f"MANUAL CLOSE {pos.upper()} @ {price:.4f}  P&L: {pnl:+.2f}%")
+    cfg = load_bot_config()
+    _bot_send_webhook(
+        "sell" if pos == "long" else "buy",
+        price,
+        f"MANUAL close {pos}|P&L {pnl:+.2f}%",
+        cfg
+    )
+    state.update({"position": None, "entry_price": None, "entry_time": None,
+                  "trail_stop": None, "trail_activated": False})
+    save_bot_state(state)
+    return jsonify({"ok": True, "price": round(price, 6), "pnl": round(pnl, 4), "direction": pos})
 
 @app.route("/upload")
 @login_required
