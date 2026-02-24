@@ -287,7 +287,10 @@ def run_ema_crossover(df_base, df_intra, p, fee_pct, capital, tick_lookup=None):
                     elif not pos["trail_active"] and ih>=pos["sl"]: xp,xr,closed,exit_ts=pos["sl"],"SL",True,its
             if not closed and pos["trail_active"]:
                 dist=get_trail_dist(d,close,ep,atr,p)
+                bar_close_mode=p.get("tsl_mode","intrabar")=="barclose"
                 for (ih2,il2,ic2,its2) in bars:
+                    if closed: break
+                    # Step 1: activate or tighten TSL on this candle
                     if d=="long":
                         if not pos["trail_on"]:
                             if ih2>=ep+dist: pos["trail_on"]=True; pos["tsl"]=ih2-dist
@@ -296,15 +299,14 @@ def run_ema_crossover(df_base, df_intra, p, fee_pct, capital, tick_lookup=None):
                         if not pos["trail_on"]:
                             if il2<=ep-dist: pos["trail_on"]=True; pos["tsl"]=il2+dist
                         elif pos["tsl"] is None or il2+dist<pos["tsl"]: pos["tsl"]=il2+dist
-                if pos["trail_on"] and pos["tsl"] is not None:
-                    if p.get("tsl_mode","intrabar")=="barclose":
-                        if d=="long" and close<=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,bar_ts_val
-                        elif d=="short" and close>=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,bar_ts_val
-                    else:
-                        for (ih2,il2,ic2,its2) in bars:
-                            if closed: break
-                            if d=="long" and il2<=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,its2
-                            elif d=="short" and ih2>=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,its2
+                    # Step 2: check TSL hit on this SAME candle (only after TSL is active)
+                    if not bar_close_mode and pos["trail_on"] and pos["tsl"] is not None:
+                        if d=="long" and il2<=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,its2
+                        elif d=="short" and ih2>=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,its2
+                # Bar-close TSL check (uses final bar close, no 1m timestamp)
+                if not closed and bar_close_mode and pos["trail_on"] and pos["tsl"] is not None:
+                    if d=="long" and close<=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,bar_ts_val
+                    elif d=="short" and close>=pos["tsl"]: xp,xr,closed,exit_ts=pos["tsl"],"TSL",True,bar_ts_val
             if not closed:
                 if d=="long" and ss[i]: xp,xr,closed,exit_ts=close,"Signal",True,bar_ts_val
                 elif d=="short" and ls[i]: xp,xr,closed,exit_ts=close,"Signal",True,bar_ts_val
@@ -582,7 +584,7 @@ def _bot_loop(stop_ev):
                             log.info(f"  ENTRY SHORT @ {entry_open:.4f}")
                             _bot_send_webhook("sell",entry_open,"open short",cfg)
                             state.update({"position":"short","entry_price":entry_open,"entry_time":now.isoformat(),"trail_stop":None,"trail_activated":False})
-                    state["trail_stop"]=tsl; state["trail_activated"]=ta; state["last_atr"]=atr_val; state["last_close"]=last_close
+                    state["trail_stop"]=tsl; state["trail_activated"]=ta; state["last_atr"]=atr_val; state["last_close"]=last_close; state["last_bar_time"]=now.isoformat()
                     save_bot_state(state)
                 except Exception as e: log.error(f"Bot bar error: {e}")
             time.sleep(15)
@@ -749,36 +751,146 @@ def api_backtest_run():
             max_dd=_compute_dd(eq,capital)
             gw=float(df_t[df_t["pnl_usdt"]>0]["pnl_usdt"].sum()); gl=float(df_t[df_t["pnl_usdt"]<=0]["pnl_usdt"].abs().sum())
             pf=round(gw/gl,3) if gl>0 else 99.0
-            # Buy & Hold: $capital invested at first bar close, held to end
+            # ── Rich stats ──
+            rets=df_t["pnl_pct"].values/100
+            sharpe=float(np.mean(rets)/np.std(rets)*np.sqrt(252)) if np.std(rets)>0 else 0.0
+            neg=rets[rets<0]; sortino=float(np.mean(rets)/np.std(neg)*np.sqrt(252)) if len(neg)>0 and np.std(neg)>0 else 0.0
+            calmar=round(ret/abs(max_dd),2) if max_dd!=0 else 0.0
+            # avg trade duration in minutes
+            df_t["_dur"]=(pd.to_datetime(df_t["exit_time"])-pd.to_datetime(df_t["entry_time"])).dt.total_seconds()/60
+            avg_dur_min=round(float(df_t["_dur"].mean()),0)
+            # max consecutive wins/losses
+            wins_arr=(df_t["pnl_pct"]>0).astype(int).values
+            max_cw=max_cl=cur_w=cur_l=0
+            for w in wins_arr:
+                if w: cur_w+=1; cur_l=0
+                else: cur_l+=1; cur_w=0
+                max_cw=max(max_cw,cur_w); max_cl=max(max_cl,cur_l)
+            # monthly breakdown
+            df_t["_month"]=pd.to_datetime(df_t["exit_time"]).dt.to_period("M").astype(str)
+            monthly=df_t.groupby("_month").agg(
+                pnl=("pnl_usdt","sum"), trades=("pnl_usdt","count"),
+                wins=("pnl_pct",lambda x:(x>0).sum())
+            ).reset_index()
+            monthly_data=[{"month":r["_month"],"pnl":round(r["pnl"],2),
+                           "trades":int(r["trades"]),"wins":int(r["wins"])} for _,r in monthly.iterrows()]
+            # Buy & Hold
             bh_start=float(df_base["close"].iloc[0])
-            bh_qty=capital/bh_start  # how many units you could buy
+            bh_qty=capital/bh_start
             bh_eq=[round(bh_qty*float(p_),2) for p_ in df_base["close"]]
             bh_dates=[str(t)[:16] for t in df_base["timestamp"]]
+            bh_ret=round((bh_eq[-1]-capital)/capital*100,2) if bh_eq else 0.0
             eq_vals=[round(capital+float(df_t["pnl_usdt"].iloc[:i+1].sum()),2) for i in range(len(df_t))]
             eq_dates=[str(t["exit_time"])[:16] for t in trades]
             arr=np.array(eq_vals); pk=np.maximum.accumulate(arr); dd_vals=[round(float(v),2) for v in ((arr-pk)/pk*100)]
-            result={"combo_key":ck,"saved_at":datetime.now(timezone.utc).isoformat(),
+            result={"combo_key":ck,"exchange":ex_name,"symbol":sym,"timeframe":tf,"saved_at":datetime.now(timezone.utc).isoformat(),
                 "summary":{"total_trades":len(trades),"wins":wins,"losses":len(trades)-wins,
                     "win_rate":round(wins/len(trades)*100,2),"total_return":round(ret,2),"final_capital":round(final_cap,2),
                     "initial_capital":capital,"max_dd":round(max_dd,2),"profit_factor":pf,
+                    "sharpe":round(sharpe,3),"sortino":round(sortino,3),"calmar":round(calmar,3),
+                    "avg_trade_duration_min":avg_dur_min,
+                    "max_consec_wins":max_cw,"max_consec_losses":max_cl,
+                    "bh_return":bh_ret,
                     "total_fees":round(float(df_t["fee_usdt"].sum()),2),
                     "avg_win":round(float(df_t[df_t["pnl_pct"]>0]["pnl_pct"].mean()) if wins>0 else 0,3),
                     "avg_loss":round(float(df_t[df_t["pnl_pct"]<=0]["pnl_pct"].mean()) if len(trades)-wins>0 else 0,3),
+                    "best_trade":round(float(df_t["pnl_pct"].max()),3),
+                    "worst_trade":round(float(df_t["pnl_pct"].min()),3),
                     "exit_tp":int(df_t["exit_reason"].eq("TP").sum()),"exit_tsl":int(df_t["exit_reason"].eq("TSL").sum()),
                     "exit_sl":int(df_t["exit_reason"].eq("SL").sum()),"exit_signal":int(df_t["exit_reason"].eq("Signal").sum()),
                     "data_from":df_base["timestamp"].iloc[0].isoformat(),"data_to":df_base["timestamp"].iloc[-1].isoformat()},
+                "monthly":monthly_data,
                 "equity_curve":{"dates":eq_dates,"values":eq_vals},
                 "drawdown_series":{"dates":eq_dates,"values":dd_vals},
                 "bh_curve":{"dates":bh_dates,"values":bh_eq},
-                "trades":trades[-300:],"all_trades_count":len(trades),"params":p}
-            save_combo(ck,result); _bt_jobs[jid]={"status":"done","combo_key":ck}
+                "trades":trades[-500:],"all_trades_count":len(trades),"params":p}
+            save_combo(ck,result); _bt_jobs[jid]={"status":"done","combo_key":ck,"intra_warning":intra_warning}
         except Exception as e:
             import traceback; _bt_jobs[jid]={"status":"error","message":str(e),"trace":traceback.format_exc()}
     threading.Thread(target=do,daemon=True).start(); return jsonify({"ok":True,"jid":jid,"cached":False})
 
+
+@app.route("/api/backtest/candles/<ck>")
+@login_required
+def api_bt_candles(ck):
+    """Return OHLCV candles for a backtest result so frontend can draw trade markers."""
+    r = load_combo(ck)
+    if not r: return jsonify({"error": "Not found"}), 404
+    p = r.get("params", {})
+    cfg_sym = r.get("summary", {})
+    # Try to reconstruct from params — we stored data_from/data_to in summary
+    s = r.get("summary", {})
+    # We need symbol/tf — stored in the combo key params
+    # Find any cached result with this key to get exchange/symbol/tf
+    # Fall back: scan combo_key files for metadata
+    # Better: add exchange/symbol/tf to result (we'll patch this later)
+    # For now find from saved combo metadata
+    ex = r.get("exchange", "bybit")
+    sym = r.get("symbol", "XMR/USDT:USDT")
+    tf = r.get("timeframe", "30m")
+    d_from = s.get("data_from")
+    d_to = s.get("data_to")
+    df = load_cache(ex, sym, tf)
+    if df is None: return jsonify({"error": "No cache"}), 404
+    if d_from: df = df[df["timestamp"] >= pd.Timestamp(d_from, tz="UTC")]
+    if d_to:   df = df[df["timestamp"] <= pd.Timestamp(d_to,   tz="UTC")]
+    # Downsample if too many candles (max 2000 for chart perf)
+    if len(df) > 2000:
+        step = len(df) // 2000 + 1
+        df = df.iloc[::step]
+    candles = [{"t": int(row.timestamp.timestamp()*1000),
+                "o": row.open, "h": row.high, "l": row.low, "c": row.close}
+               for row in df.itertuples()]
+    # Also compute EMAs
+    df2 = load_cache(ex, sym, tf)
+    if d_from: df2 = df2[df2["timestamp"] >= pd.Timestamp(d_from, tz="UTC")]
+    if d_to:   df2 = df2[df2["timestamp"] <= pd.Timestamp(d_to,   tz="UTC")]
+    fast_ema = compute_ema(df2["close"], p.get("fast_length", 9)).round(4).tolist()
+    slow_ema = compute_ema(df2["close"], p.get("slow_length", 21)).round(4).tolist()
+    ts_list  = df2["timestamp"].tolist()
+    if len(df2) > 2000:
+        step = len(df2) // 2000 + 1
+        fast_ema = fast_ema[::step]; slow_ema = slow_ema[::step]; ts_list = ts_list[::step]
+    return jsonify({"candles": candles, "fast_ema": fast_ema, "slow_ema": slow_ema,
+                    "ts": [int(t.timestamp()*1000) for t in ts_list],
+                    "fast_length": p.get("fast_length"), "slow_length": p.get("slow_length")})
+
 @app.route("/api/backtest/status/<jid>")
 @login_required
 def api_bt_status(jid): return jsonify(_bt_jobs.get(jid,{"status":"idle"}))
+
+
+@app.route("/api/backtest/saved")
+@login_required
+def api_bt_saved():
+    """List all saved backtest combos with summary stats for comparison."""
+    results = []
+    for p in sorted(RESULT_DIR.glob("c_*.json"), key=lambda x: x.stat().st_mtime, reverse=True)[:30]:
+        try:
+            with open(p) as f: r = json.load(f)
+            s = r.get("summary", {})
+            results.append({
+                "combo_key": r.get("combo_key"),
+                "symbol": r.get("symbol", "?"),
+                "timeframe": r.get("timeframe", "?"),
+                "saved_at": r.get("saved_at", ""),
+                "params_label": f"EMA {r.get('params',{}).get('fast_length','?')}/{r.get('params',{}).get('slow_length','?')} ATR{r.get('params',{}).get('atr_length','?')}×{r.get('params',{}).get('atr_multiplier','?')} TP{r.get('params',{}).get('tp_perc','?')}%",
+                "total_return": s.get("total_return"),
+                "max_dd": s.get("max_dd"),
+                "win_rate": s.get("win_rate"),
+                "profit_factor": s.get("profit_factor"),
+                "sharpe": s.get("sharpe"),
+                "sortino": s.get("sortino"),
+                "calmar": s.get("calmar"),
+                "avg_trade_duration_min": s.get("avg_trade_duration_min"),
+                "max_consec_losses": s.get("max_consec_losses"),
+                "total_trades": s.get("total_trades"),
+                "data_from": s.get("data_from","")[:10],
+                "data_to": s.get("data_to","")[:10],
+                "params": r.get("params", {}),
+            })
+        except: pass
+    return jsonify({"results": results})
 
 @app.route("/api/backtest/result/<ck>")
 @login_required
@@ -812,7 +924,7 @@ def api_presets_get(): return jsonify(load_presets())
 def api_presets_save():
     b=request.json or {}; name=b.get("name","").strip()
     if not name: return jsonify({"error":"Name required"}),400
-    p=load_presets(); p[name]={"config":b.get("config",{}),"stats":b.get("stats",{}),"saved_at":datetime.now(timezone.utc).isoformat()}
+    p=load_presets(); p[name]={"config":b.get("config",{}),"stats":b.get("stats",{}),"combo_key":b.get("combo_key"),"saved_at":datetime.now(timezone.utc).isoformat()}
     save_presets(p); return jsonify({"ok":True})
 
 @app.route("/api/presets/<name>", methods=["DELETE"])
@@ -1019,6 +1131,57 @@ def api_bot_stop():
     cfg=load_bot_config(); cfg["enabled"]=False; save_bot_config(cfg); stop_bot(); return jsonify({"ok":True,"enabled":False})
 
 
+
+
+
+
+@app.route("/api/cache/clear", methods=["POST"])
+@login_required
+def api_cache_clear():
+    """Clear OHLCV cache for a symbol/tf."""
+    b = request.json or {}
+    ex = b.get("exchange", "bybit"); sym = b.get("symbol", "XMR/USDT:USDT"); tf = b.get("timeframe", "30m")
+    p = _cache_path(ex, sym, tf)
+    if p.exists():
+        p.unlink()
+        return jsonify({"ok": True, "message": f"Cleared {tf} cache for {sym}"})
+    return jsonify({"ok": False, "message": "No cache found"})
+
+@app.route("/api/stats/summary")
+@login_required
+def api_stats_summary():
+    """Overall platform stats for the dashboard header."""
+    total_results = len(list(RESULT_DIR.glob("c_*.json")))
+    best_return = best_sharpe = None
+    best_label = ""
+    for p in list(RESULT_DIR.glob("c_*.json"))[:50]:
+        try:
+            with open(p) as f: r = json.load(f)
+            s = r.get("summary", {})
+            ret = s.get("total_return", 0) or 0
+            sh  = s.get("sharpe", 0) or 0
+            if best_return is None or ret > best_return:
+                best_return = ret
+                best_label  = f"EMA {r.get('params',{}).get('fast_length','?')}/{r.get('params',{}).get('slow_length','?')}"
+            if best_sharpe is None or sh > best_sharpe:
+                best_sharpe = sh
+        except: pass
+    return jsonify({
+        "total_backtests": total_results,
+        "best_return": round(best_return, 2) if best_return is not None else None,
+        "best_sharpe": round(best_sharpe, 2) if best_sharpe is not None else None,
+        "best_label": best_label,
+    })
+
+@app.route("/api/backtest/delete/<ck>", methods=["DELETE"])
+@login_required
+def api_bt_delete(ck):
+    """Delete a saved backtest result."""
+    p = _combo_path(ck)
+    if p.exists():
+        p.unlink()
+        return jsonify({"ok": True})
+    return jsonify({"error": "Not found"}), 404
 
 @app.route("/api/bot/manual-close", methods=["POST"])
 @login_required
